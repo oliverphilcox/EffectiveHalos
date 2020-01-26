@@ -17,7 +17,7 @@ class Cosmology:
     - Quijote: Fiducial cosmology from the Quijote simulations.
     """
 
-    loaded_models = {'Quijote':{"h":0.6711,"Omega_cdm":(0.3175 - 0.049)*0.6711**2,
+    loaded_models = {'Quijote':{"h":0.6711,"omega_cdm":(0.3175 - 0.049)*0.6711**2,
                                 "Omega_b":0.049, "sigma8":0.834,"n_s":0.9624,
                                 "N_eff":3.04}}
 
@@ -32,31 +32,32 @@ class Cosmology:
 
         print('need to specify class attributes + methods in the docstring...')
 
-        ## Load parameters
+        ## Load parameters into a dictionary to pass to CLASS
+        class_params = dict(**params)
         if len(name)>0:
+            if len(params.items())>0:
+                raise Exception('Must either choose a preset cosmology or specify parameters!')
             if name in self.loaded_models.keys():
-                print("QUIJOTE COSMOLOGY DOESN'T GIVE EXACTLY CORRECT LINEAR POWER")
                 print('Loading the %s cosmology at z = %.2f'%(name,redshift))
                 loaded_model = self.loaded_models[name]
                 for key in loaded_model.keys():
-                    setattr(self,key,loaded_model[key])
+                    class_params[key] = loaded_model[key]
             else:
                 raise Exception("This cosmology isn't yet implemented")
         else:
             if len(params.items())==0:
                 print('Using default CLASS cosmology')
             for name, param in params.items():
-                setattr(self,name,param)
+                class_params[name] = param
 
         ## # Check we have the correct parameters
-        if hasattr(self,'sigma8') and hasattr(self,'A_s'):
+        if 'sigma8' in class_params.keys() and 'A_s' in class_params.keys():
             raise NameError('Cannot specify both A_s and sigma8!')
 
         ## Define other parameters
         self.z = redshift
         self.a = 1./(1.+redshift)
         print('Add other CLASS parameters here?')
-        class_params = dict(**params)
         if 'output' not in class_params.keys():
             class_params['output']='mPk'
         if 'P_k_max_h/Mpc' not in class_params.keys() and 'P_k_max_1/Mpc' not in class_params.keys():
@@ -67,6 +68,7 @@ class Cosmology:
             class_params['z_pk']=redshift
 
         ## Load CLASS and set parameters
+        print('Loading CLASS')
         self.cosmo = Class()
         self.cosmo.set(class_params)
         self.cosmo.compute()
@@ -155,7 +157,6 @@ class Cosmology:
         output = (self.cosmo.Omega0_cdm()+self.cosmo.Omega_b())/self.a**3/hnorm**2
         return output
 
-
 class MassFunction:
     """Class to hold a mass function for halos and associated bias.
 
@@ -207,7 +208,6 @@ class MassFunction:
         # Define mass-function specific parameters:
         self._load_mass_function_parameters(mass_dict)
 
-
     def mass_function(self,m_h):
         """We currently assume that all mass functions can be written as
         dn/dlogM = f(sigma_M) * rho_matter * d(log sigma_M)/d(log10 M) / M
@@ -251,7 +251,6 @@ class MassFunction:
         - m_h: Mass in Msun/h units.
         """
 
-        ## From Sheth-Tormen mass function in Peak-Background split
         m = m_h/self.h
 
         logM = np.log10(m)
@@ -267,7 +266,31 @@ class MassFunction:
         elif self.mass_function_name=='Crocce':
             return 1.-self.pa/(self.delta_c + self.pb*self.delta_c*(self.delta_c/nu)**self.pa) + (2.*self.pc*np.power(nu,2.))/np.power(self.delta_c,3.)
 
+    def second_order_bias(self,m_h):
+        """ Compute the second order Eulerian bias, defined as 4/21 b1L + 1/2 b2L where b1L and b2L are the Lagrangian bias parameters.
 
+        Associated bias functions are available for each mass function, and more can be user-defined.
+        See the class description for details of the loaded parametrizations.
+
+        Parameters:
+        - m_h: Mass in Msun/h units.
+        """
+
+        m = m_h/self.h
+
+        logM = np.log10(m)
+        sigma= self.cosmology.sigma_logM_int(logM);
+        nu = self.delta_c/sigma;
+
+        if self.mass_function_name=='Crocce':
+            b1L = -self.pa/(self.delta_c + self.pb*self.delta_c*(self.delta_c/nu)**self.pa) + (2.*self.pc*np.power(nu,2.))/np.power(self.delta_c,3.)
+            b2L = (4.*self.pb*self.pc*self.delta_c**2.*(-2.*self.delta_c**2.+self.pc*nu**2.)+nu**self.pa*(self.pa**2.*self.delta_c**4.-4.*(1.+self.pa)*self.pc*self.delta_c**2.*nu**2.+4.*self.pc**2*nu**4.))/(self.delta_c**6.*(self.pb*self.delta_c**self.pa+nu**self.pa))
+
+            b2E = 4./21.*b1L + 1./2.*b2L
+            return b2E
+
+        else:
+            raise Exception('Second order bias only implemented for the Crocce mass function.')
 
     def _load_mass_function_parameters(self,mass_dict):
         """Load internal mass function parameters.
@@ -300,7 +323,7 @@ class MassFunction:
             phi0=np.asarray([-0.729,-0.789,-0.910])
             eta0=np.asarray([-0.243,-0.261,-0.261])
             odeltas=np.asarray([200,300,400])
-            alpha=interp1d(odeltas,alpha)(odelta)
+            self.alpha=interp1d(odeltas,alpha)(odelta)
             beta0=interp1d(odeltas,beta0)(odelta)
             gamma0=interp1d(odeltas,gamma0)(odelta)
             phi0=interp1d(odeltas,phi0)(odelta)
@@ -312,13 +335,13 @@ class MassFunction:
             self.gamma = gamma0*self.a**0.01
 
             # BIAS FUNCTION PARAMETERS
-            y = log10(odelta);
+            y = np.log10(odelta);
 
-            self.fit_A = 1.0 + 0.24*y*exp(-pow(4./y,4.));
+            self.fit_A = 1.0 + 0.24*y*np.exp(-np.power(4./y,4.));
             self.fit_a = 0.44*y-0.88;
             self.fit_B = 0.183;
             self.fit_b = 1.5;
-            self.fit_C = 0.019+0.107*y+0.19*exp(-pow(4./y,4.));
+            self.fit_C = 0.019+0.107*y+0.19*np.exp(-np.power(4./y,4.));
             self.fit_c = 2.4;
 
         elif self.mass_function_name=='Crocce':
@@ -582,7 +605,7 @@ class MassIntegrals:
                 min_window = self.halo_physics.halo_profile(min_m_h,self.k_vectors).ravel()
                 zero_window = self.halo_physics.halo_profile(min_m_h,0.).ravel()
                 self.I_11 += A*min_window/zero_window
-        return self.I_11
+        return self.I_11.copy()
 
     def compute_I_20(self):
         """Compute the I_2^0(k,k) integral, if not already computed.
@@ -593,7 +616,7 @@ class MassIntegrals:
             print('How do we want this - should the two k arguments be the same?')
             print('cleanup this')
             print('save the k stack?')
-        return self.I_20
+        return self.I_20.copy()
 
     def compute_I_21(self):
         """Compute the I_2^1 integral, if not already computed.
@@ -604,14 +627,14 @@ class MassIntegrals:
             print('How do we want this - should the two k arguments be the same?')
             print('cleanup this')
             print('save the k stack?')
-        return self.I_21
+        return self.I_21.copy()
 
     def compute_I_111(self):
         """Compute the I_1^{1,1} integral, if not already computed.
         """
         if not hasattr(self,'I_111'):
             self.I_111 = simps(self._I_p_q1q2_integrand(1,1,1,self.k_vectors),self.logM_grid,axis=1)
-        return self.I_111
+        return self.I_111.copy()
 
     def compute_I_01(self):
         """Compute the I_0^1 integral, if not already computed.
@@ -619,7 +642,35 @@ class MassIntegrals:
         if not hasattr(self,'I_01'):
             # NB: we pass kh_vectors as a placeholder here; it's not used.
             self.I_01 = simps(self._I_p_q1q2_integrand(0,1,0,self.k_vectors),self.logM_grid)
-        return self.I_01
+        return self.I_01.copy()
+
+    def compute_I_00(self):
+        """Compute the I_0^0 integral, if not already computed.
+        """
+        if not hasattr(self,'I_00'):
+            # NB: we pass kh_vectors as a placeholder here; it's not used.
+            self.I_00 = simps(self._I_p_q1q2_integrand(0,0,0,self.k_vectors),self.logM_grid)
+        return self.I_00.copy()
+
+    def compute_I_12(self,apply_correction = True):
+        """Compute the I_1^2 integral, if not already computed.
+
+        When computing {}_i J_1^2 type integrals (over a finite mass bin), the correction should *not* be applied.
+
+        Parameters:
+        - apply_correction (Boolean): Whether to apply the correction in the class header to ensure the bias consistency relation is upheld.
+        """
+        if not hasattr(self,'I_12'):
+            self.I_12 = simps(self._I_p_q1q2_integrand(1,2,0,self.k_vectors),self.logM_grid)
+
+            if apply_correction:
+                A = - simps(self._I_p_q1q2_integrand(1,2,0,0.),self.logM_grid)
+                # compute window functions
+                min_m_h = np.power(10.,self.min_logM)*self.h
+                min_window = self.halo_physics.halo_profile(min_m_h,self.k_vectors).ravel()
+                zero_window = self.halo_physics.halo_profile(min_m_h,0.).ravel()
+                self.I_11 += A*min_window/zero_window
+        return self.I_12.copy()
 
     def _I_p_q1q2_integrand(self,p,q1,q2,k_vectors):
         """Compute the integrand of the I_p^{q1,q2} function defined in the class description.
@@ -659,13 +710,19 @@ class MassIntegrals:
         """Compute the mass function for specified masses if not already computed."""
         if not hasattr(self,'mass_function_grid'):
             self.mass_function_grid = self.mass_function.mass_function(self.m_h_grid)
-        return self.mass_function_grid
+        return self.mass_function_grid.copy()
 
     def _compute_linear_bias(self):
         """Compute the linear bias function for specified masses if not already computed."""
         if not hasattr(self,'linear_bias_grid'):
             self.linear_bias_grid = self.mass_function.linear_halo_bias(self.m_h_grid)
-        return self.linear_bias_grid
+        return self.linear_bias_grid.copy()
+
+    def _compute_second_order_bias(self):
+        """Compute the second order bias function for specified masses if not already computed."""
+        if not hasattr(self,'second_order_bias_grid'):
+            self.second_order_bias_grid = self.mass_function.second_order_bias(self.m_h_grid)
+        return self.second_order_bias_grid.copy()
 
     def _return_bias(self,q):
         """Return the q-th order halo bias function for all masses in the self.logM_grid attribute.
@@ -677,6 +734,8 @@ class MassIntegrals:
             return 1.
         elif q==1:
             return self._compute_linear_bias()
+        elif q==2:
+            return self._compute_second_order_bias()
         else:
             raise Exception('%-th order bias not yet implemented!'%q)
 
@@ -728,7 +787,7 @@ class HaloPower:
 
         # Compute linear power for the k-vector
         print('should rename cosmology.linear_power to cosmology.compute_linear_power')
-        self.linear_power = self.cosmology.linear_power(self.kh_vector)
+        self.linear_power = self.cosmology.linear_power(self.kh_vector).copy()
 
     def compute_one_loop_only_power(self):
         """Compute the one-loop SPT power from the linear power spectrum in the Cosmology class.
@@ -740,7 +799,7 @@ class HaloPower:
             print('should carry over parameters here - or initialize them in the class')
             self.one_loop_only_power = self._one_loop_only_power_interpolater(self.cosmology.linear_power)(self.kh_vector)
 
-        return self.one_loop_only_power
+        return self.one_loop_only_power.copy()
 
     def compute_resummed_linear_power(self):
         """Compute the IR-resummed linear power spectrum, using the linear power spectrum in the Cosmology class.
@@ -768,7 +827,7 @@ class HaloPower:
             # Compute and return IR resummed power
             self.resummed_linear_power = no_wiggle+np.exp(-self.BAO_damping*self.kh_vector**2.)*wiggle
 
-        return self.resummed_linear_power
+        return self.resummed_linear_power.copy()
 
     def compute_resummed_one_loop_power(self):
         """Compute the IR-resummed linear-plus-one-loop power spectrum, using the linear power spectrum in the Cosmology class.
@@ -800,10 +859,9 @@ class HaloPower:
             wiggle_one_loop = one_loop_all - no_wiggle_one_loop
 
             # Compute and return IR resummed power
-            self.resummed_one_loop_power = no_wiggle_lin + no_wiggle_one_loop
-            self.resummed_one_loop_power += np.exp(-self.BAO_damping*self.kh_vector**2.)*(wiggle_lin*(1.+self.kh_vector**2.*self.BAO_damping)+wiggle_one_loop)
+            self.resummed_one_loop_power = no_wiggle_lin + no_wiggle_one_loop + np.exp(-self.BAO_damping*self.kh_vector**2.)*(wiggle_lin*(1.+self.kh_vector**2.*self.BAO_damping)+wiggle_one_loop)
 
-        return self.resummed_one_loop_power
+        return self.resummed_one_loop_power.copy()
 
     def non_linear_power(self,cs2,R,pt_type = 'EFT',pade_resum = True, smooth_density = True, IR_resum = True):
         """Compute the non-linear power spectrum to one-loop order, with IR corrections and counterterms.
@@ -830,14 +888,14 @@ class HaloPower:
 
         if not IR_resum:
             if pt_type=='Linear':
-                output = self.linear_power
+                output = self.linear_power.copy()
             elif pt_type=='SPT':
-                output = self.linear_power+self.compute_one_loop_only_power()
+                output = self.linear_power.copy()+self.compute_one_loop_only_power()
             elif pt_type=='EFT':
-                counterterm = -cs2*self.kh_vector**2.*self.linear_power
+                counterterm = -cs2*self.kh_vector**2.*self.linear_power.copy()
                 if pade_resum:
-                    ct/=(1.+k**2.)
-                output = self.linear_power+self.compute_one_loop_only_power()+counterterm
+                    counterterm/=(1.+self.kh_vector**2.)
+                output = self.linear_power.copy()+self.compute_one_loop_only_power()+counterterm
             else:
                 raise NameError("pt_type must be 'Linear', 'SPT' or 'EFT'!")
         else:
@@ -851,7 +909,7 @@ class HaloPower:
                 if pade_resum:
                     counterterm_tmp/=(1.+self.kh_vector**2.)
                 no_wiggle_lin = self.linear_no_wiggle_power
-                wiggle_lin = self.linear_power - no_wiggle_lin
+                wiggle_lin = self.linear_power.copy() - no_wiggle_lin
                 output = self.compute_resummed_one_loop_power() + counterterm_tmp * (no_wiggle_lin + wiggle_lin * np.exp(-self.BAO_damping*self.kh_vector**2.))
             else:
                 raise NameError("pt_type must be 'Linear', 'SPT' or 'EFT'!")
@@ -889,11 +947,12 @@ class HaloPower:
         if not hasattr(self,'I_11'):
             self.I_11 = self.mass_integrals.compute_I_11(apply_correction = True)
         if not hasattr(self,'I_20'):
+            print('separately return 2h + 1h terms?')
+            print('this is taking far too long - is anything being recomputed?')
             self.I_20 = self.mass_integrals.compute_I_20()
 
         # Compute the final mass function
-        print('separately return 2h + 1h terms?')
-        return p_non_linear*self.I_11*self.I_11 + self.I_20
+        return p_non_linear*self.I_11.copy()*self.I_11.copy() + self.I_20.copy()
 
     def _compute_smoothing_function(self,R):
             """Compute the smoothing function W(kR), for smoothing scale R.
@@ -935,7 +994,7 @@ class HaloPower:
         # Compute the one-loop spectrum using FAST-PT
         fastpt = FASTPT.FASTPT(kh_interp,to_do=['one_loop_dd'],n_pad=len(kh_interp)*3,
                                verbose=0);
-        initial_power=fastpt.one_loop_dd(linear_spectrum(kh_interp),C_window=0.65,P_window=[0.25,0.25])[0]
+        initial_power=fastpt.one_loop_dd(linear_spectrum(kh_interp).copy(),C_window=0.65,P_window=[0.25,0.25])[0]
 
          # Now convolve k
         filt = kh_interp>k_cut
@@ -969,9 +1028,11 @@ class HaloPower:
         - N_k: Number of points over which to compute no-wiggle power spectrum, default: 5000
         - kh_max: Maximum k (in h/Mpc units) to which to apply the no-wiggle decomposition, default: 1. Beyond k_max, we assume wiggles are negligible, so P_{no-wiggle} = P_{full}]
         """
-        print('need to test these hyperparameters')
 
-        if not hasattr(self,'linear_no_wiggle_spectrum') and not hasattr(self,'one_loop_only_no_wiggle_spectrum') and not hasattr(self,'BAO_damping'):
+        if not hasattr(self,'linear_no_wiggle_power') and not hasattr(self,'one_loop_only_no_wiggle_power') and not hasattr(self,'BAO_damping'):
+
+            print('need to test these hyperparameters')
+
             # First define a k-grid in h/Mpc units
             min_k = np.max([np.min(self.kh_vector),1e-4]) # setting minimum to avoid zero errors
             max_k = np.max(self.kh_vector)
@@ -1099,7 +1160,7 @@ class CountsCovariance:
 
         # Compute linear power for the k-vector
         print('should rename cosmology.linear_power to cosmology.compute_linear_power')
-        self.linear_power = self.cosmology.linear_power(self.kh_vector)
+        self.linear_power = self.cosmology.linear_power(self.kh_vector).copy()
 
         # Generate a power spectrum class with this k-vector
         self.halo_power = HaloPower(cosmology, mass_function, halo_physics, mass_integrals, kh_vector, kh_min)
@@ -1119,12 +1180,12 @@ class CountsCovariance:
         - IR_resum: If True, perform IR resummation on the density field to resum non-perturbative long-wavelength modes, default: True
         """
         # Compute no-SSC covariance
-        covariance = self._compute_no_ssc_covariance(cs2, R, pt_type = 'EFT', pade_resum = True, smooth_density = True, IR_resum = True)
+        covariance = self._compute_no_ssc_covariance(cs2, R, pt_type, pade_resum, smooth_density, IR_resum)
         print('It would probably be nicer to define these parameters on class initialization')
 
         # Compute SSC covariance, if required
         if use_SSC:
-            covariance += self._compute_ssc_covariance(cs2, R, pt_type = 'EFT', pade_resum = True, smooth_density = True, IR_resum = True)
+            covariance += self._compute_ssc_covariance(cs2, R, pt_type, pade_resum, smooth_density, IR_resum)
 
         return covariance
 
@@ -1141,25 +1202,25 @@ class CountsCovariance:
         """
 
         # Compute the non-linear power spectrum
-        power_model = self.halo_power.non_linear_power(cs2, R, pt_type = pt_type, pade_resum = pade_resum, smooth_density = smooth_density, IR_resum = IR_resum)
+        power_model = self.halo_power.non_linear_power(cs2, R, pt_type, pade_resum, smooth_density, IR_resum)
 
         # Compute relevant I_p^q integrals, if not already computed
         if not hasattr(self,'I_11'):
-            self.I_11 = self.mass_integrals.compute_I_11(apply_correction = True)
+            self.I_11 = self.mass_integrals.compute_I_11(apply_correction = True).copy()
 
         # Load mass integrals for each bin, if not already computed
         self._load_mass_integrals()
 
         # Compute iJ_p^q integrals in each mass bin and store
-        if not hasattr(self,'iJ_11_array'):
+        if not hasattr(self,'all_iJ_11_array'):
             # Note that we don't apply the I_1^1 correction, since we expect the mass to be finite
             self.all_iJ_11_array = np.asarray([self.all_mass_integrals[n_bin].compute_I_11(apply_correction = False) for n_bin in range(self.N_bins)])
-        if not hasattr(self,'iJ_20_array'):
+        if not hasattr(self,'all_iJ_20_array'):
             self.all_iJ_20_array = np.asarray([self.all_mass_integrals[n_bin].compute_I_20() for n_bin in range(self.N_bins)])
 
         # Now compute the covariance
-        two_halo_term = 2. * self.I_11 * self.all_iJ_11_array * power_model
-        one_halo_term = self.all_iJ_20_array
+        two_halo_term = 2. * self.I_11.copy() * self.all_iJ_11_array.copy() * power_model
+        one_halo_term = self.all_iJ_20_array.copy()
 
         return two_halo_term + one_halo_term
 
@@ -1177,10 +1238,10 @@ class CountsCovariance:
 
         # Compute the non-linear power spectrum
         power_model = self.halo_power.non_linear_power(cs2, R, pt_type = pt_type, pade_resum = pade_resum, smooth_density = smooth_density, IR_resum = IR_resum)
-        print('no need to load power twice?')
 
         # Compute relevant I_p^q integrals, if not already computed
         if not hasattr(self,'I_11'):
+            print('no need to load power twice?')
             self.I_11 = self.mass_integrals.compute_I_11(apply_correction = True)
         if not hasattr(self,'I_21'):
             self.I_21 = self.mass_integrals.compute_I_21()
@@ -1191,14 +1252,14 @@ class CountsCovariance:
         self._load_mass_integrals()
 
         # Compute iJ_p^q integrals in each mass bin and store
-        if not hasattr(self,'iJ_01_array'):
+        if not hasattr(self,'all_iJ_01_array'):
+            print('allow for more flexible sigma^2(V)?')
             self.all_iJ_01_array = np.asarray([self.all_mass_integrals[n_bin].compute_I_01() for n_bin in range(self.N_bins)])
 
         # Now compute the covariance
-        print('allow for more flexible sigma^2(V)?')
-        prefactor = (self.volume * self._compute_sigma2_volume() * self.all_iJ_01_array).reshape(-1,1)
-        three_halo_term = prefactor * (self.I_11 * self.I_111 * power_model).reshape(1,-1)
-        two_halo_term = prefactor * self.I_21.reshape(1,-1)
+        prefactor = (self.volume * self._compute_sigma2_volume() * self.all_iJ_01_array.copy()).reshape(-1,1)
+        three_halo_term = prefactor * (self.I_11.copy() * self.I_111.copy() * power_model).reshape(1,-1)
+        two_halo_term = prefactor * self.I_21.copy().reshape(1,-1)
 
         return three_halo_term + two_halo_term
 
@@ -1209,15 +1270,15 @@ class CountsCovariance:
         """
         if not hasattr(self,'sigma2_volume'):
             R_survey = np.power(3.*self.volume/(4.*np.pi),1./3.) # equivalent survey volume
-            self.sigma2_volume = np.sqrt(self.cosmology.vector_sigma_R(R_survey/self.cosmology.h))
+            self.sigma2_volume = np.power(self.cosmology.vector_sigma_R(R_survey/self.cosmology.h),2.)
 
-        return self.sigma2_volume
+        return self.sigma2_volume.copy()
 
     def _load_mass_integrals(self):
         """Load the instances of the MassIntegrals class for each mass bin.
         These will be used to compute the iJ_p^q type integrals.
 
-        This is an empty function if these have already been computed.
+        This is an empty function if these have al ready been computed.
         """
 
         if not hasattr(self,'all_mass_integrals'):

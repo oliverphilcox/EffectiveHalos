@@ -6,6 +6,12 @@
 Welcome to PerturbedHalos's documentation!
 ==========================================
 
+Authors:
+
+- Oliver Philcox (Princeton)
+- David Spergel (Princeton / CCA)
+- Francesco Villaescusa-Navarro (Princeton / CCA)
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
