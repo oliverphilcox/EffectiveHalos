@@ -17,9 +17,17 @@ class HaloPower:
     where I_p^q are mass function integrals defined in the MassIntegrals class,
     P_{NL} is the 1-loop non-linear power spectrum from Effective Field Theory
     and W(kR) is a smoothing window on scale R.
+
+    Methods:
+    - __init__: Initialize with the relevant classes and k vector.
+    - compute_one_loop_only_power: Return the 1-loop-only (Eulerian) power spectrum without IR-resummation.
+    - compute_resummed_linear_power: Return the linear power spectrum including IR-resummation.
+    - compute_resummed_one_loop_power: Return the linear-plus-one-loop power spectrum including IR-resummation.
+    - non_linear_power: Return the perturbative non-linear effective field theory power spectrum, optionally including IR-resummation, smoothing and the UV counterterm
+    - halo_power: Return the full halo model power spectrum of Philcox et al. 2020, optionally including higher-order perturbative effects.
     """
 
-    def __init__(self,cosmology,mass_function,halo_physics,mass_integrals,kh_vector,kh_min):
+    def __init__(self,cosmology,mass_function,halo_physics,mass_integrals,kh_vector,kh_min=0):
         """Initialize the class loading properties from the other classes.
 
         Parameters:
@@ -28,7 +36,7 @@ class HaloPower:
         - halo_physics: Instance of the HaloPhysics class, containing the halo profiles and concentrations.
         - mass_integrals: Instance of the MassIntegrals class, containing the mass integrals.
         - kh_vector: Vector of wavenumbers (in h/Mpc units), for which power spectrum will be computed.
-        - kh_min: Minimum k vector in the simulation (or survey) region in h/Mpc units. Modes with kh<kh_min are set to zero.
+        - kh_min: Minimum k vector in the simulation (or survey) region in h/Mpc units. Modes with kh<kh_min are set to zero, default: 0.
         """
         print('do we really need to specify all these input classes?')
         print("either take kh-vector from mass_integrals class or don't respecify")
@@ -58,80 +66,6 @@ class HaloPower:
         # Compute linear power for the k-vector
         print('should rename cosmology.linear_power to cosmology.compute_linear_power')
         self.linear_power = self.cosmology.linear_power(self.kh_vector).copy()
-
-    def compute_one_loop_only_power(self):
-        """Compute the one-loop SPT power from the linear power spectrum in the Cosmology class.
-        This returns the one-loop power evaluated at the wavenumber vector specfied in the class initialization.
-        When first called, this computes an interpolator function, which is used in this an subsequent calls.
-        """
-
-        if not hasattr(self,'one_loop_only_power'):
-            print('should carry over parameters here - or initialize them in the class')
-            self.one_loop_only_power = self._one_loop_only_power_interpolater(self.cosmology.linear_power)(self.kh_vector)
-
-        return self.one_loop_only_power.copy()
-
-    def compute_resummed_linear_power(self):
-        """Compute the IR-resummed linear power spectrum, using the linear power spectrum in the Cosmology class.
-
-        The output power is defined by
-            $ P_\mathrm{lin, IR} = P_\mathrm{lin, nw}(k) + P_\mathrm{lin, w}e^{-k^2\Sigma^2} $
-        where 'nw' and 'w' refer to the no-wiggle and wiggle parts of the linear power spectrum
-        and Sigma^2 is the BAO damping scale (computed in _prepare_IR_resummation)
-
-        This returns the IR-resummed linear power, evaluated at the wavenumber vector that the class was initialized with.
-
-        If already computed, the IR resummed linear power is simply returned.
-        """
-
-        if not hasattr(self,'resummed_linear_power'):
-
-            # First create IR interpolaters if not present
-            self._prepare_IR_resummation()
-            print('add ir parameters?')
-
-            # Load no-wiggle and wiggly parts
-            no_wiggle = self.linear_no_wiggle_power
-            wiggle = self.linear_power - no_wiggle
-
-            # Compute and return IR resummed power
-            self.resummed_linear_power = no_wiggle+np.exp(-self.BAO_damping*self.kh_vector**2.)*wiggle
-
-        return self.resummed_linear_power.copy()
-
-    def compute_resummed_one_loop_power(self):
-        """Compute the IR-resummed linear-plus-one-loop power spectrum, using the linear power spectrum in the Cosmology class.
-
-        The output power is defined by
-            $ P_\mathrm{1-loop, IR} = P_\mathrm{lin, nw}(k) + P_\mathrm{1-loop, nw}(k)
-                                     + e^{-k^2\Sigma^2} [ P_\mathrm{lin, w}(k) (1 + k^2\Sigma^2) + P_\mathrm{1-loop,w}(k) ] $
-        where 'nw' and 'w' refer to the no-wiggle and wiggle parts of the linear / 1-loop power spectrum
-        and Sigma^2 is the BAO damping scale (computed in _prepare_IR_resummation)
-
-        This returns the IR-resummed linear+one-loop power, evaluated at the wavenumber vector that the class was initialized with.
-
-        If already computed, the IR resummed linear+one-loop power is simply returned.
-        """
-
-        if not hasattr(self,'resummed_one_loop_power'):
-
-            # First create IR interpolators if not present
-            self._prepare_IR_resummation()
-            print('add ir parameters?')
-
-            # Compute 1-loop only power spectrum
-            one_loop_all = self.compute_one_loop_only_power()
-
-            # Load no-wiggle and wiggly parts
-            no_wiggle_lin = self.linear_no_wiggle_power
-            wiggle_lin = self.linear_power - no_wiggle_lin
-            no_wiggle_one_loop = self.one_loop_only_no_wiggle_power
-            wiggle_one_loop = one_loop_all - no_wiggle_one_loop
-
-            # Compute and return IR resummed power
-            self.resummed_one_loop_power = no_wiggle_lin + no_wiggle_one_loop + np.exp(-self.BAO_damping*self.kh_vector**2.)*(wiggle_lin*(1.+self.kh_vector**2.*self.BAO_damping)+wiggle_one_loop)
-
-        return self.resummed_one_loop_power.copy()
 
     def non_linear_power(self,cs2,R,pt_type = 'EFT',pade_resum = True, smooth_density = True, IR_resum = True):
         """Compute the non-linear power spectrum to one-loop order, with IR corrections and counterterms.
@@ -224,6 +158,80 @@ class HaloPower:
         # Compute the final mass function
         return p_non_linear*self.I_11.copy()*self.I_11.copy() + self.I_20.copy()
 
+    def compute_one_loop_only_power(self):
+        """Compute the one-loop SPT power from the linear power spectrum in the Cosmology class.
+        This returns the one-loop power evaluated at the wavenumber vector specfied in the class initialization.
+        When first called, this computes an interpolator function, which is used in this an subsequent calls.
+        """
+
+        if not hasattr(self,'one_loop_only_power'):
+            print('should carry over parameters here - or initialize them in the class')
+            self.one_loop_only_power = self._one_loop_only_power_interpolater(self.cosmology.linear_power)(self.kh_vector)
+
+        return self.one_loop_only_power.copy()
+
+    def compute_resummed_linear_power(self):
+        """Compute the IR-resummed linear power spectrum, using the linear power spectrum in the Cosmology class.
+
+        The output power is defined by
+            $ P_\mathrm{lin, IR} = P_\mathrm{lin, nw}(k) + P_\mathrm{lin, w}e^{-k^2\Sigma^2} $
+        where 'nw' and 'w' refer to the no-wiggle and wiggle parts of the linear power spectrum
+        and Sigma^2 is the BAO damping scale (computed in _prepare_IR_resummation)
+
+        This returns the IR-resummed linear power, evaluated at the wavenumber vector that the class was initialized with.
+
+        If already computed, the IR resummed linear power is simply returned.
+        """
+
+        if not hasattr(self,'resummed_linear_power'):
+
+            # First create IR interpolaters if not present
+            self._prepare_IR_resummation()
+            print('add ir parameters?')
+
+            # Load no-wiggle and wiggly parts
+            no_wiggle = self.linear_no_wiggle_power
+            wiggle = self.linear_power - no_wiggle
+
+            # Compute and return IR resummed power
+            self.resummed_linear_power = no_wiggle+np.exp(-self.BAO_damping*self.kh_vector**2.)*wiggle
+
+        return self.resummed_linear_power.copy()
+
+    def compute_resummed_one_loop_power(self):
+        """Compute the IR-resummed linear-plus-one-loop power spectrum, using the linear power spectrum in the Cosmology class.
+
+        The output power is defined by
+            $ P_\mathrm{1-loop, IR} = P_\mathrm{lin, nw}(k) + P_\mathrm{1-loop, nw}(k)
+                                     + e^{-k^2\Sigma^2} [ P_\mathrm{lin, w}(k) (1 + k^2\Sigma^2) + P_\mathrm{1-loop,w}(k) ] $
+        where 'nw' and 'w' refer to the no-wiggle and wiggle parts of the linear / 1-loop power spectrum
+        and Sigma^2 is the BAO damping scale (computed in _prepare_IR_resummation)
+
+        This returns the IR-resummed linear+one-loop power, evaluated at the wavenumber vector that the class was initialized with.
+
+        If already computed, the IR resummed linear+one-loop power is simply returned.
+        """
+
+        if not hasattr(self,'resummed_one_loop_power'):
+
+            # First create IR interpolators if not present
+            self._prepare_IR_resummation()
+            print('add ir parameters?')
+
+            # Compute 1-loop only power spectrum
+            one_loop_all = self.compute_one_loop_only_power()
+
+            # Load no-wiggle and wiggly parts
+            no_wiggle_lin = self.linear_no_wiggle_power
+            wiggle_lin = self.linear_power - no_wiggle_lin
+            no_wiggle_one_loop = self.one_loop_only_no_wiggle_power
+            wiggle_one_loop = one_loop_all - no_wiggle_one_loop
+
+            # Compute and return IR resummed power
+            self.resummed_one_loop_power = no_wiggle_lin + no_wiggle_one_loop + np.exp(-self.BAO_damping*self.kh_vector**2.)*(wiggle_lin*(1.+self.kh_vector**2.*self.BAO_damping)+wiggle_one_loop)
+
+        return self.resummed_one_loop_power.copy()
+
     def _compute_smoothing_function(self,R):
             """Compute the smoothing function W(kR), for smoothing scale R.
             This accounts for the smoothing of the density field on scale R and is the Fourier
@@ -280,7 +288,6 @@ class HaloPower:
 
         # Create and return an interpolator
         return interp1d(combined_k,combined_power)
-
 
     def _prepare_IR_resummation(self,N_k=5000,kh_max=1.):
         """Compute relevant quantities to allow IR resummation of the non-linear power spectrum to be performed.

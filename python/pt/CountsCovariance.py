@@ -19,9 +19,13 @@ class CountsCovariance:
     There is an additional contribution from super-sample-covariance:
         $$ cov_{SSC}(N_i, P(k)) = V sigma^2(V) iJ_0^1 [ I_1^1(k) I_1^{1,1}(k) W^2(kR)  + I_2^1(k) ] $$
     where sigma^2(V) is the variance of the linear density field on scales with volume V.
+
+    Methods:
+    - __init__: Initialize with necessary classes, k-vector and masses.
+    - counts_covariance: Compute and return the covariance between N(m) and P(k) for the specfied mass and k-bins. This can optionally include super-sample covariances, and higher-order perturbative corrections.
     """
 
-    def __init__(self,cosmology,mass_function,halo_physics,mass_integrals,kh_vector,kh_min,mass_bins,volume):
+    def __init__(self,cosmology,mass_function,halo_physics,mass_integrals,kh_vector,mass_bins,volume,kh_min=0):
         """Initialize the class loading properties from the other classes.
 
         Parameters:
@@ -30,13 +34,14 @@ class CountsCovariance:
         - halo_physics: Instance of the HaloPhysics class, containing the halo profiles and concentrations.
         - mass_integrals: Instance of the MassIntegrals class, containing the mass integrals.
         - kh_vector: Vector of wavenumbers (in h/Mpc units), for which power spectrum will be computed.
-        - kh_min: Minimum k vector in the simulation (or survey) region in h/Mpc units. Modes with kh<kh_min are set to zero.
         - mass_bins: Array of mass bin edges, in Msun/h units. Must have length N_bins + 1.
         - volume: Volume of the survey in (Mpc/h)^3. The variance of the linear field will be computed for radius giving this volume
+        - kh_min: Minimum k vector in the simulation (or survey) region in h/Mpc units. Modes with kh<kh_min are set to zero, default 0.
         """
         print('do we really need to specify all these input classes? generate inside class?')
 
         print('also compute N(m) autocovariance?')
+        print('think about how to do sigma^2')
 
         # Write attributes, if they're of the correct type
         if isinstance(cosmology, Cosmology):
@@ -205,7 +210,6 @@ class CountsCovariance:
         print('OVERWRITING sigma^2(V)')
         #return 4.717e-4
         return 5.12e-4
-        #return self.sigma2_volume.copy()
 
     def _load_mass_integrals(self):
         """Load the instances of the MassIntegrals class for each mass bin.

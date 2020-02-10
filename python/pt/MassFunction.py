@@ -7,16 +7,22 @@ class MassFunction:
     """Class to hold a mass function for halos and associated bias.
 
     Implemented Mass Functions:
-    - 'Sheth-Tormen': Sheth-Tormen 1999 analytic mass function. This assumes virialized halos.
+    - 'Sheth-Tormen': Sheth & Tormen 1999 analytic mass function. This assumes virialized halos, and uses the critical density from Nakamura & Suto 1997.
     - 'Tinker': Tinker et al. 2010, eq. 8. This assume a spherical overdensity, the value of which can be specified.
     - 'Crocce': Crocce et al. 2009, eq. 22. Calibrated from Friends-of-Friends halos with linking length 0.2
     - 'Bhattacharya': Bhattacharya et al. 2010, eq. 12. Calibrated from Friends-of-Friends halos with linking length 0.2
 
     Implemented Bias Functions:
-    - 'Sheth-Tormen': Sheth-Tormen 2001 ???. Associated to the 'Sheth-Tormen' mass function.
-    - 'Tinker': Tinker et al. 2010 ???. Associated to the 'Tinker' mass function.
-    - 'Crocce': ???. Associated to the 'Crocce' mass function.
-    - 'Bhattacharya': Bhattacharya et al. 2010, eq. 18. Assicuated to the 'Bhattacharya' mass function.
+    - 'Sheth-Tormen': Sheth-Tormen 2001, eq. 8 Associated to the 'Sheth-Tormen' mass function.
+    - 'Tinker': Tinker et al. 2010, eq. 15. Associated to the 'Tinker' mass function.
+    - 'Crocce': Peak-background split derivation from the 'Crocce' mass function of eq. 22, Crocce et al. 2009.
+    - 'Bhattacharya': Bhattacharya et al. 2010, eq. 18. Associated to the 'Bhattacharya' mass function.
+
+    Methods:
+    - __init__: Initialize the function, specifying the mass function name and any hyperparameters.
+    - mass_function: Return the halo mass function for an input mass, in the form dn/dlog10(m)
+    - linear_halo_bias: Return the first-order bias for a given mass, in Eulerian co-ordinates.
+    - second_order_bias: Return the second-order bias for a given mass, in Eulerian co-ordinates.
     """
 
     def __init__(self,cosmology,mass_function_name='Crocce',**mass_params):
@@ -30,9 +36,6 @@ class MassFunction:
         """
 
         print('need to specify class attributes + methods in the docstring...')
-
-        print('add mass function + bias references')
-        print('add ref to ST overdensity (NakamuraSuto)')
 
         # Write attributes, if they're of the correct type
         self.mass_function_name = mass_function_name
@@ -91,7 +94,6 @@ class MassFunction:
         mf = f * self.cosmology.rhoM * dlns_dlogM / m
         return mf
 
-
     def linear_halo_bias(self,m_h):
         """Compute the linear halo bias, from the peak background split.
         Associated bias functions are available for each mass function, and more can be user-defined.
@@ -100,7 +102,6 @@ class MassFunction:
         Parameters:
         - m_h: Mass in Msun/h units.
         """
-
 
         m = m_h/self.h
 
@@ -119,7 +120,6 @@ class MassFunction:
 
         elif self.mass_function_name=='Bhattacharya':
             return 1. + (self.a0*nu**2.+2.*self.p0/(1.+np.power(self.a0*nu**2.,self.p0))-self.q0) / self.delta_c
-
 
     def second_order_bias(self,m_h):
         """ Compute the second order Eulerian bias, defined as 4/21 b1L + 1/2 b2L where b1L and b2L are the Lagrangian bias parameters.
@@ -168,7 +168,7 @@ class MassFunction:
             self.a_ST = 0.707
             self.A_ST  = (1.+2.**(-self.p_ST)*gamma_fn(0.5-self.p_ST)/np.sqrt(np.pi))**(-1.)*np.sqrt(2.*self.a_ST/np.pi)
 
-            # Compute the spherical collapse threshold of Nakamura-Suto.
+            # Compute the spherical collapse threshold of Nakamura-Suto, 1997.
             Om_mz = self.cosmology._Omega_m()
             dc0 = (3./20.)*pow(12.*np.pi,2./3.);
             self.delta_c = dc0*(1.+0.012299*np.log10(Om_mz));

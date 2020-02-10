@@ -10,7 +10,12 @@ class HaloPhysics:
     - 'Duffy': Duffy et al. (2008) for virial-density haloes (second section in Table 1)
 
     Implemented Halo Profiles:
-    - 'NFW':
+    - 'NFW': Navarro, Frenk & White (1997) universal halo profile. We use the virial collapse overdensity from Bryan & Norman 1998 to construct this.
+
+    Methods:
+    - __init__: Initialize the class with loaded modules and choices of halo profile and concentration function.
+    - halo_profile: Compute the halo profile in Fourier space, rho(k|M), from a given input M and k-vector.
+    - halo_concentration: Compute the concentration parameter for a given mass halo.
     """
 
     def __init__(self,cosmology,mass_function,concentration_name='Duffy',profile_name='NFW',**hyperparams):
@@ -27,12 +32,7 @@ class HaloPhysics:
             - npoints: Number of sampling points for sigma(M) interpolation, default: 1e5
             - tinker_overdensity: (Only for the Tinker mass function): spherical overdensity defining halos, default: 200
         """
-        print('Add detail on mass functions from CCL.')
-        print('Add concentration details + use this argument')
-        print('Add profile details and use this argument')
-        print('Add NFW reference')
         print('Are these hyperparams overkill?')
-
 
         print('need to specify class attributes + methods in the docstring...')
 
@@ -76,34 +76,29 @@ class HaloPhysics:
         - m_h: Mass in Msun/h units.
         - k_phys: Wavenumber in 1/Mpc units.
         - norm_only: Boolean, if set, just return the normalization factor m/rho_M, default: False
-        """        
+        """
         m = m_h/self.h # in Msun units
 
         if norm_only:
             return m/self.cosmology.rhoM
 
-        # Compute virial overdensity
-        print('should this be a virial overdensity?')
-        odelta = self._virial_overdensity()
+        if self.profile_name=='NFW':
+            # Compute virial overdensity
+            print('should this be a virial overdensity?')
+            odelta = self._virial_overdensity()
 
-        # The halo virial radius in physical units
-        rv = np.power(m*3.0/(4.0*np.pi*self.cosmology.rhoM*odelta),1.0/3.0)
+            # The halo virial radius in physical units
+            rv = np.power(m*3.0/(4.0*np.pi*self.cosmology.rhoM*odelta),1.0/3.0)
 
-        # Compute halo concentration
-        c = self._halo_concentration(m_h);
-        # The function u is normalised to 1 for k<<1 so multiplying by M/rho turns units to a density
-        return self._normalized_halo_profile(k_phys,rv, c)*m/self.cosmology.rhoM;
+            # Compute halo concentration
+            c = self.halo_concentration(m_h);
+            # The function u is normalised to 1 for k<<1 so multiplying by M/rho turns units to a density
+            return self._normalized_halo_profile(k_phys,rv, c)*m/self.cosmology.rhoM;
 
-    def _virial_overdensity(self):
-        """Compute the virial collapse overdensity from Bryan-Norman 1998"""
-        Om_mz = self.cosmology._Omega_m()
-        x = Om_mz-1.;
-        Dv0 = 18.*pow(np.pi,2);
-        Dv = (Dv0+82.*x-39.*pow(x,2))/Om_mz;
+        else:
+            raise Exception("Halo profile '%s' not currently implemented!"%self.profile_name)
 
-        return Dv;
-
-    def _halo_concentration(self,m_h):
+    def halo_concentration(self,m_h):
         """Compute the halo concentration c = r_virial / r_scale.
 
         For details of the available concentration parametrizations, see the class description.
@@ -120,6 +115,14 @@ class HaloPhysics:
         else:
             raise NameError('Concentration profile %s is not implemented yet'%(self.concentration_name))
 
+    def _virial_overdensity(self):
+        """Compute the virial collapse overdensity from Bryan-Norman 1998"""
+        Om_mz = self.cosmology._Omega_m()
+        x = Om_mz-1.;
+        Dv0 = 18.*pow(np.pi,2);
+        Dv = (Dv0+82.*x-39.*pow(x,2))/Om_mz;
+
+        return Dv;
 
     def _normalized_halo_profile(self,k_phys,r_virial,c):
         """Compute the normalized halo profile function in Fourier space; u(k|m)

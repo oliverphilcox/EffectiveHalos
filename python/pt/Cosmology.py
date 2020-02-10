@@ -8,12 +8,26 @@ class Cosmology:
     This can be initialized by a set of cosmological parameters or a pre-defined name.
 
     Loaded cosmological models:
-    - Quijote: Fiducial cosmology from the Quijote simulations.
+    - Planck18: Bestfit cosmology from Planck 2018, using the baseline TT,TE,EE+lowE+lensing likelihood.
+    - Quijote: Fiducial cosmology from the Quijote simulations of Francisco Villaescusa-Navarro et al.
+    - Abacus: Fiducial cosmology from the Abacus simulations of Lehman Garrison et al.
+
+    Methods:
+    - __init__: Initialize the class at a given redshift with a specified cosmology.
+    - linear_power: Compute the linear power spectrum for a given k vector.
+    - sigmaM: Compute sigma(M) from CLASS for input mass M.
+    - sigma_logM_int: Return an interpolated value of sigma(M) corresponding to an input log10(M) grid.
+    - dlns_dlogM_int: Return an interpolated value of d(ln(sigma(M)))/d(log10(M)) corresponding to an input log10(M) grid.
     """
 
     loaded_models = {'Quijote':{"h":0.6711,"omega_cdm":(0.3175 - 0.049)*0.6711**2,
                                 "Omega_b":0.049, "sigma8":0.834,"n_s":0.9624,
-                                "N_eff":3.04}}
+                                "N_eff":3.04},
+                     'Abacus':{"h":0.6726,"omega_cdm":0.1199,
+                                "omega_b":0.02222,"n_s":0.9652,"sigma8":0.830,
+                                "N_eff":3.04},
+                     'Planck18':{"h":0.6732,"omega_cdm":0.12011,"omega_b":0.022383,
+                                "n_s":0.96605,"sigma8":0.8120}}
 
     def __init__(self,redshift,name="",**params):
 
@@ -25,7 +39,8 @@ class Cosmology:
         - **params: Other parameters from CLASS.
         """
 
-        print('need to specify class attributes + methods in the docstring...')
+        print('need to update class attributes + methods in the docstring...')
+        print("we don't need two sigma(M) functions - remove one!")
 
         ## Load parameters into a dictionary to pass to CLASS
         class_params = dict(**params)
@@ -111,6 +126,26 @@ class Cosmology:
         sigma_func = self.vector_sigma_R(r_phys)
         return sigma_func
 
+    def sigma_logM_int(self,logM):
+        """Return the value of sigma(M) using the prebuilt interpolators, which are constructed if not present.
+
+        Parameters:
+        - logM: log10(M/Msun)
+        """
+        if not hasattr(self,'sigma_logM_int_func'):
+            self._interpolate_sigma_and_deriv()
+        return self._sigma_logM_int_func(logM)
+
+    def dlns_dlogM_int(self,logM):
+        """Return the value of d(ln sigma(M))/d(log10(M)) using the prebuilt interpolators, which are constructed if not present.
+
+        Parameters:
+        - logM: log10(M/Msun)
+        """
+        if not hasattr(self,'dlns_dlogM_int_func'):
+            self._interpolate_sigma_and_deriv()
+        return self._dlns_dlogM_int_func(logM)
+
     def _interpolate_sigma_and_deriv(self,logM_min=6,logM_max=17,npoints=int(1e5)):
         """Create an interpolator function for d ln(sigma)/dlog10(M) and sigma(logM).
         Note that mass is in physical units (without 1/h factor).
@@ -123,7 +158,7 @@ class Cosmology:
         - npoints: Number of sampling points.
         """
 
-        if not hasattr(self,'sigma_logM_int'):
+        if not hasattr(self,'sigma_logM_int_func'):
             print("Creating an interpolator for sigma(M) and its derivative.")
             ## Compute log derivative by interpolation and numerical differentiation
             # First compute the grid of M and sigma
@@ -136,8 +171,8 @@ class Cosmology:
             all_diff = -np.diff(all_lns)/np.diff(logM_grid)
             mid_logM = 0.5*(logM_grid[:-1]+logM_grid[1:])
 
-            self.sigma_logM_int = interp1d(logM_grid,all_sigM)
-            self.dlns_dlogM_int = interp1d(mid_logM,all_diff)
+            self._sigma_logM_int_func = interp1d(logM_grid,all_sigM)
+            self._dlns_dlogM_int_func = interp1d(mid_logM,all_diff)
 
     def _h_over_h0(self):
         """Return the value of H(z)/H(0) at the class redshift"""

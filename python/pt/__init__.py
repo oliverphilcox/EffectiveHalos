@@ -1,5 +1,3 @@
-from scipy.special import spherical_jn, sici, gamma as gamma_fn
-
 # Module import
 from Cosmology import Cosmology
 from MassFunction import MassFunction

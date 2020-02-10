@@ -9,13 +9,23 @@ class MassIntegrals:
     which are needed to compute the power spectrum model. Here b^{(q)} is the q-th order bias (with b^{0}=1),
     u(k|m) is the normalized halo profile and n(m) is the mass function.
 
-    All integrals are performed via Simpson's rule over a specified mass range.
+    All integrals are performed via Simpson's rule over a specified mass range, and are simply returned if they are already computed.
 
     For the I_1^{1,0} = I_1^1 integral, the integral must be corrected to ensure that we recover the bias consistency relation;
         $ I_1^1 \rightarrow 1 $ as $ k \rightarrow 0 $.
     This requires an infinite mass range, so we instead approximate;
         $ I_1^1(k)_\mathrm{corrected} = I_1^1(k) + ( 1 - I_1^1(0) ) u(k|m_min) / u(k|0) $
     for normalized halo profile $u$.
+
+    Methods:
+    - __init__: Initialize the class specifying the k-vector and relevant attributes.
+    - compute_I_00: Return the I_0^0 integral.
+    - compute_I_01: Return the I_0^1 integral.
+    - compute_I_11: Compute the I_1^1 integral for the k-vector specified in the class description, with the above correction if specified.
+    - compute_I_111: Compute the I_1^{1,1} integral for the k-vector specified in the class description.
+    - compute_I_12: Compute the I_1^1 integral for the k-vector specified in the class description, with the above correction if specified.
+    - compute_I_20: Compute the I_1^2 integral for the k-vector specified in the class description.
+    - compute_I_21: Compute the I_2^1 integral for the k-vector specified in the class description.
     """
     def __init__(self,cosmology,mass_function,halo_physics,kh_vector,min_logM=6.001, max_logM=16.999, N_mass=int(1e4)):
         """Initialize the class with relevant model hyperparameters.
@@ -74,6 +84,22 @@ class MassIntegrals:
         self.k_vectors = kh_vector*self.h # remove h dependence so that k is in physical units
         self.N_k = len(self.k_vectors) # define number of k points
 
+    def compute_I_00(self):
+        """Compute the I_0^0 integral, if not already computed.
+        """
+        if not hasattr(self,'I_00'):
+            # NB: we pass kh_vectors as a placeholder here; it's not used.
+            self.I_00 = simps(self._I_p_q1q2_integrand(0,0,0),self.logM_grid)
+        return self.I_00.copy()
+
+    def compute_I_01(self):
+        """Compute the I_0^1 integral, if not already computed.
+        """
+        if not hasattr(self,'I_01'):
+            # NB: we pass kh_vectors as a placeholder here; it's not used.
+            self.I_01 = simps(self._I_p_q1q2_integrand(0,1,0),self.logM_grid)
+        return self.I_01.copy()
+
     def compute_I_11(self,apply_correction = True):
         """Compute the I_1^1(k) integral, if not already computed. Also apply the correction noted in the class header.
 
@@ -95,42 +121,12 @@ class MassIntegrals:
                 self.I_11 += A*min_window/zero_window
         return self.I_11.copy()
 
-    def compute_I_20(self):
-        """Compute the I_2^0(k,k) integral, if not already computed.
-        Note that we assume both k vectors are the same here."""
-        if not hasattr(self,'I_20'):
-            self.I_20 = simps(self._I_p_q1q2_integrand(2,0,0),self.logM_grid,axis=1)
-        return self.I_20.copy()
-
-    def compute_I_21(self):
-        """Compute the I_2^1 integral, if not already computed.
-        Note that we assume both k vectors are the same here."""
-        if not hasattr(self,'I_21'):
-            self.I_21 = simps(self._I_p_q1q2_integrand(2,1,0),self.logM_grid,axis=1)
-        return self.I_21.copy()
-
     def compute_I_111(self):
         """Compute the I_1^{1,1} integral, if not already computed.
         """
         if not hasattr(self,'I_111'):
             self.I_111 = simps(self._I_p_q1q2_integrand(1,1,1),self.logM_grid,axis=1)
         return self.I_111.copy()
-
-    def compute_I_01(self):
-        """Compute the I_0^1 integral, if not already computed.
-        """
-        if not hasattr(self,'I_01'):
-            # NB: we pass kh_vectors as a placeholder here; it's not used.
-            self.I_01 = simps(self._I_p_q1q2_integrand(0,1,0),self.logM_grid)
-        return self.I_01.copy()
-
-    def compute_I_00(self):
-        """Compute the I_0^0 integral, if not already computed.
-        """
-        if not hasattr(self,'I_00'):
-            # NB: we pass kh_vectors as a placeholder here; it's not used.
-            self.I_00 = simps(self._I_p_q1q2_integrand(0,0,0),self.logM_grid)
-        return self.I_00.copy()
 
     def compute_I_12(self,apply_correction = True):
         """Compute the I_1^2 integral, if not already computed.
@@ -151,6 +147,20 @@ class MassIntegrals:
                 zero_window = self.halo_physics.halo_profile(min_m_h,0.).ravel()
                 self.I_12 += A*min_window/zero_window
         return self.I_12.copy()
+
+    def compute_I_20(self):
+        """Compute the I_2^0(k,k) integral, if not already computed.
+        Note that we assume both k vectors are the same here."""
+        if not hasattr(self,'I_20'):
+            self.I_20 = simps(self._I_p_q1q2_integrand(2,0,0),self.logM_grid,axis=1)
+        return self.I_20.copy()
+
+    def compute_I_21(self):
+        """Compute the I_2^1 integral, if not already computed.
+        Note that we assume both k vectors are the same here."""
+        if not hasattr(self,'I_21'):
+            self.I_21 = simps(self._I_p_q1q2_integrand(2,1,0),self.logM_grid,axis=1)
+        return self.I_21.copy()
 
     def _I_p_q1q2_integrand(self,p,q1,q2,zero_k=False):
         """Compute the integrand of the I_p^{q1,q2} function defined in the class description.
