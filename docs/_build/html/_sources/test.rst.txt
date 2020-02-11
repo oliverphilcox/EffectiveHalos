@@ -1,8 +1,8 @@
 Test import
 ============
 
-v3
---
+Cosmology
+----------
 
-.. automodule:: PerturbedHalos.test
+.. automodule:: PerturbedHalos.Cosmology
   :members:
