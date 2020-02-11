@@ -81,7 +81,7 @@
             
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../test.html">Test import</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../test.html">Python API</a></li>
 </ul>
 
             
@@ -147,6 +147,7 @@
   <h1>Source code for PerturbedHalos.Cosmology</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">classy</span> <span class="kn">import</span> <span class="n">Class</span>
+<span class="kn">from</span> <span class="nn">scipy.interpolate</span> <span class="kn">import</span> <span class="n">interp1d</span>
 
 <div class="viewcode-block" id="Cosmology"><a class="viewcode-back" href="../../test.html#PerturbedHalos.Cosmology.Cosmology">[docs]</a><span class="k">class</span> <span class="nc">Cosmology</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>

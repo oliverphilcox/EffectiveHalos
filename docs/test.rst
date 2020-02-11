@@ -1,14 +1,15 @@
-Test import
+Python API
 ============
 
-Cosmology
-----------
+Cosmology Module
+-----------------
 
 .. automodule:: PerturbedHalos.Cosmology
   :members:
 
-test
-----
 
-.. automodule:: PerturbedHalos.test
+Mass Function Module
+---------------------
+
+.. automodule:: PerturbedHalos.MassFunction
   :members:

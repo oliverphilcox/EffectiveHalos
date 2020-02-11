@@ -1,5 +1,6 @@
 import numpy as np
 from classy import Class
+from scipy.interpolate import interp1d
 
 class Cosmology(object):
     """

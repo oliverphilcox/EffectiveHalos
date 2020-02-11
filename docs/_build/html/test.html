@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Test import &mdash; PerturbedHalos  documentation</title>
+  <title>Python API &mdash; PerturbedHalos  documentation</title>
   
 
   
@@ -82,9 +82,9 @@
             
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Test import</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#module-PerturbedHalos.Cosmology">Cosmology</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-PerturbedHalos.test">test</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Python API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-PerturbedHalos.Cosmology">Cosmology Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-PerturbedHalos.MassFunction">Mass Function Module</a></li>
 </ul>
 </li>
 </ul>
@@ -132,7 +132,7 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>Test import</li>
+      <li>Python API</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -151,10 +151,10 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="test-import">
-<h1>Test import<a class="headerlink" href="#test-import" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="python-api">
+<h1>Python API<a class="headerlink" href="#python-api" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="module-PerturbedHalos.Cosmology">
-<span id="cosmology"></span><h2>Cosmology<a class="headerlink" href="#module-PerturbedHalos.Cosmology" title="Permalink to this headline">¶</a></h2>
+<span id="cosmology-module"></span><h2>Cosmology Module<a class="headerlink" href="#module-PerturbedHalos.Cosmology" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="PerturbedHalos.Cosmology.Cosmology">
 <em class="property">class </em><code class="descclassname">PerturbedHalos.Cosmology.</code><code class="descname">Cosmology</code><span class="sig-paren">(</span><em>redshift</em>, <em>name=''</em>, <em>**params</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/Cosmology.html#Cosmology"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.Cosmology.Cosmology" title="Permalink to this definition">¶</a></dt>
@@ -266,34 +266,96 @@
 </dd></dl>
 
 </div>
-<div class="section" id="module-PerturbedHalos.test">
-<span id="test"></span><h2>test<a class="headerlink" href="#module-PerturbedHalos.test" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-PerturbedHalos.MassFunction">
+<span id="mass-function-module"></span><h2>Mass Function Module<a class="headerlink" href="#module-PerturbedHalos.MassFunction" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
-<dt id="PerturbedHalos.test.test">
-<em class="property">class </em><code class="descclassname">PerturbedHalos.test.</code><code class="descname">test</code><a class="reference internal" href="_modules/PerturbedHalos/test.html#test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.test.test" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create and manage a new sqlite database.</p>
-<dl class="method">
-<dt id="PerturbedHalos.test.test.method">
-<code class="descname">method</code><span class="sig-paren">(</span><em>index</em>, <em>string</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/test.html#test.method"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.test.test.method" title="Permalink to this definition">¶</a></dt>
-<dd><p>A simple method.</p>
+<dt id="PerturbedHalos.MassFunction.MassFunction">
+<em class="property">class </em><code class="descclassname">PerturbedHalos.MassFunction.</code><code class="descname">MassFunction</code><span class="sig-paren">(</span><em>cosmology</em>, <em>mass_function_name='Crocce'</em>, <em>**mass_params</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/MassFunction.html#MassFunction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.MassFunction.MassFunction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class to hold a mass function for halos and associated bias.</p>
+<p>Implemented Mass Functions:</p>
+<ul class="simple">
+<li>‘Sheth-Tormen’: Sheth &amp; Tormen 1999 analytic mass function. This assumes virialized halos, and uses the critical density from Nakamura &amp; Suto 1997.</li>
+<li>‘Tinker’: Tinker et al. 2010, eq. 8. This assume a spherical overdensity, the value of which can be specified.</li>
+<li>‘Crocce’: Crocce et al. 2009, eq. 22. Calibrated from Friends-of-Friends halos with linking length 0.2</li>
+<li>‘Bhattacharya’: Bhattacharya et al. 2010, eq. 12. Calibrated from Friends-of-Friends halos with linking length 0.2</li>
+</ul>
+<p>Implemented Bias Functions:</p>
+<ul class="simple">
+<li>‘Sheth-Tormen’: Sheth-Tormen 2001, eq. 8 Associated to the ‘Sheth-Tormen’ mass function.</li>
+<li>‘Tinker’: Tinker et al. 2010, eq. 15. Associated to the ‘Tinker’ mass function.</li>
+<li>‘Crocce’: Peak-background split derivation from the ‘Crocce’ mass function of eq. 22, Crocce et al. 2009.</li>
+<li>‘Bhattacharya’: Bhattacharya et al. 2010, eq. 18. Associated to the ‘Bhattacharya’ mass function.</li>
+</ul>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>input</strong> (<em>int</em>) – an input</li>
-<li><strong>input2</strong> (<em>str</em>) – another input</li>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>cosmology</strong> (<a class="reference internal" href="#PerturbedHalos.Cosmology.Cosmology" title="PerturbedHalos.Cosmology.Cosmology"><em>Cosmology</em></a>) – Class instance containing relevant cosmological information</li>
+<li><strong>mass_function_name</strong> (<em>str</em>) – Mass function to use (see above), default: ‘Crocce’</li>
+<li><strong>mass_param</strong> (<em>kwargs</em>) – Any additional parameters to pass to the class. These include:
+- tinker_overdensity: (Only for the Tinker mass function): spherical overdensity defining halos, default: 200</li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Unity</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">int</p>
 </td>
 </tr>
 </tbody>
 </table>
+<dl class="method">
+<dt id="PerturbedHalos.MassFunction.MassFunction.linear_halo_bias">
+<code class="descname">linear_halo_bias</code><span class="sig-paren">(</span><em>m_h</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/MassFunction.html#MassFunction.linear_halo_bias"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.MassFunction.MassFunction.linear_halo_bias" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the linear halo bias, from the peak background split.</p>
+<p>Associated bias functions are available for each mass function, and more can be user-defined. See the class description for details of the loaded parametrizations.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>m_h</strong> (<em>float</em>) – Mass in <span class="math notranslate nohighlight">\(h^{-1}M_\odot\)</span> units.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Linear Eulerian halo bias (dimensionless)</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PerturbedHalos.MassFunction.MassFunction.mass_function">
+<code class="descname">mass_function</code><span class="sig-paren">(</span><em>m_h</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/MassFunction.html#MassFunction.mass_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.MassFunction.MassFunction.mass_function" title="Permalink to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Return the mass function, equal to the number density of halos per unit logarithmic mass interval. This assumes the existence of a universal mass function, with:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>dn/d\log_{10}M = f(\sigma(M))ar{
+</pre></div>
+</div>
+</div></blockquote>
+<p>ho}_M/M dlnsigma(M)/dlog_{10}(M)</p>
+<blockquote>
+<div>where <span class="math notranslate nohighlight">\(f\)</span> is the universal mass function, :math:<a href="#id1"><span class="problematic" id="id2">`</span></a>ar{</div></blockquote>
+<p>ho}_M` is the mean matter density at redshift zero and <span class="math notranslate nohighlight">\(\sigma(M)^2\)</span> is the overdensity variance on spheres with a radius given by the Lagrangian radius for mass <span class="math notranslate nohighlight">\(M\)</span>.</p>
+<blockquote>
+<div><p>For details of the available mass function parametrizations, see the class description.</p>
+<dl class="docutils">
+<dt>Note:</dt>
+<dd>We return the mass function <span class="math notranslate nohighlight">\(dn/d\log_{10}(M)\)</span> for later computational ease.</dd>
+<dt>Args:</dt>
+<dd>m_h (float): Mass in <span class="math notranslate nohighlight">\(h^{-1}M_\odot\)</span> units.</dd>
+<dt>Returns:</dt>
+<dd>float: Mass function, <span class="math notranslate nohighlight">\(dn/d\log_{10}(M)\)</span> in <span class="math notranslate nohighlight">\(\mathrm{Mpc}^{-3}\)</span> units</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="PerturbedHalos.MassFunction.MassFunction.second_order_bias">
+<code class="descname">second_order_bias</code><span class="sig-paren">(</span><em>m_h</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/MassFunction.html#MassFunction.second_order_bias"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.MassFunction.MassFunction.second_order_bias" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the second order Eulerian bias, defined as :math:`
+rac{4}{21}b_1^L +
+rac{1}{2} b_2^L` where <span class="math notranslate nohighlight">\(b_1^L\)</span> and <span class="math notranslate nohighlight">\(b_2^L\)</span> are the Lagrangian bias parameters.</p>
+<blockquote>
+<div><p>Associated bias functions are available for each mass function, and more can be user-defined. See the class description for details of the loaded parametrizations.</p>
+<p>Parameters:
+- m_h: Mass in <span class="math notranslate nohighlight">\(h^{-1}M_\odot\)</span> units.</p>
+</div></blockquote>
 </dd></dl>
 
 </dd></dl>
