@@ -176,8 +176,8 @@
 <span class="sd">        mass_function (MassFunction): Class containing the mass function and bias.</span>
 <span class="sd">        halo_physics (HaloPhysics): Class containing the halo profiles and concentrations.</span>
 <span class="sd">        mass_integrals (MassIntegrals): Class containing the mass integrals.</span>
-<span class="sd">        kh_vector (float): Vector of wavenumbers (in :math:`h/\mathrm{Mpc}` units), for which power spectrum will be computed.</span>
-<span class="sd">        mass_bins (float): Array of mass bin edges, in :math:`h^{-1}M_\mathrm{sun}` units. Must have length N_bins + 1.</span>
+<span class="sd">        kh_vector (np.ndarray): Vector of wavenumbers (in :math:`h/\mathrm{Mpc}` units), for which power spectrum will be computed.</span>
+<span class="sd">        mass_bins (np.ndarray): Array of mass bin edges, in :math:`h^{-1}M_\mathrm{sun}` units. Must have length N_bins + 1.</span>
 <span class="sd">        volume: Volume of the survey in :math:`(h^{-1}\mathrm{Mpc})^3`. The variance of the linear field will be computed for radius giving this volume</span>
 
 <span class="sd">    Keyword Args:</span>
@@ -224,8 +224,7 @@
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">mass_bins</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">&lt;=</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="mf">10.</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">mass_integrals</span><span class="o">.</span><span class="n">max_logM</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">cosmology</span><span class="o">.</span><span class="n">h</span><span class="p">,</span> <span class="s1">&#39;Maximum bin must be below MassIntegral limit!&#39;</span>
 
         <span class="c1"># Compute linear power for the k-vector</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;should rename cosmology.linear_power to cosmology.compute_linear_power&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">linear_power</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cosmology</span><span class="o">.</span><span class="n">linear_power</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kh_vector</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">kh_min</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">linear_power</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cosmology</span><span class="o">.</span><span class="n">compute_linear_power</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kh_vector</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">kh_min</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
         <span class="c1"># Generate a power spectrum class with this k-vector</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">halo_power</span> <span class="o">=</span> <span class="n">HaloPower</span><span class="p">(</span><span class="n">cosmology</span><span class="p">,</span> <span class="n">mass_function</span><span class="p">,</span> <span class="n">halo_physics</span><span class="p">,</span> <span class="n">mass_integrals</span><span class="p">,</span> <span class="n">kh_vector</span><span class="p">,</span> <span class="n">kh_min</span><span class="p">)</span>
@@ -248,7 +247,7 @@
 <span class="sd">            IR_resum (bool): If True, perform IR resummation on the density field to resum non-perturbative long-wavelength modes, default: True</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            float: Two-dimensional array of :math:`\mathrm{cov}(N_i,P(k))` with shape (N_bins, N_k) for N_bins mass bins and N_k power spectrum bins.</span>
+<span class="sd">            np.ndarray: Two-dimensional array of :math:`\mathrm{cov}(N_i,P(k))` with shape (N_bins, N_k) for N_bins mass bins and N_k power spectrum bins.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Compute no-SSC covariance</span>
         <span class="n">covariance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_no_ssc_covariance</span><span class="p">(</span><span class="n">cs2</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">pt_type</span><span class="p">,</span> <span class="n">pade_resum</span><span class="p">,</span> <span class="n">smooth_density</span><span class="p">,</span> <span class="n">IR_resum</span><span class="p">)</span>
@@ -274,7 +273,7 @@
 <span class="sd">            IR_resum (bool): If True, perform IR resummation on the density field to resum non-perturbative long-wavelength modes, default: True</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            float: Two-dimensional array of no-SSC :math:`\mathrm{cov}(N_i,P(k))` with shape (N_bins, N_k) for N_bins mass bins and N_k power spectrum bins.</span>
+<span class="sd">            np.ndarray: Two-dimensional array of no-SSC :math:`\mathrm{cov}(N_i,P(k))` with shape (N_bins, N_k) for N_bins mass bins and N_k power spectrum bins.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># Compute the non-linear power spectrum</span>
@@ -314,7 +313,7 @@
 <span class="sd">            IR_resum (bool): If True, perform IR resummation on the density field to resum non-perturbative long-wavelength modes, default: True</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            float: Two-dimensional array of SSC :math:`\mathrm{cov}(N_i,P(k))` with shape (N_bins, N_k) for N_bins mass bins and N_k power spectrum bins.&quot;&quot;&quot;</span>
+<span class="sd">            np.ndarray: Two-dimensional array of SSC :math:`\mathrm{cov}(N_i,P(k))` with shape (N_bins, N_k) for N_bins mass bins and N_k power spectrum bins.&quot;&quot;&quot;</span>
 
         <span class="c1"># Compute the non-linear power spectrum</span>
         <span class="n">power_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">halo_power</span><span class="o">.</span><span class="n">non_linear_power</span><span class="p">(</span><span class="n">cs2</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">pt_type</span> <span class="o">=</span> <span class="n">pt_type</span><span class="p">,</span> <span class="n">pade_resum</span> <span class="o">=</span> <span class="n">pade_resum</span><span class="p">,</span> <span class="n">smooth_density</span> <span class="o">=</span> <span class="n">smooth_density</span><span class="p">,</span> <span class="n">IR_resum</span> <span class="o">=</span> <span class="n">IR_resum</span><span class="p">)</span>
@@ -349,7 +348,7 @@
         <span class="c1"># Create an interpolator for k^3 P(k)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="s1">&#39;log_derivative&#39;</span><span class="p">):</span>
             <span class="n">all_k</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">10000</span><span class="p">)</span>
-            <span class="n">all_cal_P</span> <span class="o">=</span> <span class="n">all_k</span><span class="o">**</span><span class="mf">3.</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">cosmology</span><span class="o">.</span><span class="n">linear_power</span><span class="p">(</span><span class="n">all_k</span><span class="p">,</span><span class="mf">0.0</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mf">2.</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">**</span><span class="mf">2.</span><span class="p">)</span>
+            <span class="n">all_cal_P</span> <span class="o">=</span> <span class="n">all_k</span><span class="o">**</span><span class="mf">3.</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">cosmology</span><span class="o">.</span><span class="n">compute_linear_power</span><span class="p">(</span><span class="n">all_k</span><span class="p">,</span><span class="mf">0.0</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mf">2.</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">**</span><span class="mf">2.</span><span class="p">)</span>
             <span class="n">dlogP_dlogk</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">all_cal_P</span><span class="p">))</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">all_k</span><span class="p">))</span>
             <span class="n">mid_k</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">all_k</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">+</span><span class="n">all_k</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
             <span class="n">R</span> <span class="o">=</span> <span class="mf">68.</span><span class="o">/</span><span class="mf">21.</span> <span class="o">-</span> <span class="n">dlogP_dlogk</span><span class="o">/</span><span class="mf">3.</span>

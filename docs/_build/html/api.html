@@ -183,26 +183,8 @@
 </tbody>
 </table>
 <dl class="method">
-<dt id="PerturbedHalos.Cosmology.Cosmology.dlns_dlogM_int">
-<code class="descname">dlns_dlogM_int</code><span class="sig-paren">(</span><em>logM</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/Cosmology.html#Cosmology.dlns_dlogM_int"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.Cosmology.Cosmology.dlns_dlogM_int" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the value of <span class="math notranslate nohighlight">\(d\ln\sigma/d\log M\)</span> using the prebuilt interpolators, which are constructed if not present.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>logM</strong> (<em>float</em>) – Input <span class="math notranslate nohighlight">\(\log_{10}(M/M_\mathrm{sun})\)</span></td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><span class="math notranslate nohighlight">\(d\ln\sigma/d\log M\)</span></td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">float</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="PerturbedHalos.Cosmology.Cosmology.linear_power">
-<code class="descname">linear_power</code><span class="sig-paren">(</span><em>kh_vector</em>, <em>kh_min=0.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/Cosmology.html#Cosmology.linear_power"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.Cosmology.Cosmology.linear_power" title="Permalink to this definition">¶</a></dt>
+<dt id="PerturbedHalos.Cosmology.Cosmology.compute_linear_power">
+<code class="descname">compute_linear_power</code><span class="sig-paren">(</span><em>kh_vector</em>, <em>kh_min=0.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/Cosmology.html#Cosmology.compute_linear_power"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.Cosmology.Cosmology.compute_linear_power" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the linear power spectrum from CLASS for a vector of input k.</p>
 <p>If set, we remove any modes below some minimum k.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -210,7 +192,7 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>kh_vector</strong> (<em>float</em>) – Vector of wavenumbers (in h/Mpc units) to compute linear power with.</li>
+<li><strong>kh_vector</strong> (<em>np.ndarray</em>) – Vector of wavenumbers (in h/Mpc units) to compute linear power with.</li>
 <li><strong>kh_min</strong> (<em>float</em>) – Value of k (in h/Mpc units) below which to set <span class="math notranslate nohighlight">\(P(k) = 0\)</span>, default: 0.</li>
 </ul>
 </td>
@@ -218,8 +200,26 @@
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Linear power spectrum in <span class="math notranslate nohighlight">\((h^{-1}\mathrm{Mpc})^3\)</span> units</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">float</p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">np.ndarray</p>
 </td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PerturbedHalos.Cosmology.Cosmology.dlns_dlogM_int">
+<code class="descname">dlns_dlogM_int</code><span class="sig-paren">(</span><em>logM</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/Cosmology.html#Cosmology.dlns_dlogM_int"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.Cosmology.Cosmology.dlns_dlogM_int" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the value of <span class="math notranslate nohighlight">\(d\ln\sigma/d\log M\)</span> using the prebuilt interpolators, which are constructed if not present.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>logM</strong> (<em>np.ndarray</em>) – Input <span class="math notranslate nohighlight">\(\log_{10}(M/M_\mathrm{sun})\)</span></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><span class="math notranslate nohighlight">\(d\ln\sigma/d\log M\)</span></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">np.ndarray</td>
 </tr>
 </tbody>
 </table>
@@ -234,7 +234,7 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>M_phys</strong> (<em>float</em>) – Physical mass in <span class="math notranslate nohighlight">\(M_\mathrm{sun}\)</span> units.</li>
+<li><strong>M_phys</strong> (<em>np.ndarray</em>) – Physical mass in <span class="math notranslate nohighlight">\(M_\mathrm{sun}\)</span> units.</li>
 <li><strong>z</strong> (<em>float</em>) – Redshift.</li>
 </ul>
 </td>
@@ -242,7 +242,7 @@
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><span class="math notranslate nohighlight">\(\sigma(M,z)\)</span></p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">float</p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">np.ndarray</p>
 </td>
 </tr>
 </tbody>
@@ -257,11 +257,11 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>logM</strong> (<em>float</em>) – Input <span class="math notranslate nohighlight">\(\log_{10}(M/M_\mathrm{sun})\)</span></td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>logM</strong> (<em>np.ndarray</em>) – Input <span class="math notranslate nohighlight">\(\log_{10}(M/M_\mathrm{sun})\)</span></td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><span class="math notranslate nohighlight">\(\sigma(M,z)\)</span></td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">np.ndarray</td>
 </tr>
 </tbody>
 </table>
@@ -313,11 +313,11 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>m_h</strong> (<em>float</em>) – Mass in <span class="math notranslate nohighlight">\(h^{-1}M_\mathrm{sun}\)</span> units.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>m_h</strong> (<em>np.ndarray</em>) – Array of masses in <span class="math notranslate nohighlight">\(h^{-1}M_\mathrm{sun}\)</span> units.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Linear Eulerian halo bias (dimensionless)</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">np.ndarray</td>
 </tr>
 </tbody>
 </table>
@@ -339,11 +339,11 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>m_h</strong> (<em>float</em>) – Mass in <span class="math notranslate nohighlight">\(h^{-1}M_\mathrm{sun}\)</span> units.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>m_h</strong> (<em>np.ndarray</em>) – Array of masses in <span class="math notranslate nohighlight">\(h^{-1}M_\mathrm{sun}\)</span> units.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Mass function, <span class="math notranslate nohighlight">\(dn/d\log_{10}(M)\)</span> in <span class="math notranslate nohighlight">\(\mathrm{Mpc}^{-3}\)</span> units</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">np.ndarray</td>
 </tr>
 </tbody>
 </table>
@@ -408,7 +408,11 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>m_h</strong> (<em>float</em>) – Mass in <span class="math notranslate nohighlight">\(h^{-1}M_{\odot}\)</span> units.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>m_h</strong> (<em>np.ndarray</em>) – Mass in <span class="math notranslate nohighlight">\(h^{-1}M_\mathrm{sun}\)</span> units.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Array of concentration parameters.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">np.ndarray</td>
 </tr>
 </tbody>
 </table>
@@ -426,8 +430,8 @@ where <span class="math notranslate nohighlight">\(\bar{\rho}_M\)</span> is the 
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>m_h</strong> (<em>float</em>) – Mass in <span class="math notranslate nohighlight">\(h^{-1}M_\mathrm{sun}\)</span> units.</li>
-<li><strong>k_phys</strong> (<em>float</em>) – Physical wavenumber in 1/Mpc units.</li>
+<li><strong>m_h</strong> (<em>np.ndarray</em>) – Mass in <span class="math notranslate nohighlight">\(h^{-1}M_\mathrm{sun}\)</span> units.</li>
+<li><strong>k_phys</strong> (<em>np.ndarray</em>) – Physical wavenumber in 1/Mpc units.</li>
 <li><strong>norm_only</strong> (<em>bool</em>) – Boolean, if set, just return the normalization factor <span class="math notranslate nohighlight">\(m/\bar{\rho}_M\)</span>, default: False</li>
 </ul>
 </td>
@@ -435,7 +439,7 @@ where <span class="math notranslate nohighlight">\(\bar{\rho}_M\)</span> is the 
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Halo profile <span class="math notranslate nohighlight">\(\rho(k|m)\)</span> or <span class="math notranslate nohighlight">\(m/\bar{\rho}_M\)</span>, if the norm_only parameter is set.</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">float</p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">np.ndarray</p>
 </td>
 </tr>
 </tbody>
@@ -469,7 +473,7 @@ where <span class="math notranslate nohighlight">\(\bar{\rho}_M\)</span> is the 
 <li><strong>cosmology</strong> (<a class="reference internal" href="#PerturbedHalos.Cosmology.Cosmology" title="PerturbedHalos.Cosmology.Cosmology"><em>Cosmology</em></a>) – Instance of the Cosmology class containing relevant cosmology and functions.</li>
 <li><strong>mass_function</strong> (<a class="reference internal" href="#PerturbedHalos.MassFunction.MassFunction" title="PerturbedHalos.MassFunction.MassFunction"><em>MassFunction</em></a>) – Instance of the MassFunction class, containing the mass function and bias.</li>
 <li><strong>halo_physics</strong> (<a class="reference internal" href="#PerturbedHalos.HaloPhysics.HaloPhysics" title="PerturbedHalos.HaloPhysics.HaloPhysics"><em>HaloPhysics</em></a>) – Instance of the HaloPhysics class, containing the halo profiles and concentrations.</li>
-<li><strong>kh_vector</strong> (<em>float</em>) – Array (or float) of wavenumbers in <span class="math notranslate nohighlight">\(h\mathrm{Mpc}^{-1}\)</span> units from which to compute mass integrals.</li>
+<li><strong>kh_vector</strong> (<em>np.ndarray</em>) – Array (or float) of wavenumbers in <span class="math notranslate nohighlight">\(h\mathrm{Mpc}^{-1}\)</span> units from which to compute mass integrals.</li>
 </ul>
 </td>
 </tr>
@@ -529,7 +533,7 @@ where <span class="math notranslate nohighlight">\(\bar{\rho}_M\)</span> is the 
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Array of <span class="math notranslate nohighlight">\(I_1^1\)</span> values for each k.</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">np.ndarray</td>
 </tr>
 </tbody>
 </table>
@@ -545,7 +549,7 @@ where <span class="math notranslate nohighlight">\(\bar{\rho}_M\)</span> is the 
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Array of <span class="math notranslate nohighlight">\(I_1^{1,1}\)</span> values for each k.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">np.ndarray</td>
 </tr>
 </tbody>
 </table>
@@ -565,7 +569,7 @@ where <span class="math notranslate nohighlight">\(\bar{\rho}_M\)</span> is the 
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Array of <span class="math notranslate nohighlight">\(I_1^2\)</span> values for each k.</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">np.ndarray</td>
 </tr>
 </tbody>
 </table>
@@ -581,7 +585,7 @@ where <span class="math notranslate nohighlight">\(\bar{\rho}_M\)</span> is the 
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Array of <span class="math notranslate nohighlight">\(I_2^0\)</span> values for each k.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">np.ndarray</td>
 </tr>
 </tbody>
 </table>
@@ -597,7 +601,7 @@ where <span class="math notranslate nohighlight">\(\bar{\rho}_M\)</span> is the 
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Array of <span class="math notranslate nohighlight">\(I_2^1\)</span> values for each k.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">np.ndarray</td>
 </tr>
 </tbody>
 </table>
@@ -610,7 +614,7 @@ where <span class="math notranslate nohighlight">\(\bar{\rho}_M\)</span> is the 
 <span id="halo-power-module"></span><h2>Halo Power Module<a class="headerlink" href="#module-PerturbedHalos.HaloPower" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="PerturbedHalos.HaloPower.HaloPower">
-<em class="property">class </em><code class="descclassname">PerturbedHalos.HaloPower.</code><code class="descname">HaloPower</code><span class="sig-paren">(</span><em>cosmology</em>, <em>mass_function</em>, <em>halo_physics</em>, <em>mass_integrals</em>, <em>kh_vector</em>, <em>kh_min=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/HaloPower.html#HaloPower"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.HaloPower.HaloPower" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">PerturbedHalos.HaloPower.</code><code class="descname">HaloPower</code><span class="sig-paren">(</span><em>cosmology</em>, <em>mass_function</em>, <em>halo_physics</em>, <em>kh_vector</em>, <em>kh_min=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/HaloPower.html#HaloPower"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.HaloPower.HaloPower" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class to compute the non-linear power spectrum from the halo model of Philcox et al. 2020.</p>
 <p>The model power is defined as</p>
 <div class="math notranslate nohighlight">
@@ -624,8 +628,7 @@ where <span class="math notranslate nohighlight">\(\bar{\rho}_M\)</span> is the 
 <li><strong>cosmology</strong> (<a class="reference internal" href="#PerturbedHalos.Cosmology.Cosmology" title="PerturbedHalos.Cosmology.Cosmology"><em>Cosmology</em></a>) – Instance of the Cosmology class containing relevant cosmology and functions.</li>
 <li><strong>mass_function</strong> (<a class="reference internal" href="#PerturbedHalos.MassFunction.MassFunction" title="PerturbedHalos.MassFunction.MassFunction"><em>MassFunction</em></a>) – Instance of the MassFunction class, containing the mass function and bias.</li>
 <li><strong>halo_physics</strong> (<a class="reference internal" href="#PerturbedHalos.HaloPhysics.HaloPhysics" title="PerturbedHalos.HaloPhysics.HaloPhysics"><em>HaloPhysics</em></a>) – Instance of the HaloPhysics class, containing the halo profiles and concentrations.</li>
-<li><strong>mass_integrals</strong> (<em>mass_integrals</em>) – Instance of the MassIntegrals class, containing the mass integrals.</li>
-<li><strong>kh_vector</strong> (<em>float</em>) – Vector of wavenumbers (in <span class="math notranslate nohighlight">\(h/\mathrm{Mpc}\)</span> units), for which power spectrum will be computed.</li>
+<li><strong>kh_vector</strong> (<em>np.ndarray</em>) – Vector of wavenumbers (in <span class="math notranslate nohighlight">\(h/\mathrm{Mpc}\)</span> units), for which power spectrum will be computed.</li>
 </ul>
 </td>
 </tr>
@@ -645,7 +648,7 @@ where <span class="math notranslate nohighlight">\(\bar{\rho}_M\)</span> is the 
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Vector of 1-loop power <span class="math notranslate nohighlight">\(P_\mathrm{1-loop}(k)\)</span> for the input k-vector.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">np.ndarray</td>
 </tr>
 </tbody>
 </table>
@@ -666,7 +669,7 @@ where <span class="math notranslate nohighlight">\(\bar{\rho}_M\)</span> is the 
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Vector of IR-resummed linear power <span class="math notranslate nohighlight">\(P_\mathrm{lin,IR}(k)\)</span> for the input k-vector.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">np.ndarray</td>
 </tr>
 </tbody>
 </table>
@@ -686,7 +689,7 @@ where <span class="math notranslate nohighlight">\(\bar{\rho}_M\)</span> is the 
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Vector of IR-resummed linear-plus-one-loop power <span class="math notranslate nohighlight">\(P_\mathrm{lin+1,IR}(k)\)</span> for the input k-vector.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">np.ndarray</td>
 </tr>
 </tbody>
 </table>
@@ -720,7 +723,7 @@ where <span class="math notranslate nohighlight">\(\bar{\rho}_M\)</span> is the 
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Non-linear halo model power spectrum <span class="math notranslate nohighlight">\(P_\mathrm{halo}\)</span> evaluated at the input k-vector.</p>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">float</p>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">np.ndarray</p>
 </td>
 </tr>
 </tbody>
@@ -761,7 +764,7 @@ where <span class="math notranslate nohighlight">\(\bar{\rho}_M\)</span> is the 
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Non-linear power spectrum <span class="math notranslate nohighlight">\(P_\mathrm{NL}\)</span> evaluated at the input k-vector.</p>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">float</p>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">np.ndarray</p>
 </td>
 </tr>
 </tbody>
@@ -795,8 +798,8 @@ where <span class="math notranslate nohighlight">\(\bar{\rho}_M\)</span> is the 
 <li><strong>mass_function</strong> (<a class="reference internal" href="#PerturbedHalos.MassFunction.MassFunction" title="PerturbedHalos.MassFunction.MassFunction"><em>MassFunction</em></a>) – Class containing the mass function and bias.</li>
 <li><strong>halo_physics</strong> (<a class="reference internal" href="#PerturbedHalos.HaloPhysics.HaloPhysics" title="PerturbedHalos.HaloPhysics.HaloPhysics"><em>HaloPhysics</em></a>) – Class containing the halo profiles and concentrations.</li>
 <li><strong>mass_integrals</strong> (<a class="reference internal" href="#PerturbedHalos.MassIntegrals.MassIntegrals" title="PerturbedHalos.MassIntegrals.MassIntegrals"><em>MassIntegrals</em></a>) – Class containing the mass integrals.</li>
-<li><strong>kh_vector</strong> (<em>float</em>) – Vector of wavenumbers (in <span class="math notranslate nohighlight">\(h/\mathrm{Mpc}\)</span> units), for which power spectrum will be computed.</li>
-<li><strong>mass_bins</strong> (<em>float</em>) – Array of mass bin edges, in <span class="math notranslate nohighlight">\(h^{-1}M_\mathrm{sun}\)</span> units. Must have length N_bins + 1.</li>
+<li><strong>kh_vector</strong> (<em>np.ndarray</em>) – Vector of wavenumbers (in <span class="math notranslate nohighlight">\(h/\mathrm{Mpc}\)</span> units), for which power spectrum will be computed.</li>
+<li><strong>mass_bins</strong> (<em>np.ndarray</em>) – Array of mass bin edges, in <span class="math notranslate nohighlight">\(h^{-1}M_\mathrm{sun}\)</span> units. Must have length N_bins + 1.</li>
 <li><strong>volume</strong> – Volume of the survey in <span class="math notranslate nohighlight">\((h^{-1}\mathrm{Mpc})^3\)</span>. The variance of the linear field will be computed for radius giving this volume</li>
 </ul>
 </td>
@@ -835,7 +838,7 @@ where <span class="math notranslate nohighlight">\(\bar{\rho}_M\)</span> is the 
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Two-dimensional array of <span class="math notranslate nohighlight">\(\mathrm{cov}(N_i,P(k))\)</span> with shape (N_bins, N_k) for N_bins mass bins and N_k power spectrum bins.</p>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">float</p>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">np.ndarray</p>
 </td>
 </tr>
 </tbody>

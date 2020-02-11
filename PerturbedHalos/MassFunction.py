@@ -72,10 +72,10 @@ class MassFunction:
             For efficiency, we return the mass function :math:`\\frac{dn}{d\log_{10}(M)}` rather than the standard form :math:`\\frac{dn}{dM}`.
 
         Args:
-            m_h (float): Mass in :math:`h^{-1}M_\mathrm{sun}` units.
+            m_h (np.ndarray): Array of masses in :math:`h^{-1}M_\mathrm{sun}` units.
 
         Returns:
-            float: Mass function, :math:`dn/d\log_{10}(M)` in :math:`\mathrm{Mpc}^{-3}` units
+            np.ndarray: Mass function, :math:`dn/d\log_{10}(M)` in :math:`\mathrm{Mpc}^{-3}` units
 
         """
         print('FIX rho-bar definitions above!!')
@@ -111,10 +111,10 @@ class MassFunction:
         Associated bias functions are available for each mass function, and more can be user-defined. See the class description for details of the loaded parametrizations.
 
         Args:
-            m_h (float): Mass in :math:`h^{-1}M_\mathrm{sun}` units.
+            m_h (np.ndarray): Array of masses in :math:`h^{-1}M_\mathrm{sun}` units.
 
         Returns:
-            float: Linear Eulerian halo bias (dimensionless)
+            np.ndarray: Linear Eulerian halo bias (dimensionless)
         """
 
         m = m_h/self.h

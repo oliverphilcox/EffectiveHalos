@@ -29,8 +29,8 @@ class CountsCovariance:
         mass_function (MassFunction): Class containing the mass function and bias.
         halo_physics (HaloPhysics): Class containing the halo profiles and concentrations.
         mass_integrals (MassIntegrals): Class containing the mass integrals.
-        kh_vector (float): Vector of wavenumbers (in :math:`h/\mathrm{Mpc}` units), for which power spectrum will be computed.
-        mass_bins (float): Array of mass bin edges, in :math:`h^{-1}M_\mathrm{sun}` units. Must have length N_bins + 1.
+        kh_vector (np.ndarray): Vector of wavenumbers (in :math:`h/\mathrm{Mpc}` units), for which power spectrum will be computed.
+        mass_bins (np.ndarray): Array of mass bin edges, in :math:`h^{-1}M_\mathrm{sun}` units. Must have length N_bins + 1.
         volume: Volume of the survey in :math:`(h^{-1}\mathrm{Mpc})^3`. The variance of the linear field will be computed for radius giving this volume
 
     Keyword Args:
@@ -77,8 +77,7 @@ class CountsCovariance:
         assert self.mass_bins[-1]<=np.power(10.,self.mass_integrals.max_logM)*self.cosmology.h, 'Maximum bin must be below MassIntegral limit!'
 
         # Compute linear power for the k-vector
-        print('should rename cosmology.linear_power to cosmology.compute_linear_power')
-        self.linear_power = self.cosmology.linear_power(self.kh_vector,self.kh_min).copy()
+        self.linear_power = self.cosmology.compute_linear_power(self.kh_vector,self.kh_min).copy()
 
         # Generate a power spectrum class with this k-vector
         self.halo_power = HaloPower(cosmology, mass_function, halo_physics, mass_integrals, kh_vector, kh_min)
@@ -101,7 +100,7 @@ class CountsCovariance:
             IR_resum (bool): If True, perform IR resummation on the density field to resum non-perturbative long-wavelength modes, default: True
 
         Returns:
-            float: Two-dimensional array of :math:`\mathrm{cov}(N_i,P(k))` with shape (N_bins, N_k) for N_bins mass bins and N_k power spectrum bins.
+            np.ndarray: Two-dimensional array of :math:`\mathrm{cov}(N_i,P(k))` with shape (N_bins, N_k) for N_bins mass bins and N_k power spectrum bins.
         """
         # Compute no-SSC covariance
         covariance = self._compute_no_ssc_covariance(cs2, R, pt_type, pade_resum, smooth_density, IR_resum)
@@ -127,7 +126,7 @@ class CountsCovariance:
             IR_resum (bool): If True, perform IR resummation on the density field to resum non-perturbative long-wavelength modes, default: True
 
         Returns:
-            float: Two-dimensional array of no-SSC :math:`\mathrm{cov}(N_i,P(k))` with shape (N_bins, N_k) for N_bins mass bins and N_k power spectrum bins.
+            np.ndarray: Two-dimensional array of no-SSC :math:`\mathrm{cov}(N_i,P(k))` with shape (N_bins, N_k) for N_bins mass bins and N_k power spectrum bins.
         """
 
         # Compute the non-linear power spectrum
@@ -167,7 +166,7 @@ class CountsCovariance:
             IR_resum (bool): If True, perform IR resummation on the density field to resum non-perturbative long-wavelength modes, default: True
 
         Returns:
-            float: Two-dimensional array of SSC :math:`\mathrm{cov}(N_i,P(k))` with shape (N_bins, N_k) for N_bins mass bins and N_k power spectrum bins."""
+            np.ndarray: Two-dimensional array of SSC :math:`\mathrm{cov}(N_i,P(k))` with shape (N_bins, N_k) for N_bins mass bins and N_k power spectrum bins."""
 
         # Compute the non-linear power spectrum
         power_model = self.halo_power.non_linear_power(cs2, R, pt_type = pt_type, pade_resum = pade_resum, smooth_density = smooth_density, IR_resum = IR_resum)
@@ -202,7 +201,7 @@ class CountsCovariance:
         # Create an interpolator for k^3 P(k)
         if not hasattr(self,'log_derivative'):
             all_k = np.logspace(-3,1,10000)
-            all_cal_P = all_k**3.*self.cosmology.linear_power(all_k,0.0)/(2.*np.pi**2.)
+            all_cal_P = all_k**3.*self.cosmology.compute_linear_power(all_k,0.0)/(2.*np.pi**2.)
             dlogP_dlogk = np.diff(np.log(all_cal_P))/np.diff(np.log(all_k))
             mid_k = 0.5*(all_k[1:]+all_k[:-1])
             R = 68./21. - dlogP_dlogk/3.

@@ -29,7 +29,7 @@ class MassIntegrals:
         cosmology (Cosmology): Instance of the Cosmology class containing relevant cosmology and functions.
         mass_function (MassFunction): Instance of the MassFunction class, containing the mass function and bias.
         halo_physics (HaloPhysics): Instance of the HaloPhysics class, containing the halo profiles and concentrations.
-        kh_vector (float): Array (or float) of wavenumbers in :math:`h\mathrm{Mpc}^{-1}` units from which to compute mass integrals.
+        kh_vector (np.ndarray): Array (or float) of wavenumbers in :math:`h\mathrm{Mpc}^{-1}` units from which to compute mass integrals.
 
     Keyword Args:
         min_logM (float): Minimum mass in :math:`\log_{10}(M/M_\mathrm{sun})` units, default: 6.001.
@@ -116,7 +116,7 @@ class MassIntegrals:
             apply_correction (bool): Whether to apply the correction in the class header to ensure the bias consistency relation is upheld.
 
         Returns:
-            float: Array of :math:`I_1^1` values for each k.
+            np.ndarray: Array of :math:`I_1^1` values for each k.
         """
 
         if not hasattr(self,'I_11'):
@@ -136,7 +136,7 @@ class MassIntegrals:
         """Compute the :math:`I_1^{1,1}(k)` integral, if not already computed.
 
         Returns:
-            float: Array of :math:`I_1^{1,1}` values for each k.
+            np.ndarray: Array of :math:`I_1^{1,1}` values for each k.
         """
         if not hasattr(self,'I_111'):
             self.I_111 = simps(self._I_p_q1q2_integrand(1,1,1),self.logM_grid,axis=1)
@@ -151,7 +151,7 @@ class MassIntegrals:
             apply_correction (bool): Whether to apply the correction in the class header to ensure the bias consistency relation is upheld.
 
         Returns:
-            float: Array of :math:`I_1^2` values for each k.
+            np.ndarray: Array of :math:`I_1^2` values for each k.
         """
         if not hasattr(self,'I_12'):
             self.I_12 = simps(self._I_p_q1q2_integrand(1,2,0),self.logM_grid)
@@ -169,7 +169,7 @@ class MassIntegrals:
         """Compute the :math:`I_2^0(k,k)` integral, if not already computed. Note that we assume both k-vectors are the same here.
 
         Returns:
-            float: Array of :math:`I_2^0` values for each k.
+            np.ndarray: Array of :math:`I_2^0` values for each k.
         """
         if not hasattr(self,'I_20'):
             self.I_20 = simps(self._I_p_q1q2_integrand(2,0,0),self.logM_grid,axis=1)
@@ -179,7 +179,7 @@ class MassIntegrals:
         """Compute the :math:`I_2^1(k,k)` integral, if not already computed. Note that we assume both k-vectors are the same here.
 
         Returns:
-            float: Array of :math:`I_2^1` values for each k.
+            np.ndarray: Array of :math:`I_2^1` values for each k.
         """
         if not hasattr(self,'I_21'):
             self.I_21 = simps(self._I_p_q1q2_integrand(2,1,0),self.logM_grid,axis=1)
@@ -228,7 +228,7 @@ class MassIntegrals:
         Compute the normalized halo profile :math:`u(k|m)` for specified masses and k if not already computed.
 
         Returns:
-            float: array of :math:`u(k|m)` values.
+            np.ndarray: array of :math:`u(k|m)` values.
         """
         if not hasattr(self,'fourier_profile'):
             self.fourier_profile = self.halo_physics.halo_profile(self.m_h_grid,self.k_vectors)
@@ -238,7 +238,7 @@ class MassIntegrals:
         """Compute the mass function for specified masses if not already computed.
 
         Returns:
-            float: :math:`dn/d\log_{10}(M)` array
+            np.ndarray: :math:`dn/d\log_{10}(M)` array
         """
         if not hasattr(self,'mass_function_grid'):
             self.mass_function_grid = self.mass_function.mass_function(self.m_h_grid)
@@ -248,7 +248,7 @@ class MassIntegrals:
         """Compute the linear bias function for specified masses if not already computed.
 
         Returns:
-            float: Array of Eulerian linear biases :math:`b_1^L(m)`
+            np.ndarray: Array of Eulerian linear biases :math:`b_1^L(m)`
         """
         if not hasattr(self,'linear_bias_grid'):
             self.linear_bias_grid = self.mass_function.linear_halo_bias(self.m_h_grid)
@@ -258,7 +258,7 @@ class MassIntegrals:
         """Compute the second order bias function for specified masses if not already computed.
 
         Returns:
-            float: Array of second order Eulerian biases :math:`b_2^L(m)`
+            np.ndarray: Array of second order Eulerian biases :math:`b_2^L(m)`
         """
         if not hasattr(self,'second_order_bias_grid'):
             self.second_order_bias_grid = self.mass_function.second_order_bias(self.m_h_grid)
@@ -271,7 +271,7 @@ class MassIntegrals:
             q (int): Order of bias. Setting q = 0 returns unity. Currently only :math:`q\leq 2` is implemented.
 
         Returns:
-            float: Array of q-th order Eulerian biases.
+            np.ndarray: Array of q-th order Eulerian biases.
         """
         if q==0:
             return 1.

@@ -77,12 +77,12 @@ class HaloPhysics:
         For details of the available profile parametrizations, see the class description.
 
         Args:
-            m_h (float): Mass in :math:`h^{-1}M_\mathrm{sun}` units.
-            k_phys (float): Physical wavenumber in 1/Mpc units.
+            m_h (np.ndarray): Mass in :math:`h^{-1}M_\mathrm{sun}` units.
+            k_phys (np.ndarray): Physical wavenumber in 1/Mpc units.
             norm_only (bool): Boolean, if set, just return the normalization factor :math:`m/\\bar{\\rho}_M`, default: False
 
         Returns:
-            float: Halo profile :math:`\\rho(k|m)` or :math:`m/\\bar{\\rho}_M`, if the norm_only parameter is set.
+            np.ndarray: Halo profile :math:`\\rho(k|m)` or :math:`m/\\bar{\\rho}_M`, if the norm_only parameter is set.
         """
         m = m_h/self.h # in Msun units
 
@@ -111,7 +111,10 @@ class HaloPhysics:
         For details of the available concentration parametrizations, see the class description.
 
         Args:
-            m_h (float): Mass in :math:`h^{-1}M_{\odot}` units.
+            m_h (np.ndarray): Mass in :math:`h^{-1}M_\mathrm{sun}` units.
+
+        Returns:
+            np.ndarray: Array of concentration parameters.
         """
 
         m = m_h/self.h
@@ -143,12 +146,12 @@ class HaloPhysics:
         Note that the function returns unity for :math:`k \\leq 0`.
 
         Args:
-            k_phys (float): Wavenumber in 1/Mpc units.
-            r_virial (float): Virial radius in Mpc units.
-            c (float): Halo concentration parameter; :math:`c = r_\mathrm{virial}/r_\mathrm{scale}`.
+            k_phys (np.ndarray): Wavenumber in 1/Mpc units.
+            r_virial (np.ndarray): Virial radius in Mpc units.
+            c (np.ndarray): Halo concentration parameter; :math:`c = r_\mathrm{virial}/r_\mathrm{scale}`.
 
         Returns:
-            float: Normalized halo profile :math:`u(k|m)`
+            np.ndarray: Normalized halo profile :math:`u(k|m)`
         """
 
         if self.profile_name=='NFW':

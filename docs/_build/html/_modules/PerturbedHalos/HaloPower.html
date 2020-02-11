@@ -170,15 +170,14 @@
 <span class="sd">        cosmology (Cosmology): Instance of the Cosmology class containing relevant cosmology and functions.</span>
 <span class="sd">        mass_function (MassFunction): Instance of the MassFunction class, containing the mass function and bias.</span>
 <span class="sd">        halo_physics (HaloPhysics): Instance of the HaloPhysics class, containing the halo profiles and concentrations.</span>
-<span class="sd">        mass_integrals (mass_integrals): Instance of the MassIntegrals class, containing the mass integrals.</span>
-<span class="sd">        kh_vector (float): Vector of wavenumbers (in :math:`h/\mathrm{Mpc}` units), for which power spectrum will be computed.</span>
+<span class="sd">        kh_vector (np.ndarray): Vector of wavenumbers (in :math:`h/\mathrm{Mpc}` units), for which power spectrum will be computed.</span>
 
 <span class="sd">    Keyword Args:</span>
 <span class="sd">        kh_min: Minimum k vector in the simulation (or survey) region in :math:`h/\mathrm{Mpc}` units. Modes below kh_min are set to zero, default: 0.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">cosmology</span><span class="p">,</span><span class="n">mass_function</span><span class="p">,</span><span class="n">halo_physics</span><span class="p">,</span><span class="n">mass_integrals</span><span class="p">,</span><span class="n">kh_vector</span><span class="p">,</span><span class="n">kh_min</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">cosmology</span><span class="p">,</span><span class="n">mass_function</span><span class="p">,</span><span class="n">halo_physics</span><span class="p">,</span><span class="n">kh_vector</span><span class="p">,</span><span class="n">kh_min</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Initialize the class loading properties from the other classes.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;do we really need to specify all these input classes? - load mass integrals directly&#39;</span><span class="p">)</span>
@@ -198,10 +197,10 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">halo_physics</span> <span class="o">=</span> <span class="n">halo_physics</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;halo_physics input must be an instance of the HaloPhysics class!&#39;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mass_integrals</span><span class="p">,</span> <span class="n">MassIntegrals</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">mass_integrals</span> <span class="o">=</span> <span class="n">mass_integrals</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;mass_integrals input must be an instance of the MassIntegrals class!&#39;</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;How do we pass in MassIntegrals parameters?&quot;</span><span class="p">)</span>
+        <span class="c1"># Create instance of the MassIntegrals class</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mass_integrals</span> <span class="o">=</span> <span class="n">MassIntegrals</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cosmology</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mass_function</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">halo_physics</span><span class="p">,</span> <span class="n">kh_vector</span><span class="p">)</span>
 
         <span class="c1"># Write useful attributes</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">kh_vector</span> <span class="o">=</span> <span class="n">kh_vector</span>
@@ -209,7 +208,7 @@
 
         <span class="c1"># Compute linear power for the k-vector</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;should rename cosmology.linear_power to cosmology.compute_linear_power&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">linear_power</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cosmology</span><span class="o">.</span><span class="n">linear_power</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kh_vector</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">linear_power</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cosmology</span><span class="o">.</span><span class="n">compute_linear_power</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kh_vector</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
 <div class="viewcode-block" id="HaloPower.non_linear_power"><a class="viewcode-back" href="../../api.html#PerturbedHalos.HaloPower.HaloPower.non_linear_power">[docs]</a>    <span class="k">def</span> <span class="nf">non_linear_power</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">cs2</span><span class="p">,</span><span class="n">R</span><span class="p">,</span><span class="n">pt_type</span> <span class="o">=</span> <span class="s1">&#39;EFT&#39;</span><span class="p">,</span><span class="n">pade_resum</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">smooth_density</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">IR_resum</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -242,7 +241,7 @@
 <span class="sd">            IR_resum (bool): If True, perform IR resummation on the density field to resum non-perturbative long-wavelength modes, default: True</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            float: Non-linear power spectrum :math:`P_\mathrm{NL}` evaluated at the input k-vector.</span>
+<span class="sd">            np.ndarray: Non-linear power spectrum :math:`P_\mathrm{NL}` evaluated at the input k-vector.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">IR_resum</span><span class="p">:</span>
@@ -297,7 +296,7 @@
 <span class="sd">            IR_resum (bool): If True, perform IR resummation on the density field to resum non-perturbative long-wavelength modes, default: True</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            float: Non-linear halo model power spectrum :math:`P_\mathrm{halo}` evaluated at the input k-vector.</span>
+<span class="sd">            np.ndarray: Non-linear halo model power spectrum :math:`P_\mathrm{halo}` evaluated at the input k-vector.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># Compute the non-linear power spectrum</span>
@@ -319,12 +318,12 @@
 <span class="sd">        Compute the one-loop SPT power from the linear power spectrum in the Cosmology class. This returns the one-loop power evaluated at the wavenumber vector specfied in the class initialization. When first called, this computes an interpolator function, which is used in this and subsequent calls.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            float: Vector of 1-loop power :math:`P_\mathrm{1-loop}(k)` for the input k-vector.</span>
+<span class="sd">            np.ndarray: Vector of 1-loop power :math:`P_\mathrm{1-loop}(k)` for the input k-vector.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="s1">&#39;one_loop_only_power&#39;</span><span class="p">):</span>
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;should carry over parameters here - or initialize them in the class&#39;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">one_loop_only_power</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_one_loop_only_power_interpolater</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cosmology</span><span class="o">.</span><span class="n">linear_power</span><span class="p">)(</span><span class="bp">self</span><span class="o">.</span><span class="n">kh_vector</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">one_loop_only_power</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_one_loop_only_power_interpolater</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cosmology</span><span class="o">.</span><span class="n">compute_linear_power</span><span class="p">)(</span><span class="bp">self</span><span class="o">.</span><span class="n">kh_vector</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">one_loop_only_power</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
 
@@ -343,7 +342,7 @@
 <span class="sd">        If already computed, the IR resummed linear power is simply returned.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            float: Vector of IR-resummed linear power :math:`P_\mathrm{lin,IR}(k)` for the input k-vector.</span>
+<span class="sd">            np.ndarray: Vector of IR-resummed linear power :math:`P_\mathrm{lin,IR}(k)` for the input k-vector.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="s1">&#39;resummed_linear_power&#39;</span><span class="p">):</span>
@@ -374,7 +373,7 @@
 <span class="sd">        where &#39;nw&#39; and &#39;w&#39; refer to the no-wiggle and wiggle parts of the linear / 1-loop power spectrum and :math:`Sigma^2` is the BAO damping scale (computed in the _prepare_IR_resummation function)</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            float: Vector of IR-resummed linear-plus-one-loop power :math:`P_\mathrm{lin+1,IR}(k)` for the input k-vector.</span>
+<span class="sd">            np.ndarray: Vector of IR-resummed linear-plus-one-loop power :math:`P_\mathrm{lin+1,IR}(k)` for the input k-vector.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="s1">&#39;resummed_one_loop_power&#39;</span><span class="p">):</span>
@@ -405,7 +404,7 @@
 <span class="sd">                R: Smoothing scale in :math:`h^{-1}\mathrm{Mpc}` units.</span>
 
 <span class="sd">            Returns:</span>
-<span class="sd">                float: :math:`W(kR)` evaluated on the input k-vector.</span>
+<span class="sd">                np.ndarray: :math:`W(kR)` evaluated on the input k-vector.</span>
 <span class="sd">            &quot;&quot;&quot;</span>
             <span class="n">kR</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kh_vector</span><span class="o">*</span><span class="n">R</span>
             <span class="k">return</span>  <span class="mf">3.</span><span class="o">*</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">kR</span><span class="p">)</span><span class="o">-</span><span class="n">kR</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">kR</span><span class="p">))</span><span class="o">/</span><span class="n">kR</span><span class="o">**</span><span class="mf">3.</span>
@@ -488,11 +487,11 @@
             <span class="n">kh_interp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">min_k</span><span class="p">)</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">max_k</span><span class="p">)</span><span class="o">+</span><span class="mf">0.5</span><span class="p">,</span><span class="n">N_k</span><span class="p">)</span>
 
             <span class="c1"># Define turning point of power spectrum (we compute no-wiggle spectrum beyond this point)</span>
-            <span class="n">linear_power_interp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cosmology</span><span class="o">.</span><span class="n">linear_power</span><span class="p">(</span><span class="n">kh_interp</span><span class="p">,</span><span class="n">kh_min</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kh_min</span><span class="p">)</span>
+            <span class="n">linear_power_interp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cosmology</span><span class="o">.</span><span class="n">compute_linear_power</span><span class="p">(</span><span class="n">kh_interp</span><span class="p">,</span><span class="n">kh_min</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kh_min</span><span class="p">)</span>
             <span class="n">max_pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">linear_power_interp</span><span class="o">==</span><span class="nb">max</span><span class="p">(</span><span class="n">linear_power_interp</span><span class="p">))</span>
             <span class="n">kh_turn</span> <span class="o">=</span> <span class="n">kh_interp</span><span class="p">[</span><span class="n">max_pos</span><span class="p">]</span>
             <span class="n">Pk_turn</span> <span class="o">=</span> <span class="n">linear_power_interp</span><span class="p">[</span><span class="n">max_pos</span><span class="p">]</span>
-            <span class="n">Pk_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cosmology</span><span class="o">.</span><span class="n">linear_power</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">kh_max</span><span class="p">),</span><span class="n">kh_min</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kh_min</span><span class="p">)</span>
+            <span class="n">Pk_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cosmology</span><span class="o">.</span><span class="n">compute_linear_power</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">kh_max</span><span class="p">),</span><span class="n">kh_min</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kh_min</span><span class="p">)</span>
 
             <span class="c1"># Define k in required range</span>
             <span class="n">ffilt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">kh_interp</span><span class="o">&gt;</span><span class="n">kh_turn</span><span class="p">,</span><span class="n">kh_interp</span><span class="o">&lt;</span><span class="n">kh_max</span><span class="p">))</span>
@@ -535,7 +534,7 @@
             <span class="k">def</span> <span class="nf">_BAO_integrand</span><span class="p">(</span><span class="n">q</span><span class="p">):</span>
                 <span class="n">r_BAO</span> <span class="o">=</span> <span class="mf">105.</span> <span class="c1"># BAO scale in Mpc/h</span>
                 <span class="n">kh_osc</span> <span class="o">=</span> <span class="mf">1.</span><span class="o">/</span><span class="n">r_BAO</span>
-                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cosmology</span><span class="o">.</span><span class="n">linear_power</span><span class="p">(</span><span class="n">q</span><span class="p">,</span><span class="n">kh_min</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kh_min</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mf">1.</span><span class="o">-</span><span class="n">spherical_jn</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">q</span><span class="o">/</span><span class="n">kh_osc</span><span class="p">)</span><span class="o">+</span><span class="mf">2.</span><span class="o">*</span><span class="n">spherical_jn</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="n">q</span><span class="o">/</span><span class="n">kh_osc</span><span class="p">))</span><span class="o">/</span><span class="p">(</span><span class="mf">6.</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">**</span><span class="mf">2.</span><span class="p">)</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cosmology</span><span class="o">.</span><span class="n">compute_linear_power</span><span class="p">(</span><span class="n">q</span><span class="p">,</span><span class="n">kh_min</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kh_min</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mf">1.</span><span class="o">-</span><span class="n">spherical_jn</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">q</span><span class="o">/</span><span class="n">kh_osc</span><span class="p">)</span><span class="o">+</span><span class="mf">2.</span><span class="o">*</span><span class="n">spherical_jn</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="n">q</span><span class="o">/</span><span class="n">kh_osc</span><span class="p">))</span><span class="o">/</span><span class="p">(</span><span class="mf">6.</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">**</span><span class="mf">2.</span><span class="p">)</span>
             <span class="n">kk_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">1e-4</span><span class="p">,</span><span class="mf">0.2</span><span class="p">,</span><span class="mi">10000</span><span class="p">)</span>
 
             <span class="c1"># Now store the BAO damping scale as Sigma^2</span>

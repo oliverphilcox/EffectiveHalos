@@ -176,7 +176,7 @@
 <span class="sd">        cosmology (Cosmology): Instance of the Cosmology class containing relevant cosmology and functions.</span>
 <span class="sd">        mass_function (MassFunction): Instance of the MassFunction class, containing the mass function and bias.</span>
 <span class="sd">        halo_physics (HaloPhysics): Instance of the HaloPhysics class, containing the halo profiles and concentrations.</span>
-<span class="sd">        kh_vector (float): Array (or float) of wavenumbers in :math:`h\mathrm{Mpc}^{-1}` units from which to compute mass integrals.</span>
+<span class="sd">        kh_vector (np.ndarray): Array (or float) of wavenumbers in :math:`h\mathrm{Mpc}^{-1}` units from which to compute mass integrals.</span>
 
 <span class="sd">    Keyword Args:</span>
 <span class="sd">        min_logM (float): Minimum mass in :math:`\log_{10}(M/M_\mathrm{sun})` units, default: 6.001.</span>
@@ -263,7 +263,7 @@
 <span class="sd">            apply_correction (bool): Whether to apply the correction in the class header to ensure the bias consistency relation is upheld.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            float: Array of :math:`I_1^1` values for each k.</span>
+<span class="sd">            np.ndarray: Array of :math:`I_1^1` values for each k.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="s1">&#39;I_11&#39;</span><span class="p">):</span>
@@ -283,7 +283,7 @@
         <span class="sd">&quot;&quot;&quot;Compute the :math:`I_1^{1,1}(k)` integral, if not already computed.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            float: Array of :math:`I_1^{1,1}` values for each k.</span>
+<span class="sd">            np.ndarray: Array of :math:`I_1^{1,1}` values for each k.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="s1">&#39;I_111&#39;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">I_111</span> <span class="o">=</span> <span class="n">simps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_I_p_q1q2_integrand</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span><span class="bp">self</span><span class="o">.</span><span class="n">logM_grid</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -298,7 +298,7 @@
 <span class="sd">            apply_correction (bool): Whether to apply the correction in the class header to ensure the bias consistency relation is upheld.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            float: Array of :math:`I_1^2` values for each k.</span>
+<span class="sd">            np.ndarray: Array of :math:`I_1^2` values for each k.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="s1">&#39;I_12&#39;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">I_12</span> <span class="o">=</span> <span class="n">simps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_I_p_q1q2_integrand</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span><span class="bp">self</span><span class="o">.</span><span class="n">logM_grid</span><span class="p">)</span>
@@ -316,7 +316,7 @@
         <span class="sd">&quot;&quot;&quot;Compute the :math:`I_2^0(k,k)` integral, if not already computed. Note that we assume both k-vectors are the same here.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            float: Array of :math:`I_2^0` values for each k.</span>
+<span class="sd">            np.ndarray: Array of :math:`I_2^0` values for each k.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="s1">&#39;I_20&#39;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">I_20</span> <span class="o">=</span> <span class="n">simps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_I_p_q1q2_integrand</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span><span class="bp">self</span><span class="o">.</span><span class="n">logM_grid</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -326,7 +326,7 @@
         <span class="sd">&quot;&quot;&quot;Compute the :math:`I_2^1(k,k)` integral, if not already computed. Note that we assume both k-vectors are the same here.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            float: Array of :math:`I_2^1` values for each k.</span>
+<span class="sd">            np.ndarray: Array of :math:`I_2^1` values for each k.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="s1">&#39;I_21&#39;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">I_21</span> <span class="o">=</span> <span class="n">simps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_I_p_q1q2_integrand</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span><span class="bp">self</span><span class="o">.</span><span class="n">logM_grid</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -375,7 +375,7 @@
 <span class="sd">        Compute the normalized halo profile :math:`u(k|m)` for specified masses and k if not already computed.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            float: array of :math:`u(k|m)` values.</span>
+<span class="sd">            np.ndarray: array of :math:`u(k|m)` values.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="s1">&#39;fourier_profile&#39;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">fourier_profile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">halo_physics</span><span class="o">.</span><span class="n">halo_profile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">m_h_grid</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">k_vectors</span><span class="p">)</span>
@@ -385,7 +385,7 @@
         <span class="sd">&quot;&quot;&quot;Compute the mass function for specified masses if not already computed.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            float: :math:`dn/d\log_{10}(M)` array</span>
+<span class="sd">            np.ndarray: :math:`dn/d\log_{10}(M)` array</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="s1">&#39;mass_function_grid&#39;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">mass_function_grid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mass_function</span><span class="o">.</span><span class="n">mass_function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">m_h_grid</span><span class="p">)</span>
@@ -395,7 +395,7 @@
         <span class="sd">&quot;&quot;&quot;Compute the linear bias function for specified masses if not already computed.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            float: Array of Eulerian linear biases :math:`b_1^L(m)`</span>
+<span class="sd">            np.ndarray: Array of Eulerian linear biases :math:`b_1^L(m)`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="s1">&#39;linear_bias_grid&#39;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">linear_bias_grid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mass_function</span><span class="o">.</span><span class="n">linear_halo_bias</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">m_h_grid</span><span class="p">)</span>
@@ -405,7 +405,7 @@
         <span class="sd">&quot;&quot;&quot;Compute the second order bias function for specified masses if not already computed.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            float: Array of second order Eulerian biases :math:`b_2^L(m)`</span>
+<span class="sd">            np.ndarray: Array of second order Eulerian biases :math:`b_2^L(m)`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="s1">&#39;second_order_bias_grid&#39;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">second_order_bias_grid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mass_function</span><span class="o">.</span><span class="n">second_order_bias</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">m_h_grid</span><span class="p">)</span>
@@ -418,7 +418,7 @@
 <span class="sd">            q (int): Order of bias. Setting q = 0 returns unity. Currently only :math:`q\leq 2` is implemented.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            float: Array of q-th order Eulerian biases.</span>
+<span class="sd">            np.ndarray: Array of q-th order Eulerian biases.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">q</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="mf">1.</span>

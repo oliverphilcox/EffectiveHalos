@@ -34,7 +34,6 @@ class Cosmology(object):
         Initialize the cosmology class with cosmological parameters or a defined model.
 
         """
-        print('need to distinguish float + np.ndarray in this + other class docstrings')
         ## Load parameters into a dictionary to pass to CLASS
         class_params = dict(**params)
         if len(name)>0:
@@ -84,17 +83,17 @@ class Cosmology(object):
         self.rho_critical = ((3.*100.*100.)/(8.*np.pi*6.67408e-11)) * (1000.*1000.*3.085677581491367399198952281E+22/1.9884754153381438E+30)
         self.rhoM = self.rho_critical*self.cosmo.Omega0_m()*self.cosmo.h()**2.
 
-    def linear_power(self,kh_vector,kh_min=0.):
+    def compute_linear_power(self,kh_vector,kh_min=0.):
         """Compute the linear power spectrum from CLASS for a vector of input k.
 
         If set, we remove any modes below some minimum k.
 
         Args:
-            kh_vector (float): Vector of wavenumbers (in h/Mpc units) to compute linear power with.
+            kh_vector (np.ndarray): Vector of wavenumbers (in h/Mpc units) to compute linear power with.
             kh_min (float): Value of k (in h/Mpc units) below which to set :math:`P(k) = 0`, default: 0.
 
         Returns:
-            float: Linear power spectrum in :math:`(h^{-1}\mathrm{Mpc})^3` units
+            np.ndarray: Linear power spectrum in :math:`(h^{-1}\mathrm{Mpc})^3` units
         """
         print("don't recompute this?")
 
@@ -114,11 +113,11 @@ class Cosmology(object):
         """Compute :math:`\sigma(M,z)` from CLASS as a vector function.
 
         Args:
-            M_phys (float): Physical mass in :math:`M_\mathrm{sun}` units.
+            M_phys (np.ndarray): Physical mass in :math:`M_\mathrm{sun}` units.
             z (float): Redshift.
 
         Returns:
-            float: :math:`\sigma(M,z)`
+            np.ndarray: :math:`\sigma(M,z)`
         """
         # convert to Lagrangian radius
         r_phys = np.power((3.*M_phys)/(4.*np.pi*self.rhoM),1./3.)
@@ -129,10 +128,10 @@ class Cosmology(object):
         """Return the value of :math:`\sigma(M,z)` using the prebuilt interpolators, which are constructed if not present.
 
         Args:
-            logM (float): Input :math:`\log_{10}(M/M_\mathrm{sun})`
+            logM (np.ndarray): Input :math:`\log_{10}(M/M_\mathrm{sun})`
 
         Returns:
-            float: :math:`\sigma(M,z)`
+            np.ndarray: :math:`\sigma(M,z)`
         """
         if not hasattr(self,'sigma_logM_int_func'):
             self._interpolate_sigma_and_deriv()
@@ -142,10 +141,10 @@ class Cosmology(object):
         """Return the value of :math:`d\ln\sigma/d\log M` using the prebuilt interpolators, which are constructed if not present.
 
         Args:
-            logM (float): Input :math:`\log_{10}(M/M_\mathrm{sun})`
+            logM (np.ndarray): Input :math:`\log_{10}(M/M_\mathrm{sun})`
 
         Returns:
-            float: :math:`d\ln\sigma/d\log M`
+            np.ndarray: :math:`d\ln\sigma/d\log M`
         """
         if not hasattr(self,'dlns_dlogM_int_func'):
             self._interpolate_sigma_and_deriv()
@@ -157,10 +156,10 @@ class Cosmology(object):
 
         NB: This has no effect if the interpolator has already been computed.
 
-        Args:
-            logM_min (float): Minimum mass in :math:`\log_{10}(M/M_\mathrm{sun})`
-            logM_max (float): Maximum mass in :math:`\log_{10}(M/M_\mathrm{sun})`
-            npoints (int): Number of sampling points.
+        Keyword Args:
+            logM_min (float): Minimum mass in :math:`\log_{10}(M/M_\mathrm{sun})`, default: 6
+            logM_max (float): Maximum mass in :math:`\log_{10}(M/M_\mathrm{sun})`, default 17
+            npoints (int): Number of sampling points, default 100000
 
         """
 

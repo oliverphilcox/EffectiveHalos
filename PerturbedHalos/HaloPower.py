@@ -23,15 +23,14 @@ class HaloPower:
         cosmology (Cosmology): Instance of the Cosmology class containing relevant cosmology and functions.
         mass_function (MassFunction): Instance of the MassFunction class, containing the mass function and bias.
         halo_physics (HaloPhysics): Instance of the HaloPhysics class, containing the halo profiles and concentrations.
-        mass_integrals (mass_integrals): Instance of the MassIntegrals class, containing the mass integrals.
-        kh_vector (float): Vector of wavenumbers (in :math:`h/\mathrm{Mpc}` units), for which power spectrum will be computed.
+        kh_vector (np.ndarray): Vector of wavenumbers (in :math:`h/\mathrm{Mpc}` units), for which power spectrum will be computed.
 
     Keyword Args:
         kh_min: Minimum k vector in the simulation (or survey) region in :math:`h/\mathrm{Mpc}` units. Modes below kh_min are set to zero, default: 0.
 
     """
 
-    def __init__(self,cosmology,mass_function,halo_physics,mass_integrals,kh_vector,kh_min=0):
+    def __init__(self,cosmology,mass_function,halo_physics,kh_vector,kh_min=0):
         """Initialize the class loading properties from the other classes.
         """
         print('do we really need to specify all these input classes? - load mass integrals directly')
@@ -51,10 +50,10 @@ class HaloPower:
             self.halo_physics = halo_physics
         else:
             raise TypeError('halo_physics input must be an instance of the HaloPhysics class!')
-        if isinstance(mass_integrals, MassIntegrals):
-            self.mass_integrals = mass_integrals
-        else:
-            raise TypeError('mass_integrals input must be an instance of the MassIntegrals class!')
+
+        print("How do we pass in MassIntegrals parameters?")
+        # Create instance of the MassIntegrals class
+        self.mass_integrals = MassIntegrals(self.cosmology, self.mass_function, self.halo_physics, kh_vector)
 
         # Write useful attributes
         self.kh_vector = kh_vector
@@ -62,7 +61,7 @@ class HaloPower:
 
         # Compute linear power for the k-vector
         print('should rename cosmology.linear_power to cosmology.compute_linear_power')
-        self.linear_power = self.cosmology.linear_power(self.kh_vector).copy()
+        self.linear_power = self.cosmology.compute_linear_power(self.kh_vector).copy()
 
     def non_linear_power(self,cs2,R,pt_type = 'EFT',pade_resum = True, smooth_density = True, IR_resum = True):
         """
@@ -95,7 +94,7 @@ class HaloPower:
             IR_resum (bool): If True, perform IR resummation on the density field to resum non-perturbative long-wavelength modes, default: True
 
         Returns:
-            float: Non-linear power spectrum :math:`P_\mathrm{NL}` evaluated at the input k-vector.
+            np.ndarray: Non-linear power spectrum :math:`P_\mathrm{NL}` evaluated at the input k-vector.
         """
 
         if not IR_resum:
@@ -150,7 +149,7 @@ class HaloPower:
             IR_resum (bool): If True, perform IR resummation on the density field to resum non-perturbative long-wavelength modes, default: True
 
         Returns:
-            float: Non-linear halo model power spectrum :math:`P_\mathrm{halo}` evaluated at the input k-vector.
+            np.ndarray: Non-linear halo model power spectrum :math:`P_\mathrm{halo}` evaluated at the input k-vector.
         """
 
         # Compute the non-linear power spectrum
@@ -172,12 +171,12 @@ class HaloPower:
         Compute the one-loop SPT power from the linear power spectrum in the Cosmology class. This returns the one-loop power evaluated at the wavenumber vector specfied in the class initialization. When first called, this computes an interpolator function, which is used in this and subsequent calls.
 
         Returns:
-            float: Vector of 1-loop power :math:`P_\mathrm{1-loop}(k)` for the input k-vector.
+            np.ndarray: Vector of 1-loop power :math:`P_\mathrm{1-loop}(k)` for the input k-vector.
         """
 
         if not hasattr(self,'one_loop_only_power'):
             print('should carry over parameters here - or initialize them in the class')
-            self.one_loop_only_power = self._one_loop_only_power_interpolater(self.cosmology.linear_power)(self.kh_vector)
+            self.one_loop_only_power = self._one_loop_only_power_interpolater(self.cosmology.compute_linear_power)(self.kh_vector)
 
         return self.one_loop_only_power.copy()
 
@@ -196,7 +195,7 @@ class HaloPower:
         If already computed, the IR resummed linear power is simply returned.
 
         Returns:
-            float: Vector of IR-resummed linear power :math:`P_\mathrm{lin,IR}(k)` for the input k-vector.
+            np.ndarray: Vector of IR-resummed linear power :math:`P_\mathrm{lin,IR}(k)` for the input k-vector.
         """
 
         if not hasattr(self,'resummed_linear_power'):
@@ -227,7 +226,7 @@ class HaloPower:
         where 'nw' and 'w' refer to the no-wiggle and wiggle parts of the linear / 1-loop power spectrum and :math:`Sigma^2` is the BAO damping scale (computed in the _prepare_IR_resummation function)
 
         Returns:
-            float: Vector of IR-resummed linear-plus-one-loop power :math:`P_\mathrm{lin+1,IR}(k)` for the input k-vector.
+            np.ndarray: Vector of IR-resummed linear-plus-one-loop power :math:`P_\mathrm{lin+1,IR}(k)` for the input k-vector.
         """
 
         if not hasattr(self,'resummed_one_loop_power'):
@@ -258,7 +257,7 @@ class HaloPower:
                 R: Smoothing scale in :math:`h^{-1}\mathrm{Mpc}` units.
 
             Returns:
-                float: :math:`W(kR)` evaluated on the input k-vector.
+                np.ndarray: :math:`W(kR)` evaluated on the input k-vector.
             """
             kR = self.kh_vector*R
             return  3.*(np.sin(kR)-kR*np.cos(kR))/kR**3.
@@ -341,11 +340,11 @@ class HaloPower:
             kh_interp = np.logspace(np.log10(min_k)-0.5,np.log10(max_k)+0.5,N_k)
 
             # Define turning point of power spectrum (we compute no-wiggle spectrum beyond this point)
-            linear_power_interp = self.cosmology.linear_power(kh_interp,kh_min=self.kh_min)
+            linear_power_interp = self.cosmology.compute_linear_power(kh_interp,kh_min=self.kh_min)
             max_pos = np.where(linear_power_interp==max(linear_power_interp))
             kh_turn = kh_interp[max_pos]
             Pk_turn = linear_power_interp[max_pos]
-            Pk_max = self.cosmology.linear_power(np.atleast_1d(kh_max),kh_min=self.kh_min)
+            Pk_max = self.cosmology.compute_linear_power(np.atleast_1d(kh_max),kh_min=self.kh_min)
 
             # Define k in required range
             ffilt = np.where(np.logical_and(kh_interp>kh_turn,kh_interp<kh_max))
@@ -388,7 +387,7 @@ class HaloPower:
             def _BAO_integrand(q):
                 r_BAO = 105. # BAO scale in Mpc/h
                 kh_osc = 1./r_BAO
-                return self.cosmology.linear_power(q,kh_min=self.kh_min)*(1.-spherical_jn(0,q/kh_osc)+2.*spherical_jn(2,q/kh_osc))/(6.*np.pi**2.)
+                return self.cosmology.compute_linear_power(q,kh_min=self.kh_min)*(1.-spherical_jn(0,q/kh_osc)+2.*spherical_jn(2,q/kh_osc))/(6.*np.pi**2.)
             kk_grid = np.linspace(1e-4,0.2,10000)
 
             # Now store the BAO damping scale as Sigma^2
