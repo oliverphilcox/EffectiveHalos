@@ -17,4 +17,4 @@ Todo:
    :maxdepth: 2
    :caption: Contents:
 
-   test
+   api

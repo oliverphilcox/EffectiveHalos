@@ -13,3 +13,9 @@ Mass Function
 
 .. automodule:: PerturbedHalos.MassFunction
   :members:
+
+Halo Physics
+--------------
+
+.. automodule:: PerturbedHalos.HaloPhysics
+  :members:

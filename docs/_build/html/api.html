@@ -85,6 +85,7 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Python API</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#module-PerturbedHalos.Cosmology">Cosmology</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-PerturbedHalos.MassFunction">Mass Function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-PerturbedHalos.HaloPhysics">Halo Physics</a></li>
 </ul>
 </li>
 </ul>
@@ -138,7 +139,7 @@
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="_sources/test.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/api.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -324,12 +325,12 @@
 <code class="descname">mass_function</code><span class="sig-paren">(</span><em>m_h</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/MassFunction.html#MassFunction.mass_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.MassFunction.MassFunction.mass_function" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the mass function, equal to the number density of halos per unit logarithmic mass interval. This assumes the existence of a universal mass function, with</p>
 <div class="math notranslate nohighlight">
-\[dn/d\log_{10}M = f(\sigma(M))\bar{\rho}_M/M d\ln\sigma(M)/d\log_{10}(M)\]</div>
+\[dn/d\log_{10}M = f(\sigma(M))\frac{\bar{\rho}_M}{M} \frac{d\ln\sigma(M)}{d\log_{10}(M)}\]</div>
 <p>where <span class="math notranslate nohighlight">\(f\)</span> is the universal mass function, <span class="math notranslate nohighlight">\(\bar{\rho}_M\)</span> is the mean matter density at redshift zero and <span class="math notranslate nohighlight">\(\sigma^2(M)\)</span> is the overdensity variance on spheres with a radius given by the Lagrangian radius for mass <span class="math notranslate nohighlight">\(M\)</span>.</p>
 <p>For details of the available mass function parametrizations, see the class description.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">We return the mass function <span class="math notranslate nohighlight">\(dn/d\log_{10}(M)\)</span> for later computational ease.</p>
+<p class="last">For efficiency, we return the mass function <span class="math notranslate nohighlight">\(\frac{dn}{d\log_{10}(M)}\)</span> rather than the standard form <span class="math notranslate nohighlight">\(\frac{dn}{dM}\)</span>.</p>
 </div>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -348,10 +349,92 @@
 <dl class="method">
 <dt id="PerturbedHalos.MassFunction.MassFunction.second_order_bias">
 <code class="descname">second_order_bias</code><span class="sig-paren">(</span><em>m_h</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/MassFunction.html#MassFunction.second_order_bias"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.MassFunction.MassFunction.second_order_bias" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute the second order Eulerian bias, defined as <span class="math notranslate nohighlight">\(4b_1^L/21 + b_2^L/2\)</span> where <span class="math notranslate nohighlight">\(b_1^L\)</span> and <span class="math notranslate nohighlight">\(b_2^L\)</span> are the Lagrangian bias parameters.</p>
+<dd><p>Compute the second order Eulerian bias, defined as <span class="math notranslate nohighlight">\(\frac{4}{21}b_1^L + \frac{1}{2}b_2^L\)</span> where <span class="math notranslate nohighlight">\(b_1^L\)</span> and <span class="math notranslate nohighlight">\(b_2^L\)</span> are the Lagrangian bias parameters.</p>
 <p>Associated bias functions are available for each mass function, and more can be user-defined. See the class description for details of the loaded parametrizations.</p>
 <p>Parameters:
 - m_h: Mass in <span class="math notranslate nohighlight">\(h^{-1}M_\odot\)</span> units.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-PerturbedHalos.HaloPhysics">
+<span id="halo-physics"></span><h2>Halo Physics<a class="headerlink" href="#module-PerturbedHalos.HaloPhysics" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="PerturbedHalos.HaloPhysics.HaloPhysics">
+<em class="property">class </em><code class="descclassname">PerturbedHalos.HaloPhysics.</code><code class="descname">HaloPhysics</code><span class="sig-paren">(</span><em>cosmology</em>, <em>mass_function</em>, <em>concentration_name='Duffy'</em>, <em>profile_name='NFW'</em>, <em>**hyperparams</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/HaloPhysics.html#HaloPhysics"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.HaloPhysics.HaloPhysics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class to hold halo model quantities and relevant integrals.</p>
+<p>Implemented Concentration Functions:</p>
+<ul class="simple">
+<li><strong>Duffy</strong>: Duffy et al. (2008) for virial-density haloes (second section in Table 1)</li>
+</ul>
+<p>Implemented Halo Profiles:</p>
+<ul class="simple">
+<li><strong>NFW</strong>: Navarro, Frenk &amp; White (1997) universal halo profile. We use the virial collapse overdensity from Bryan &amp; Norman 1998 to construct this.</li>
+</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>cosmology</strong> (<a class="reference internal" href="#PerturbedHalos.Cosmology.Cosmology" title="PerturbedHalos.Cosmology.Cosmology"><em>Cosmology</em></a>) – Instance of the Cosmology class containing relevant cosmology and functions.</li>
+<li><strong>mass_function</strong> (<a class="reference internal" href="#PerturbedHalos.MassFunction.MassFunction" title="PerturbedHalos.MassFunction.MassFunction"><em>MassFunction</em></a>) – Instance of the MassFunction class, containing the mass function and bias</li>
+<li><strong>concentration_name</strong> (<em>str</em>) – Concentration parametrization to use (see above), default: ‘Duffy’</li>
+<li><strong>profile_name</strong> (<em>str</em>) – Halo profile parametrization to use (see above), default: ‘NFW’</li>
+<li><strong>hyperparams</strong> (<em>kwargs</em>) – Any additional parameters to pass to the class (see below).</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Optional Args:</dt>
+<dd>logM_min (float): Minimum mass in <span class="math notranslate nohighlight">\(\log_{10}(M/M_{\odot})\)</span>, default: 6
+logM_max (float): Maximum mass in <span class="math notranslate nohighlight">\(\log_{10}(M/M_{\odot})\)</span>, default: 17
+npoints (int): Number of sampling points for sigma(M) interpolation, default: 1e5
+tinker_overdensity (int): (Only for the Tinker mass function): spherical overdensity defining halos, default: 200</dd>
+</dl>
+<dl class="method">
+<dt id="PerturbedHalos.HaloPhysics.HaloPhysics.halo_concentration">
+<code class="descname">halo_concentration</code><span class="sig-paren">(</span><em>m_h</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/HaloPhysics.html#HaloPhysics.halo_concentration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.HaloPhysics.HaloPhysics.halo_concentration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the halo concentration <span class="math notranslate nohighlight">\(c = r_\mathrm{virial} / r_\mathrm{scale}\)</span>.</p>
+<p>For details of the available concentration parametrizations, see the class description.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>m_h</strong> (<em>float</em>) – Mass in <span class="math notranslate nohighlight">\(h^{-1}M_{\odot}\)</span> units.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PerturbedHalos.HaloPhysics.HaloPhysics.halo_profile">
+<code class="descname">halo_profile</code><span class="sig-paren">(</span><em>m_h</em>, <em>k_phys</em>, <em>norm_only=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/HaloPhysics.html#HaloPhysics.halo_profile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.HaloPhysics.HaloPhysics.halo_profile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the halo profile function in Fourier space; <span class="math notranslate nohighlight">\(\rho(k|m) = \frac{m}{\bar{\rho_M}}u(k|m)\)</span>
+where <span class="math notranslate nohighlight">\(\bar{\rho}_M\)</span> is the background matter density and <span class="math notranslate nohighlight">\(u(k|m)\)</span> is the halo profile.</p>
+<p>We assume halos have a virial collapse overdensity here, based on the parametrization of Bryan &amp; Norman 1998.</p>
+<p>For details of the available profile parametrizations, see the class description.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>m_h</strong> (<em>float</em>) – Mass in <span class="math notranslate nohighlight">\(h^{-1}M_{\odot}\)</span> units.</li>
+<li><strong>k_phys</strong> (<em>float</em>) – Physical wavenumber in 1/Mpc units.</li>
+<li><strong>norm_only</strong> (<em>bool</em>) – Boolean, if set, just return the normalization factor <span class="math notranslate nohighlight">\(\frac{m}{\bar{\rho}_M}\)</span>, default: False</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Halo profile <span class="math notranslate nohighlight">\(\rho(k|m)\)</span> or <span class="math notranslate nohighlight">\(\frac{m}{\bar{\rho}_M}\)</span>, if the norm_only parameter is set.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">float</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd></dl>

@@ -62,14 +62,14 @@ class MassFunction:
 
         .. math::
 
-            dn/d\log_{10}M = f(\sigma(M))\\bar{\\rho}_M/M d\ln\sigma(M)/d\log_{10}(M)
+            dn/d\log_{10}M = f(\sigma(M))\\frac{\\bar{\\rho}_M}{M} \\frac{d\ln\sigma(M)}{d\log_{10}(M)}
 
         where :math:`f` is the universal mass function, :math:`\\bar{\\rho}_M` is the mean matter density at redshift zero and :math:`\sigma^2(M)` is the overdensity variance on spheres with a radius given by the Lagrangian radius for mass :math:`M`.
 
         For details of the available mass function parametrizations, see the class description.
 
         Note:
-            We return the mass function :math:`dn/d\log_{10}(M)` for later computational ease.
+            For efficiency, we return the mass function :math:`\\frac{dn}{d\log_{10}(M)}` rather than the standard form :math:`\\frac{dn}{dM}`.
 
         Args:
             m_h (float): Mass in :math:`h^{-1}M_\odot` units.

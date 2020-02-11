@@ -81,7 +81,7 @@
             
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../test.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">Python API</a></li>
 </ul>
 
             
@@ -150,7 +150,7 @@
 <span class="kn">from</span> <span class="nn">scipy.special</span> <span class="kn">import</span> <span class="n">gamma</span> <span class="k">as</span> <span class="n">gamma_fn</span>
 <span class="kn">from</span> <span class="nn">scipy.interpolate</span> <span class="kn">import</span> <span class="n">interp1d</span>
 
-<div class="viewcode-block" id="MassFunction"><a class="viewcode-back" href="../../test.html#PerturbedHalos.MassFunction.MassFunction">[docs]</a><span class="k">class</span> <span class="nc">MassFunction</span><span class="p">:</span>
+<div class="viewcode-block" id="MassFunction"><a class="viewcode-back" href="../../api.html#PerturbedHalos.MassFunction.MassFunction">[docs]</a><span class="k">class</span> <span class="nc">MassFunction</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Class to hold a mass function for halos and associated bias.</span>
 
 <span class="sd">    Implemented Mass Functions:</span>
@@ -203,20 +203,20 @@
         <span class="c1"># Define mass-function specific parameters:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_load_mass_function_parameters</span><span class="p">(</span><span class="n">mass_dict</span><span class="p">)</span>
 
-<div class="viewcode-block" id="MassFunction.mass_function"><a class="viewcode-back" href="../../test.html#PerturbedHalos.MassFunction.MassFunction.mass_function">[docs]</a>    <span class="k">def</span> <span class="nf">mass_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">m_h</span><span class="p">):</span>
+<div class="viewcode-block" id="MassFunction.mass_function"><a class="viewcode-back" href="../../api.html#PerturbedHalos.MassFunction.MassFunction.mass_function">[docs]</a>    <span class="k">def</span> <span class="nf">mass_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">m_h</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the mass function, equal to the number density of halos per unit logarithmic mass interval. This assumes the existence of a universal mass function, with</span>
 
 <span class="sd">        .. math::</span>
 
-<span class="sd">            dn/d\log_{10}M = f(\sigma(M))\\bar{\\rho}_M/M d\ln\sigma(M)/d\log_{10}(M)</span>
+<span class="sd">            dn/d\log_{10}M = f(\sigma(M))\\frac{\\bar{\\rho}_M}{M} \\frac{d\ln\sigma(M)}{d\log_{10}(M)}</span>
 
 <span class="sd">        where :math:`f` is the universal mass function, :math:`\\bar{\\rho}_M` is the mean matter density at redshift zero and :math:`\sigma^2(M)` is the overdensity variance on spheres with a radius given by the Lagrangian radius for mass :math:`M`.</span>
 
 <span class="sd">        For details of the available mass function parametrizations, see the class description.</span>
 
 <span class="sd">        Note:</span>
-<span class="sd">            We return the mass function :math:`dn/d\log_{10}(M)` for later computational ease.</span>
+<span class="sd">            For efficiency, we return the mass function :math:`\\frac{dn}{d\log_{10}(M)}` rather than the standard form :math:`\\frac{dn}{dM}`.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            m_h (float): Mass in :math:`h^{-1}M_\odot` units.</span>
@@ -251,7 +251,7 @@
         <span class="n">mf</span> <span class="o">=</span> <span class="n">f</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">cosmology</span><span class="o">.</span><span class="n">rhoM</span> <span class="o">*</span> <span class="n">dlns_dlogM</span> <span class="o">/</span> <span class="n">m</span>
         <span class="k">return</span> <span class="n">mf</span></div>
 
-<div class="viewcode-block" id="MassFunction.linear_halo_bias"><a class="viewcode-back" href="../../test.html#PerturbedHalos.MassFunction.MassFunction.linear_halo_bias">[docs]</a>    <span class="k">def</span> <span class="nf">linear_halo_bias</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">m_h</span><span class="p">):</span>
+<div class="viewcode-block" id="MassFunction.linear_halo_bias"><a class="viewcode-back" href="../../api.html#PerturbedHalos.MassFunction.MassFunction.linear_halo_bias">[docs]</a>    <span class="k">def</span> <span class="nf">linear_halo_bias</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">m_h</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute the linear halo bias, from the peak background split.</span>
 
@@ -282,8 +282,8 @@
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">mass_function_name</span><span class="o">==</span><span class="s1">&#39;Bhattacharya&#39;</span><span class="p">:</span>
             <span class="k">return</span> <span class="mf">1.</span> <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">a0</span><span class="o">*</span><span class="n">nu</span><span class="o">**</span><span class="mf">2.</span><span class="o">+</span><span class="mf">2.</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">p0</span><span class="o">/</span><span class="p">(</span><span class="mf">1.</span><span class="o">+</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">a0</span><span class="o">*</span><span class="n">nu</span><span class="o">**</span><span class="mf">2.</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">p0</span><span class="p">))</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">q0</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">delta_c</span></div>
 
-<div class="viewcode-block" id="MassFunction.second_order_bias"><a class="viewcode-back" href="../../test.html#PerturbedHalos.MassFunction.MassFunction.second_order_bias">[docs]</a>    <span class="k">def</span> <span class="nf">second_order_bias</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">m_h</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Compute the second order Eulerian bias, defined as :math:`4b_1^L/21 + b_2^L/2` where :math:`b_1^L` and :math:`b_2^L` are the Lagrangian bias parameters.</span>
+<div class="viewcode-block" id="MassFunction.second_order_bias"><a class="viewcode-back" href="../../api.html#PerturbedHalos.MassFunction.MassFunction.second_order_bias">[docs]</a>    <span class="k">def</span> <span class="nf">second_order_bias</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">m_h</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Compute the second order Eulerian bias, defined as :math:`\\frac{4}{21}b_1^L + \\frac{1}{2}b_2^L` where :math:`b_1^L` and :math:`b_2^L` are the Lagrangian bias parameters.</span>
 
 <span class="sd">        Associated bias functions are available for each mass function, and more can be user-defined. See the class description for details of the loaded parametrizations.</span>
 
