@@ -165,12 +165,12 @@
 <span class="sd">    For the :math:`I_1^{1,0} = I_1^1` integral, the integral must be corrected to ensure that we recover the bias consistency relation :math:`I_1^1 \\rightarrow 1` as :math:`k \\rightarrow 0`.</span>
 
 <span class="sd">    This requires an infinite mass range, so we instead approximate;</span>
-<span class="sd">    </span>
+
 <span class="sd">    .. math::</span>
 
-<span class="sd">        I_1^1(k)_{\mathrm{corrected}} = I_1^1(k) + ( 1 - I_1^1(0) ) u(k|m_min) / u(k|0)</span>
+<span class="sd">        I_1^1(k)_{\mathrm{corrected}} = I_1^1(k) + ( 1 - I_1^1(0) ) \\frac{u(k|m_min)}{u(k|0)}</span>
 
-<span class="sd">    for normalized halo profile :math:`u`.</span>
+<span class="sd">    for normalized halo profile :math:`u(k|m)`.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        cosmology (Cosmology): Instance of the Cosmology class containing relevant cosmology and functions.</span>
@@ -280,7 +280,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">I_11</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="MassIntegrals.compute_I_111"><a class="viewcode-back" href="../../api.html#PerturbedHalos.MassIntegrals.MassIntegrals.compute_I_111">[docs]</a>    <span class="k">def</span> <span class="nf">compute_I_111</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Compute the :math:`I_1^{1,1}` integral, if not already computed.</span>
+        <span class="sd">&quot;&quot;&quot;Compute the :math:`I_1^{1,1}(k)` integral, if not already computed.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            float: Array of :math:`I_1^{1,1}` values for each k.</span>
@@ -313,7 +313,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">I_12</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="MassIntegrals.compute_I_20"><a class="viewcode-back" href="../../api.html#PerturbedHalos.MassIntegrals.MassIntegrals.compute_I_20">[docs]</a>    <span class="k">def</span> <span class="nf">compute_I_20</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Compute the :math:`I_2^0` integral, if not already computed. Note that we assume both k-vectors are the same here.</span>
+        <span class="sd">&quot;&quot;&quot;Compute the :math:`I_2^0(k,k)` integral, if not already computed. Note that we assume both k-vectors are the same here.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            float: Array of :math:`I_2^0` values for each k.</span>
@@ -323,7 +323,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">I_20</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="MassIntegrals.compute_I_21"><a class="viewcode-back" href="../../api.html#PerturbedHalos.MassIntegrals.MassIntegrals.compute_I_21">[docs]</a>    <span class="k">def</span> <span class="nf">compute_I_21</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Compute the :math:`I_2^1` integral, if not already computed. Note that we assume both k-vectors are the same here.</span>
+        <span class="sd">&quot;&quot;&quot;Compute the :math:`I_2^1(k,k)` integral, if not already computed. Note that we assume both k-vectors are the same here.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            float: Array of :math:`I_2^1` values for each k.</span>

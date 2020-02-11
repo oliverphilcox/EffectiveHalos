@@ -18,12 +18,12 @@ class MassIntegrals:
     For the :math:`I_1^{1,0} = I_1^1` integral, the integral must be corrected to ensure that we recover the bias consistency relation :math:`I_1^1 \\rightarrow 1` as :math:`k \\rightarrow 0`.
 
     This requires an infinite mass range, so we instead approximate;
-    
+
     .. math::
 
-        I_1^1(k)_{\mathrm{corrected}} = I_1^1(k) + ( 1 - I_1^1(0) ) u(k|m_min) / u(k|0)
+        I_1^1(k)_{\mathrm{corrected}} = I_1^1(k) + ( 1 - I_1^1(0) ) \\frac{u(k|m_min)}{u(k|0)}
 
-    for normalized halo profile :math:`u`.
+    for normalized halo profile :math:`u(k|m)`.
 
     Args:
         cosmology (Cosmology): Instance of the Cosmology class containing relevant cosmology and functions.
@@ -133,7 +133,7 @@ class MassIntegrals:
         return self.I_11.copy()
 
     def compute_I_111(self):
-        """Compute the :math:`I_1^{1,1}` integral, if not already computed.
+        """Compute the :math:`I_1^{1,1}(k)` integral, if not already computed.
 
         Returns:
             float: Array of :math:`I_1^{1,1}` values for each k.
@@ -166,7 +166,7 @@ class MassIntegrals:
         return self.I_12.copy()
 
     def compute_I_20(self):
-        """Compute the :math:`I_2^0` integral, if not already computed. Note that we assume both k-vectors are the same here.
+        """Compute the :math:`I_2^0(k,k)` integral, if not already computed. Note that we assume both k-vectors are the same here.
 
         Returns:
             float: Array of :math:`I_2^0` values for each k.
@@ -176,7 +176,7 @@ class MassIntegrals:
         return self.I_20.copy()
 
     def compute_I_21(self):
-        """Compute the :math:`I_2^1` integral, if not already computed. Note that we assume both k-vectors are the same here.
+        """Compute the :math:`I_2^1(k,k)` integral, if not already computed. Note that we assume both k-vectors are the same here.
 
         Returns:
             float: Array of :math:`I_2^1` values for each k.

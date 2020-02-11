@@ -10,9 +10,9 @@ class CountsCovariance:
 
     .. math::
 
-        \mathrm{cov}_\mathrm{no SSC}(N_i, P(k)) = I_1^1(k) [ 2 iJ_1^1(k) P_{NL}(k) W^2(kR) + ... ] + iJ_2^0(k,k)
+        \mathrm{cov}_\mathrm{no\,SSC}(N_i, P(k)) = I_1^1(k) [ 2 {}_iJ_1^1(k) P_{NL}(k) W^2(kR) + ... ] + {}_iJ_2^0(k,k)
 
-    where :math:`I_p^q` and :math:`iJ_p^q` are mass function integrals defined in the MassIntegrals class for mass bin i, :math:`P_{NL}` is the 1-loop non-linear power spectrum from Effective Field Theory and :math:`W(kR)` is a smoothing window on scale R. The ellipses refer to 1-loop bispectrum and trispectrum terms which are usually ignored.
+    where :math:`I_p^q` and :math:`{}_iJ_p^q` are mass function integrals defined in the MassIntegrals class for mass bin i, :math:`P_{NL}` is the 1-loop non-linear power spectrum from Effective Field Theory and :math:`W(kR)` is a smoothing window on scale R. The ellipses refer to 1-loop bispectrum and trispectrum terms which are usually ignored.
 
     :math:`N_i` is defined as the number of halos in a mass bin defined by [:math:`m_{low,i}`, :math:`m_{high,i}`]
 
@@ -20,7 +20,7 @@ class CountsCovariance:
 
     .. math::
 
-        \mathrm{cov}_\mathrm{SSC}(N_i, P(k)) = V \sigma^2(V) iJ_0^1 [ I_1^1(k) I_1^{1,1}(k) W^2(kR)  + I_2^1(k) ]
+        \mathrm{cov}_\mathrm{SSC}(N_i, P(k)) = V \sigma^2(V) {}_iJ_0^1 [ I_1^1(k) I_1^{1,1}(k) W^2(kR)  + I_2^1(k) ]
 
     where :math:`\sigma^2(V)` is the variance of the linear density field on scales with volume V.
 
@@ -236,7 +236,7 @@ class CountsCovariance:
 
     def _load_mass_integrals(self):
         """Load the instances of the MassIntegrals class for each mass bin.
-        These will be used to compute the :math:`iJ_p^q` type integrals.
+        These will be used to compute the :math:`{}_iJ_p^q` type integrals.
 
         This is an empty function if these have already been computed.
         """

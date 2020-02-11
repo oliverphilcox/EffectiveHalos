@@ -78,7 +78,7 @@ class HaloPower:
 
         .. math::
 
-            P_\mathrm{counterterm}(k;c_s^2) = - c_s^2 * \\frac{k^2 }{(1 + k^2)} P_\mathrm{lin}(k)
+            P_\mathrm{counterterm}(k;c_s^2) = - c_s^2 \\frac{k^2 }{(1 + k^2)} P_\mathrm{lin}(k)
 
         is the counterterm, and IR resummation is applied to all spectra.
 
@@ -189,7 +189,7 @@ class HaloPower:
 
         .. math::
 
-            P_\mathrm{lin, IR} = P_\mathrm{lin, nw}(k) + P_\mathrm{lin, w}e^{-k^2\Sigma^2}
+            P_\mathrm{lin, IR}(k) = P_\mathrm{lin, nw}(k) + P_\mathrm{lin, w}(k)e^{-k^2\Sigma^2}
 
         where 'nw' and 'w' refer to the no-wiggle and wiggle parts of the linear power spectrum and :math:`\Sigma^2` is the BAO damping scale (computed in the _prepare_IR_resummation function)
 
@@ -222,12 +222,12 @@ class HaloPower:
 
         .. math::
 
-            P_\mathrm{lin-plus-1-loop, IR} = P_\mathrm{lin, nw}(k) + P_\mathrm{1-loop, nw}(k) + e^{-k^2\Sigma^2} [ P_\mathrm{lin, w}(k) (1 + k^2\Sigma^2) + P_\mathrm{1-loop,w}(k) ]
+            P_\mathrm{lin+1, IR}(k) = P_\mathrm{lin, nw}(k) + P_\mathrm{1-loop, nw}(k) + e^{-k^2\Sigma^2} [ P_\mathrm{lin, w}(k) (1 + k^2\Sigma^2) + P_\mathrm{1-loop,w}(k) ]
 
         where 'nw' and 'w' refer to the no-wiggle and wiggle parts of the linear / 1-loop power spectrum and :math:`Sigma^2` is the BAO damping scale (computed in the _prepare_IR_resummation function)
 
         Returns:
-            float: Vector of IR-resummed linear-plus-one-loop power :math:`P_\mathrm{lin-plus-1-loop,IR}(k)` for the input k-vector.
+            float: Vector of IR-resummed linear-plus-one-loop power :math:`P_\mathrm{lin+1,IR}(k)` for the input k-vector.
         """
 
         if not hasattr(self,'resummed_one_loop_power'):

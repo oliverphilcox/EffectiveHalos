@@ -157,9 +157,9 @@
 
 <span class="sd">    .. math::</span>
 
-<span class="sd">        \mathrm{cov}_\mathrm{no SSC}(N_i, P(k)) = I_1^1(k) [ 2 iJ_1^1(k) P_{NL}(k) W^2(kR) + ... ] + iJ_2^0(k,k)</span>
+<span class="sd">        \mathrm{cov}_\mathrm{no\,SSC}(N_i, P(k)) = I_1^1(k) [ 2 {}_iJ_1^1(k) P_{NL}(k) W^2(kR) + ... ] + {}_iJ_2^0(k,k)</span>
 
-<span class="sd">    where :math:`I_p^q` and :math:`iJ_p^q` are mass function integrals defined in the MassIntegrals class for mass bin i, :math:`P_{NL}` is the 1-loop non-linear power spectrum from Effective Field Theory and :math:`W(kR)` is a smoothing window on scale R. The ellipses refer to 1-loop bispectrum and trispectrum terms which are usually ignored.</span>
+<span class="sd">    where :math:`I_p^q` and :math:`{}_iJ_p^q` are mass function integrals defined in the MassIntegrals class for mass bin i, :math:`P_{NL}` is the 1-loop non-linear power spectrum from Effective Field Theory and :math:`W(kR)` is a smoothing window on scale R. The ellipses refer to 1-loop bispectrum and trispectrum terms which are usually ignored.</span>
 
 <span class="sd">    :math:`N_i` is defined as the number of halos in a mass bin defined by [:math:`m_{low,i}`, :math:`m_{high,i}`]</span>
 
@@ -167,7 +167,7 @@
 
 <span class="sd">    .. math::</span>
 
-<span class="sd">        \mathrm{cov}_\mathrm{SSC}(N_i, P(k)) = V \sigma^2(V) iJ_0^1 [ I_1^1(k) I_1^{1,1}(k) W^2(kR)  + I_2^1(k) ]</span>
+<span class="sd">        \mathrm{cov}_\mathrm{SSC}(N_i, P(k)) = V \sigma^2(V) {}_iJ_0^1 [ I_1^1(k) I_1^{1,1}(k) W^2(kR)  + I_2^1(k) ]</span>
 
 <span class="sd">    where :math:`\sigma^2(V)` is the variance of the linear density field on scales with volume V.</span>
 
@@ -383,7 +383,7 @@
 
     <span class="k">def</span> <span class="nf">_load_mass_integrals</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Load the instances of the MassIntegrals class for each mass bin.</span>
-<span class="sd">        These will be used to compute the :math:`iJ_p^q` type integrals.</span>
+<span class="sd">        These will be used to compute the :math:`{}_iJ_p^q` type integrals.</span>
 
 <span class="sd">        This is an empty function if these have already been computed.</span>
 <span class="sd">        &quot;&quot;&quot;</span>

@@ -225,7 +225,7 @@
 
 <span class="sd">        .. math::</span>
 
-<span class="sd">            P_\mathrm{counterterm}(k;c_s^2) = - c_s^2 * \\frac{k^2 }{(1 + k^2)} P_\mathrm{lin}(k)</span>
+<span class="sd">            P_\mathrm{counterterm}(k;c_s^2) = - c_s^2 \\frac{k^2 }{(1 + k^2)} P_\mathrm{lin}(k)</span>
 
 <span class="sd">        is the counterterm, and IR resummation is applied to all spectra.</span>
 
@@ -336,7 +336,7 @@
 
 <span class="sd">        .. math::</span>
 
-<span class="sd">            P_\mathrm{lin, IR} = P_\mathrm{lin, nw}(k) + P_\mathrm{lin, w}e^{-k^2\Sigma^2}</span>
+<span class="sd">            P_\mathrm{lin, IR}(k) = P_\mathrm{lin, nw}(k) + P_\mathrm{lin, w}(k)e^{-k^2\Sigma^2}</span>
 
 <span class="sd">        where &#39;nw&#39; and &#39;w&#39; refer to the no-wiggle and wiggle parts of the linear power spectrum and :math:`\Sigma^2` is the BAO damping scale (computed in the _prepare_IR_resummation function)</span>
 
@@ -369,12 +369,12 @@
 
 <span class="sd">        .. math::</span>
 
-<span class="sd">            P_\mathrm{lin-plus-1-loop, IR} = P_\mathrm{lin, nw}(k) + P_\mathrm{1-loop, nw}(k) + e^{-k^2\Sigma^2} [ P_\mathrm{lin, w}(k) (1 + k^2\Sigma^2) + P_\mathrm{1-loop,w}(k) ]</span>
+<span class="sd">            P_\mathrm{lin+1, IR}(k) = P_\mathrm{lin, nw}(k) + P_\mathrm{1-loop, nw}(k) + e^{-k^2\Sigma^2} [ P_\mathrm{lin, w}(k) (1 + k^2\Sigma^2) + P_\mathrm{1-loop,w}(k) ]</span>
 
 <span class="sd">        where &#39;nw&#39; and &#39;w&#39; refer to the no-wiggle and wiggle parts of the linear / 1-loop power spectrum and :math:`Sigma^2` is the BAO damping scale (computed in the _prepare_IR_resummation function)</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            float: Vector of IR-resummed linear-plus-one-loop power :math:`P_\mathrm{lin-plus-1-loop,IR}(k)` for the input k-vector.</span>
+<span class="sd">            float: Vector of IR-resummed linear-plus-one-loop power :math:`P_\mathrm{lin+1,IR}(k)` for the input k-vector.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="s1">&#39;resummed_one_loop_power&#39;</span><span class="p">):</span>

@@ -459,8 +459,8 @@ where <span class="math notranslate nohighlight">\(\bar{\rho}_M\)</span> is the 
 <p>For the <span class="math notranslate nohighlight">\(I_1^{1,0} = I_1^1\)</span> integral, the integral must be corrected to ensure that we recover the bias consistency relation <span class="math notranslate nohighlight">\(I_1^1 \rightarrow 1\)</span> as <span class="math notranslate nohighlight">\(k \rightarrow 0\)</span>.</p>
 <p>This requires an infinite mass range, so we instead approximate;</p>
 <div class="math notranslate nohighlight">
-\[I_1^1(k)_{\mathrm{corrected}} = I_1^1(k) + ( 1 - I_1^1(0) ) u(k|m_min) / u(k|0)\]</div>
-<p>for normalized halo profile <span class="math notranslate nohighlight">\(u\)</span>.</p>
+\[I_1^1(k)_{\mathrm{corrected}} = I_1^1(k) + ( 1 - I_1^1(0) ) \frac{u(k|m_min)}{u(k|0)}\]</div>
+<p>for normalized halo profile <span class="math notranslate nohighlight">\(u(k|m)\)</span>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -538,7 +538,7 @@ where <span class="math notranslate nohighlight">\(\bar{\rho}_M\)</span> is the 
 <dl class="method">
 <dt id="PerturbedHalos.MassIntegrals.MassIntegrals.compute_I_111">
 <code class="descname">compute_I_111</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/MassIntegrals.html#MassIntegrals.compute_I_111"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.MassIntegrals.MassIntegrals.compute_I_111" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute the <span class="math notranslate nohighlight">\(I_1^{1,1}\)</span> integral, if not already computed.</p>
+<dd><p>Compute the <span class="math notranslate nohighlight">\(I_1^{1,1}(k)\)</span> integral, if not already computed.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -574,7 +574,7 @@ where <span class="math notranslate nohighlight">\(\bar{\rho}_M\)</span> is the 
 <dl class="method">
 <dt id="PerturbedHalos.MassIntegrals.MassIntegrals.compute_I_20">
 <code class="descname">compute_I_20</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/MassIntegrals.html#MassIntegrals.compute_I_20"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.MassIntegrals.MassIntegrals.compute_I_20" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute the <span class="math notranslate nohighlight">\(I_2^0\)</span> integral, if not already computed. Note that we assume both k-vectors are the same here.</p>
+<dd><p>Compute the <span class="math notranslate nohighlight">\(I_2^0(k,k)\)</span> integral, if not already computed. Note that we assume both k-vectors are the same here.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -590,7 +590,7 @@ where <span class="math notranslate nohighlight">\(\bar{\rho}_M\)</span> is the 
 <dl class="method">
 <dt id="PerturbedHalos.MassIntegrals.MassIntegrals.compute_I_21">
 <code class="descname">compute_I_21</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/MassIntegrals.html#MassIntegrals.compute_I_21"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.MassIntegrals.MassIntegrals.compute_I_21" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute the <span class="math notranslate nohighlight">\(I_2^1\)</span> integral, if not already computed. Note that we assume both k-vectors are the same here.</p>
+<dd><p>Compute the <span class="math notranslate nohighlight">\(I_2^1(k,k)\)</span> integral, if not already computed. Note that we assume both k-vectors are the same here.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -657,7 +657,7 @@ where <span class="math notranslate nohighlight">\(\bar{\rho}_M\)</span> is the 
 <dd><p>Compute the IR-resummed linear power spectrum, using the linear power spectrum in the Cosmology class.</p>
 <p>The output power is defined by</p>
 <div class="math notranslate nohighlight">
-\[P_\mathrm{lin, IR} = P_\mathrm{lin, nw}(k) + P_\mathrm{lin, w}e^{-k^2\Sigma^2}\]</div>
+\[P_\mathrm{lin, IR}(k) = P_\mathrm{lin, nw}(k) + P_\mathrm{lin, w}(k)e^{-k^2\Sigma^2}\]</div>
 <p>where ‘nw’ and ‘w’ refer to the no-wiggle and wiggle parts of the linear power spectrum and <span class="math notranslate nohighlight">\(\Sigma^2\)</span> is the BAO damping scale (computed in the _prepare_IR_resummation function)</p>
 <p>If already computed, the IR resummed linear power is simply returned.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -678,13 +678,13 @@ where <span class="math notranslate nohighlight">\(\bar{\rho}_M\)</span> is the 
 <dd><p>Compute the IR-resummed linear-plus-one-loop power spectrum, using the linear power spectrum in the Cosmology class.</p>
 <p>The output power is defined by</p>
 <div class="math notranslate nohighlight">
-\[P_\mathrm{lin-plus-1-loop, IR} = P_\mathrm{lin, nw}(k) + P_\mathrm{1-loop, nw}(k) + e^{-k^2\Sigma^2} [ P_\mathrm{lin, w}(k) (1 + k^2\Sigma^2) + P_\mathrm{1-loop,w}(k) ]\]</div>
+\[P_\mathrm{lin+1, IR}(k) = P_\mathrm{lin, nw}(k) + P_\mathrm{1-loop, nw}(k) + e^{-k^2\Sigma^2} [ P_\mathrm{lin, w}(k) (1 + k^2\Sigma^2) + P_\mathrm{1-loop,w}(k) ]\]</div>
 <p>where ‘nw’ and ‘w’ refer to the no-wiggle and wiggle parts of the linear / 1-loop power spectrum and <span class="math notranslate nohighlight">\(Sigma^2\)</span> is the BAO damping scale (computed in the _prepare_IR_resummation function)</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Vector of IR-resummed linear-plus-one-loop power <span class="math notranslate nohighlight">\(P_\mathrm{lin-plus-1-loop,IR}(k)\)</span> for the input k-vector.</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Vector of IR-resummed linear-plus-one-loop power <span class="math notranslate nohighlight">\(P_\mathrm{lin+1,IR}(k)\)</span> for the input k-vector.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">float</td>
 </tr>
@@ -736,7 +736,7 @@ where <span class="math notranslate nohighlight">\(\bar{\rho}_M\)</span> is the 
 \[P_\mathrm{NL}(k, R, c_s^2) = [P_\mathrm{lin}(k) + P_\mathrm{1-loop}(k) + P_\mathrm{counterterm}(k;c_s^2)] W(kR)\]</div>
 <p>where</p>
 <div class="math notranslate nohighlight">
-\[P_\mathrm{counterterm}(k;c_s^2) = - c_s^2 * \frac{k^2 }{(1 + k^2)} P_\mathrm{lin}(k)\]</div>
+\[P_\mathrm{counterterm}(k;c_s^2) = - c_s^2 \frac{k^2 }{(1 + k^2)} P_\mathrm{lin}(k)\]</div>
 <p>is the counterterm, and IR resummation is applied to all spectra.</p>
 <p>This computes the relevant integrals if they haven’t already been computed. The function returns <span class="math notranslate nohighlight">\(P_\mathrm{NL}\)</span> given smoothing scale R and effective squared sound-speed <span class="math notranslate nohighlight">\(c_s^2\)</span>.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -779,12 +779,12 @@ where <span class="math notranslate nohighlight">\(\bar{\rho}_M\)</span> is the 
 <dd><p>Class to compute the covariance of cluster counts and the non-linear power spectrum using the halo model of Philcox et al. 2020</p>
 <p>The model covariance is defined as</p>
 <div class="math notranslate nohighlight">
-\[\mathrm{cov}_\mathrm{no SSC}(N_i, P(k)) = I_1^1(k) [ 2 iJ_1^1(k) P_{NL}(k) W^2(kR) + ... ] + iJ_2^0(k,k)\]</div>
-<p>where <span class="math notranslate nohighlight">\(I_p^q\)</span> and <span class="math notranslate nohighlight">\(iJ_p^q\)</span> are mass function integrals defined in the MassIntegrals class for mass bin i, <span class="math notranslate nohighlight">\(P_{NL}\)</span> is the 1-loop non-linear power spectrum from Effective Field Theory and <span class="math notranslate nohighlight">\(W(kR)\)</span> is a smoothing window on scale R. The ellipses refer to 1-loop bispectrum and trispectrum terms which are usually ignored.</p>
+\[\mathrm{cov}_\mathrm{no\,SSC}(N_i, P(k)) = I_1^1(k) [ 2 {}_iJ_1^1(k) P_{NL}(k) W^2(kR) + ... ] + {}_iJ_2^0(k,k)\]</div>
+<p>where <span class="math notranslate nohighlight">\(I_p^q\)</span> and <span class="math notranslate nohighlight">\({}_iJ_p^q\)</span> are mass function integrals defined in the MassIntegrals class for mass bin i, <span class="math notranslate nohighlight">\(P_{NL}\)</span> is the 1-loop non-linear power spectrum from Effective Field Theory and <span class="math notranslate nohighlight">\(W(kR)\)</span> is a smoothing window on scale R. The ellipses refer to 1-loop bispectrum and trispectrum terms which are usually ignored.</p>
 <p><span class="math notranslate nohighlight">\(N_i\)</span> is defined as the number of halos in a mass bin defined by [<span class="math notranslate nohighlight">\(m_{low,i}\)</span>, <span class="math notranslate nohighlight">\(m_{high,i}\)</span>]</p>
 <p>There is an additional contribution from super-sample-covariance:</p>
 <div class="math notranslate nohighlight">
-\[\mathrm{cov}_\mathrm{SSC}(N_i, P(k)) = V \sigma^2(V) iJ_0^1 [ I_1^1(k) I_1^{1,1}(k) W^2(kR)  + I_2^1(k) ]\]</div>
+\[\mathrm{cov}_\mathrm{SSC}(N_i, P(k)) = V \sigma^2(V) {}_iJ_0^1 [ I_1^1(k) I_1^{1,1}(k) W^2(kR)  + I_2^1(k) ]\]</div>
 <p>where <span class="math notranslate nohighlight">\(\sigma^2(V)\)</span> is the variance of the linear density field on scales with volume V.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
