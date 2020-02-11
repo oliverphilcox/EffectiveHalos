@@ -188,12 +188,20 @@ class Cosmology:
             self._dlns_dlogM_int_func = interp1d(mid_logM,all_diff)
 
     def _h_over_h0(self):
-        """Return the value of H(z)/H(0) at the class redshift"""
+        """Return the value of H(z)/H(0) at the class redshift
+
+        Returns:
+            float: H(z)/H(0)
+        """
         Ea = np.sqrt((self.cosmo.Omega0_cdm()+self.cosmo.Omega_b()+self.cosmo.Omega_Lambda()*pow(self.a,-3)+self.cosmo.Omega0_k()*self.a)/pow(self.a,3))
         return Ea
 
     def _Omega_m(self):
-        """Return the value of Omega_m(z) at the class redshift"""
+        """Return the value of Omega_m(z) at the class redshift
+
+        Returns:
+        float: Omega_m(z)
+        """
         hnorm = self._h_over_h0()
         output = (self.cosmo.Omega0_cdm()+self.cosmo.Omega_b())/self.a**3/hnorm**2
         return output
