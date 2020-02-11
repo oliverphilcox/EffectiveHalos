@@ -17,5 +17,4 @@ Todo:
    :maxdepth: 2
    :caption: Contents:
 
-   PerturbedHalos
    test

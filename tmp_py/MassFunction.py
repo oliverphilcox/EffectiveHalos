@@ -19,20 +19,20 @@ class MassFunction:
     - 'Bhattacharya': Bhattacharya et al. 2010, eq. 18. Associated to the 'Bhattacharya' mass function.
 
     Methods:
-    - __init__: Initialize the function, specifying the mass function name and any hyperparameters.
-    - mass_function: Return the halo mass function for an input mass, in the form dn/dlog10(m)
-    - linear_halo_bias: Return the first-order bias for a given mass, in Eulerian co-ordinates.
-    - second_order_bias: Return the second-order bias for a given mass, in Eulerian co-ordinates.
+        __init__: Initialize the function, specifying the mass function name and any hyperparameters.
+        mass_function: Return the halo mass function for an input mass, in the form dn/dlog10(m)
+        linear_halo_bias: Return the first-order bias for a given mass, in Eulerian co-ordinates.
+        second_order_bias: Return the second-order bias for a given mass, in Eulerian co-ordinates.
     """
 
     def __init__(self,cosmology,mass_function_name='Crocce',**mass_params):
         """Initialize the class by loading the relevant model parameters.
 
-        Parameters:
-        - cosmology: Instance of the Cosmology class containing relevant cosmological information
-        - mass_function_name: Mass function to use (see above), default: 'Crocce'
-        - mass_params: Any additional parameters to pass to the class. These include:
-            - tinker_overdensity: (Only for the Tinker mass function): spherical overdensity defining halos, default: 200
+        Args:
+            cosmology (Cosmology): Class instance containing relevant cosmological information
+            mass_function_name (str): Mass function to use (see above), default: 'Crocce'
+            mass_param (**kwargs): Any additional parameters to pass to the class. These include:
+                - tinker_overdensity: (Only for the Tinker mass function): spherical overdensity defining halos, default: 200
         """
 
         print('need to specify class attributes + methods in the docstring...')
@@ -67,8 +67,11 @@ class MassFunction:
 
         For details of the available parametrizations, see the class description.
 
-        Parameters:
-        - m_h: Mass in Msun/h units.
+        Args:
+            m_h (float): Mass in Msun/h units.
+
+        Returns:
+            float: Mass function, dn/dlog10(M) in Mpc^-3 units
         """
         m = m_h/self.h # mass in Msun units
 
@@ -99,8 +102,11 @@ class MassFunction:
         Associated bias functions are available for each mass function, and more can be user-defined.
         See the class description for details of the loaded parametrizations.
 
-        Parameters:
-        - m_h: Mass in Msun/h units.
+        Args:
+            m_h (float): Mass in Msun/h units.
+
+        Returns:
+            float: Linear Eulerian halo bias (dimensionless)
         """
 
         m = m_h/self.h
