@@ -66,7 +66,7 @@ class HaloPower:
 
     def non_linear_power(self,cs2,R,pt_type = 'EFT',pade_resum = True, smooth_density = True, IR_resum = True):
         """
-        Compute the non-linear power spectrum to one-loop order, with IR corrections and counterterms. Whilst we recommend including all non-linear effects, these can be optionally removed with the Boolean parameters.
+        Compute the non-linear power spectrum to one-loop order, with IR corrections and counterterms. Whilst we recommend including all non-linear effects, these can be optionally removed with the Boolean parameters. Setting (pt_type='Linear', pade_resum=False, smooth_density=False, IR_resum = False) recovers the standard halo model prediction.
 
         Including all relevant effects, this is defined as
 
@@ -82,9 +82,7 @@ class HaloPower:
 
         is the counterterm, and IR resummation is applied to all spectra.
 
-        This computes the relevant integrals if they haven't already been computed.
-
-        The function returns :math:`P_\mathrm{NL}` given smoothing scale R and effective squared sound-speed :math:`c_s^2`.
+        This computes the relevant integrals if they haven't already been computed. The function returns :math:`P_\mathrm{NL}` given smoothing scale R and effective squared sound-speed :math:`c_s^2`.
 
         Args:
             cs2 (float): Squared-speed-of-sound counterterm in :math:`(h^{-1}Mpc)^2` units. (Unused if pt_type is not "EFT")

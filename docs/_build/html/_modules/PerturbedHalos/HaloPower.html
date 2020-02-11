@@ -213,7 +213,7 @@
 
 <div class="viewcode-block" id="HaloPower.non_linear_power"><a class="viewcode-back" href="../../api.html#PerturbedHalos.HaloPower.HaloPower.non_linear_power">[docs]</a>    <span class="k">def</span> <span class="nf">non_linear_power</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">cs2</span><span class="p">,</span><span class="n">R</span><span class="p">,</span><span class="n">pt_type</span> <span class="o">=</span> <span class="s1">&#39;EFT&#39;</span><span class="p">,</span><span class="n">pade_resum</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">smooth_density</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">IR_resum</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Compute the non-linear power spectrum to one-loop order, with IR corrections and counterterms. Whilst we recommend including all non-linear effects, these can be optionally removed with the Boolean parameters.</span>
+<span class="sd">        Compute the non-linear power spectrum to one-loop order, with IR corrections and counterterms. Whilst we recommend including all non-linear effects, these can be optionally removed with the Boolean parameters. Setting (pt_type=&#39;Linear&#39;, pade_resum=False, smooth_density=False, IR_resum = False) recovers the standard halo model prediction.</span>
 
 <span class="sd">        Including all relevant effects, this is defined as</span>
 
@@ -229,9 +229,7 @@
 
 <span class="sd">        is the counterterm, and IR resummation is applied to all spectra.</span>
 
-<span class="sd">        This computes the relevant integrals if they haven&#39;t already been computed.</span>
-
-<span class="sd">        The function returns :math:`P_\mathrm{NL}` given smoothing scale R and effective squared sound-speed :math:`c_s^2`.</span>
+<span class="sd">        This computes the relevant integrals if they haven&#39;t already been computed. The function returns :math:`P_\mathrm{NL}` given smoothing scale R and effective squared sound-speed :math:`c_s^2`.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            cs2 (float): Squared-speed-of-sound counterterm in :math:`(h^{-1}Mpc)^2` units. (Unused if pt_type is not &quot;EFT&quot;)</span>

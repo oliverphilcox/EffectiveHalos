@@ -32,3 +32,9 @@ Halo Power
 
 .. automodule:: PerturbedHalos.HaloPower
   :members:
+
+Counts Covariance
+------------------
+
+.. automodule:: PerturbedHalos.CountsCovariance
+  :members:

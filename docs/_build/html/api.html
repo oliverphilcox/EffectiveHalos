@@ -88,6 +88,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#module-PerturbedHalos.HaloPhysics">Halo Physics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-PerturbedHalos.MassIntegrals">Mass Integrals</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-PerturbedHalos.HaloPower">Halo Power</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-PerturbedHalos.CountsCovariance">Counts Covariance</a></li>
 </ul>
 </li>
 </ul>
@@ -642,7 +643,7 @@ where <span class="math notranslate nohighlight">\(\bar{\rho}_M\)</span> is the 
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Vector of 1-loop power :math:<a href="#id1"><span class="problematic" id="id2">`</span></a><a href="#id3"><span class="problematic" id="id4">P_</span></a>mathrm{1-loop}`(k) for the input k-vector.</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Vector of 1-loop power :math:<a href="#id1"><span class="problematic" id="id2">`</span></a><a href="#id7"><span class="problematic" id="id8">P_</span></a>mathrm{1-loop}`(k) for the input k-vector.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">float</td>
 </tr>
@@ -729,7 +730,7 @@ where <span class="math notranslate nohighlight">\(\bar{\rho}_M\)</span> is the 
 <dl class="method">
 <dt id="PerturbedHalos.HaloPower.HaloPower.non_linear_power">
 <code class="descname">non_linear_power</code><span class="sig-paren">(</span><em>cs2</em>, <em>R</em>, <em>pt_type='EFT'</em>, <em>pade_resum=True</em>, <em>smooth_density=True</em>, <em>IR_resum=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/HaloPower.html#HaloPower.non_linear_power"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.HaloPower.HaloPower.non_linear_power" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute the non-linear power spectrum to one-loop order, with IR corrections and counterterms. Whilst we recommend including all non-linear effects, these can be optionally removed with the Boolean parameters.</p>
+<dd><p>Compute the non-linear power spectrum to one-loop order, with IR corrections and counterterms. Whilst we recommend including all non-linear effects, these can be optionally removed with the Boolean parameters. Setting (pt_type=’Linear’, pade_resum=False, smooth_density=False, IR_resum = False) recovers the standard halo model prediction.</p>
 <p>Including all relevant effects, this is defined as</p>
 <div class="math notranslate nohighlight">
 \[P_\mathrm{NL}(k, R, c_s^2) = [P_\mathrm{lin}(k) + P_\mathrm{1-loop}(k) + P_\mathrm{counterterm}(k;c_s^2)] W(kR)\]</div>
@@ -737,8 +738,7 @@ where <span class="math notranslate nohighlight">\(\bar{\rho}_M\)</span> is the 
 <div class="math notranslate nohighlight">
 \[P_\mathrm{counterterm}(k;c_s^2) = - c_s^2 * \frac{k^2 }{(1 + k^2)} P_\mathrm{lin}(k)\]</div>
 <p>is the counterterm, and IR resummation is applied to all spectra.</p>
-<p>This computes the relevant integrals if they haven’t already been computed.</p>
-<p>The function returns <span class="math notranslate nohighlight">\(P_\mathrm{NL}\)</span> given smoothing scale R and effective squared sound-speed <span class="math notranslate nohighlight">\(c_s^2\)</span>.</p>
+<p>This computes the relevant integrals if they haven’t already been computed. The function returns <span class="math notranslate nohighlight">\(P_\mathrm{NL}\)</span> given smoothing scale R and effective squared sound-speed <span class="math notranslate nohighlight">\(c_s^2\)</span>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -759,6 +759,80 @@ where <span class="math notranslate nohighlight">\(\bar{\rho}_M\)</span> is the 
 </td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Non-linear power spectrum <span class="math notranslate nohighlight">\(P_\mathrm{NL}\)</span> evaluated at the input k-vector.</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">float</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-PerturbedHalos.CountsCovariance">
+<span id="counts-covariance"></span><h2>Counts Covariance<a class="headerlink" href="#module-PerturbedHalos.CountsCovariance" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="PerturbedHalos.CountsCovariance.CountsCovariance">
+<em class="property">class </em><code class="descclassname">PerturbedHalos.CountsCovariance.</code><code class="descname">CountsCovariance</code><span class="sig-paren">(</span><em>cosmology</em>, <em>mass_function</em>, <em>halo_physics</em>, <em>mass_integrals</em>, <em>kh_vector</em>, <em>mass_bins</em>, <em>volume</em>, <em>kh_min=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/CountsCovariance.html#CountsCovariance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.CountsCovariance.CountsCovariance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class to compute the covariance of cluster counts and the non-linear power spectrum using the halo model of Philcox et al. 2020</p>
+<p>The model covariance is defined as</p>
+<div class="math notranslate nohighlight">
+\[\mathrm{cov}_\mathrm{no SSC}(N_i, P(k)) = I_1^1(k) [ 2 iJ_1^1(k) P_{NL}(k) W^2(kR) + ... ] + iJ_2^0(k,k)\]</div>
+<p>where <span class="math notranslate nohighlight">\(I_p^q\)</span> and <span class="math notranslate nohighlight">\(iJ_p^q\)</span> are mass function integrals defined in the MassIntegrals class for mass bin i, <span class="math notranslate nohighlight">\(P_{NL}\)</span> is the 1-loop non-linear power spectrum from Effective Field Theory and <span class="math notranslate nohighlight">\(W(kR)\)</span> is a smoothing window on scale R. The ellipses refer to 1-loop bispectrum and trispectrum terms which are usually ignored.</p>
+<p><span class="math notranslate nohighlight">\(N_i\)</span> is defined as the number of halos in a mass bin defined by [<span class="math notranslate nohighlight">\(m_{low,i}\)</span>, <span class="math notranslate nohighlight">\(m_{high,i}\)</span>]</p>
+<p>There is an additional contribution from super-sample-covariance:</p>
+<div class="math notranslate nohighlight">
+\[\mathrm{cov}_\mathrm{SSC}(N_i, P(k)) = V \sigma^2(V) iJ_0^1 [ I_1^1(k) I_1^{1,1}(k) W^2(kR)  + I_2^1(k) ] $$\]</div>
+<p>where <span class="math notranslate nohighlight">\(\sigma^2(V)\)</span> is the variance of the linear density field on scales with volume V.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>cosmology</strong> (<a class="reference internal" href="#PerturbedHalos.Cosmology.Cosmology" title="PerturbedHalos.Cosmology.Cosmology"><em>Cosmology</em></a>) – Class containing relevant cosmology and functions.</li>
+<li><strong>mass_function</strong> (<a class="reference internal" href="#PerturbedHalos.MassFunction.MassFunction" title="PerturbedHalos.MassFunction.MassFunction"><em>MassFunction</em></a>) – Class containing the mass function and bias.</li>
+<li><strong>halo_physics</strong> (<a class="reference internal" href="#PerturbedHalos.HaloPhysics.HaloPhysics" title="PerturbedHalos.HaloPhysics.HaloPhysics"><em>HaloPhysics</em></a>) – Class containing the halo profiles and concentrations.</li>
+<li><strong>mass_integrals</strong> (<a class="reference internal" href="#PerturbedHalos.MassIntegrals.MassIntegrals" title="PerturbedHalos.MassIntegrals.MassIntegrals"><em>MassIntegrals</em></a>) – Class containing the mass integrals.</li>
+<li><strong>kh_vector</strong> (<em>float</em>) – Vector of wavenumbers (in <span class="math notranslate nohighlight">\(h/\mathrm{Mpc}\)</span> units), for which power spectrum will be computed.</li>
+<li><strong>mass_bins</strong> (<em>float</em>) – Array of mass bin edges, in <span class="math notranslate nohighlight">\(h^{-1}M_\mathrm{sun}\)</span> units. Must have length N_bins + 1.</li>
+<li><strong>volume</strong> – Volume of the survey in :math:<a href="#id3"><span class="problematic" id="id4">`</span></a>(h^{-1}mathrm{Mpc})^3. The variance of the linear field will be computed for radius giving this volume</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body"><p class="first last"><strong>kh_min</strong> – Minimum k vector in the simulation (or survey) region in <span class="math notranslate nohighlight">\(h/\mathrm{Mpc}\)</span> units. Modes below kh_min are set to zero, default 0.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="PerturbedHalos.CountsCovariance.CountsCovariance.counts_covariance">
+<code class="descname">counts_covariance</code><span class="sig-paren">(</span><em>cs2</em>, <em>R</em>, <em>use_SSC=True</em>, <em>pt_type='EFT'</em>, <em>pade_resum=True</em>, <em>smooth_density=True</em>, <em>IR_resum=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/CountsCovariance.html#CountsCovariance.counts_covariance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.CountsCovariance.CountsCovariance.counts_covariance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the full SSC+no-SSC covariance matrix of <span class="math notranslate nohighlight">\(N_i, P(k)\)</span> as defined in the class description. Whilst we recommend including all non-linear effects, these can be optionally removed with the Boolean parameters. Setting (pt_type=’Linear’, pade_resum=False, smooth_density=False, IR_resum = False) recovers the standard halo model prediction.</p>
+<p>If use_SSC = False, then we only return the non-SSC covariance.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>cs2</strong> (<em>float</em>) – Squared-speed-of-sound <span class="math notranslate nohighlight">\(c_s^2\)</span> counterterm in :math:<a href="#id5"><span class="problematic" id="id6">`</span></a>(h^{-1}mathrm{Mpc})^2. (Unused if pt_type is not “EFT”)</li>
+<li><strong>R</strong> (<em>float</em>) – Smoothing scale in :math:h^{-1}`mathrm{Mpc}`. This is a free parameter of the model. (Unused if smooth_density = False)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first simple">
+<li><strong>use_SSC</strong> (<em>bool</em>) – Whether to include the super-sample covariance (SSC) terms, default: True</li>
+<li><strong>pt_type</strong> (<em>str</em>) – Which flavor of perturbation theory to adopt. Options ‘EFT’ (linear + 1-loop + counterterm), ‘SPT’ (linear + 1-loop), ‘Linear’, default: ‘EFT’</li>
+<li><strong>pade_resum</strong> (<em>bool</em>) – If True, use a Pade resummation of the counterterm <span class="math notranslate nohighlight">\(k^2/(1+k^2) P_\mathrm{lin}\)</span> rather than <span class="math notranslate nohighlight">\(k^2 P_\mathrm{lin}(k)\)</span>, default: True</li>
+<li><strong>smooth_density</strong> (<em>bool</em>) – If True, smooth the density field on scale R, i.e. multiply power by W(kR)^2, default: True</li>
+<li><strong>IR_resum</strong> (<em>bool</em>) – If True, perform IR resummation on the density field to resum non-perturbative long-wavelength modes, default: True</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Two-dimensional array of <span class="math notranslate nohighlight">\(\mathrm{cov}(N_i,P(k))\)</span> with shape (N_bins, N_k) for N_bins mass bins and N_k power spectrum bins.</p>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">float</p>
