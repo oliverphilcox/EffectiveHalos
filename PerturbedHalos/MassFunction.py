@@ -58,11 +58,13 @@ class MassFunction:
 
     def mass_function(self,m_h):
         """
-        Return the mass function, equal to the number density of halos per unit logarithmic mass interval. This assumes the existence of a universal mass function, with::
+        Return the mass function, equal to the number density of halos per unit logarithmic mass interval. This assumes the existence of a universal mass function, with
 
-            dn/d\log_{10}M = f(\sigma(M))\bar{\{rho}}_M/M d\ln\sigma(M)/d\log_{10}(M)
+        .. math::
 
-        where :math:`f` is the universal mass function, :math:`\bar{\{rho}}_M` is the mean matter density at redshift zero and :math:`\sigma(M)^2` is the overdensity variance on spheres with a radius given by the Lagrangian radius for mass :math:`M`.
+            dn/d\log_{10}M = f(\sigma(M))\bar{\rho}_M/M d\ln\sigma(M)/d\log_{10}(M)
+
+        where :math:`f` is the universal mass function, :math:`\bar{\rho}_M` is the mean matter density at redshift zero and :math:`\sigma^2(M)` is the overdensity variance on spheres with a radius given by the Lagrangian radius for mass :math:`M`.
 
         For details of the available mass function parametrizations, see the class description.
 
@@ -76,6 +78,7 @@ class MassFunction:
             float: Mass function, :math:`dn/d\log_{10}(M)` in :math:`\mathrm{Mpc}^{-3}` units
 
         """
+        print('FIX rho-bar definitions above!!')
 
         m = m_h/self.h # mass in Msun units
 
@@ -133,7 +136,7 @@ class MassFunction:
             return 1. + (self.a0*nu**2.+2.*self.p0/(1.+np.power(self.a0*nu**2.,self.p0))-self.q0) / self.delta_c
 
     def second_order_bias(self,m_h):
-        """ Compute the second order Eulerian bias, defined as :math:`\{frac}{4}{21}b_1^L + \{frac}{1}{2} b_2^L` where :math:`b_1^L` and :math:`b_2^L` are the Lagrangian bias parameters.
+        """ Compute the second order Eulerian bias, defined as :math:`4b_1^L/21 + b_2^L/2` where :math:`b_1^L` and :math:`b_2^L` are the Lagrangian bias parameters.
 
         Associated bias functions are available for each mass function, and more can be user-defined. See the class description for details of the loaded parametrizations.
 

@@ -322,34 +322,32 @@
 <dl class="method">
 <dt id="PerturbedHalos.MassFunction.MassFunction.mass_function">
 <code class="descname">mass_function</code><span class="sig-paren">(</span><em>m_h</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/MassFunction.html#MassFunction.mass_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.MassFunction.MassFunction.mass_function" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the mass function, equal to the number density of halos per unit logarithmic mass interval. This assumes the existence of a universal mass function, with:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>dn/d\log_{10}M = f(\sigma(M))ar{\{rho}}_M/M d\ln\sigma(M)/d\log_{10}(M)
-</pre></div>
-</div>
-<p>where <span class="math notranslate nohighlight">\(f\)</span> is the universal mass function, <span class="math notranslate nohighlight">\(ar{\{rho}}_M\)</span> is the mean matter density at redshift zero and <span class="math notranslate nohighlight">\(\sigma(M)^2\)</span> is the overdensity variance on spheres with a radius given by the Lagrangian radius for mass <span class="math notranslate nohighlight">\(M\)</span>.</p>
-<p>For details of the available mass function parametrizations, see the class description.</p>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">We return the mass function <span class="math notranslate nohighlight">\(dn/d\log_{10}(M)\)</span> for later computational ease.</p>
-</div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>m_h</strong> (<em>float</em>) – Mass in <span class="math notranslate nohighlight">\(h^{-1}M_\odot\)</span> units.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Mass function, <span class="math notranslate nohighlight">\(dn/d\log_{10}(M)\)</span> in <span class="math notranslate nohighlight">\(\mathrm{Mpc}^{-3}\)</span> units</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">float</td>
-</tr>
-</tbody>
-</table>
+<dd><blockquote>
+<div><p>Return the mass function, equal to the number density of halos per unit logarithmic mass interval. This assumes the existence of a universal mass function, with</p>
+<div class="math notranslate nohighlight">
+\[dn/d\log_{10}M = f(\sigma(M))ar{\]</div>
+</div></blockquote>
+<p>ho}_M/M dlnsigma(M)/dlog_{10}(M)</p>
+<blockquote>
+<div>where <span class="math notranslate nohighlight">\(f\)</span> is the universal mass function, :math:<a href="#id1"><span class="problematic" id="id2">`</span></a>ar{</div></blockquote>
+<p>ho}_M` is the mean matter density at redshift zero and <span class="math notranslate nohighlight">\(\sigma^2(M)\)</span> is the overdensity variance on spheres with a radius given by the Lagrangian radius for mass <span class="math notranslate nohighlight">\(M\)</span>.</p>
+<blockquote>
+<div><p>For details of the available mass function parametrizations, see the class description.</p>
+<dl class="docutils">
+<dt>Note:</dt>
+<dd>We return the mass function <span class="math notranslate nohighlight">\(dn/d\log_{10}(M)\)</span> for later computational ease.</dd>
+<dt>Args:</dt>
+<dd>m_h (float): Mass in <span class="math notranslate nohighlight">\(h^{-1}M_\odot\)</span> units.</dd>
+<dt>Returns:</dt>
+<dd>float: Mass function, <span class="math notranslate nohighlight">\(dn/d\log_{10}(M)\)</span> in <span class="math notranslate nohighlight">\(\mathrm{Mpc}^{-3}\)</span> units</dd>
+</dl>
+</div></blockquote>
 </dd></dl>
 
 <dl class="method">
 <dt id="PerturbedHalos.MassFunction.MassFunction.second_order_bias">
 <code class="descname">second_order_bias</code><span class="sig-paren">(</span><em>m_h</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/MassFunction.html#MassFunction.second_order_bias"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.MassFunction.MassFunction.second_order_bias" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute the second order Eulerian bias, defined as <span class="math notranslate nohighlight">\(\{frac}{4}{21}b_1^L + \{frac}{1}{2} b_2^L\)</span> where <span class="math notranslate nohighlight">\(b_1^L\)</span> and <span class="math notranslate nohighlight">\(b_2^L\)</span> are the Lagrangian bias parameters.</p>
+<dd><p>Compute the second order Eulerian bias, defined as <span class="math notranslate nohighlight">\(4b_1^L/21 + b_2^L/2\)</span> where <span class="math notranslate nohighlight">\(b_1^L\)</span> and <span class="math notranslate nohighlight">\(b_2^L\)</span> are the Lagrangian bias parameters.</p>
 <p>Associated bias functions are available for each mass function, and more can be user-defined. See the class description for details of the loaded parametrizations.</p>
 <p>Parameters:
 - m_h: Mass in <span class="math notranslate nohighlight">\(h^{-1}M_\odot\)</span> units.</p>
