@@ -2,7 +2,7 @@ Test import
 ============
 
 
-.. automodule PerturbedHalos
+.. automodule:: PerturbedHalos
   :members:
 
 
@@ -10,5 +10,12 @@ Test import
 v2
 --
 
-.. automodule PerturbedHalos.Cosmology
+.. automodule:: PerturbedHalos.Cosmology
+  :members:
+
+
+v3
+--
+
+.. automodule:: PerturbedHalos.test
   :members:
