@@ -10,6 +10,11 @@ class Cosmology(object):
     - **Quijote**: Fiducial cosmology from the Quijote simulations of Francisco Villaescusa-Navarro et al.
     - **Abacus**: Fiducial cosmology from the Abacus simulations of Lehman Garrison et al.
 
+    Args:
+        redshift (float): Desired redshift
+        name (str): Load cosmology from a list of predetermined cosmologies. Currently implemented: Quijote
+        params (kwargs): Other parameters from CLASS.
+
     """
 
     loaded_models = {'Quijote':{"h":0.6711,"omega_cdm":(0.3175 - 0.049)*0.6711**2,
@@ -26,10 +31,6 @@ class Cosmology(object):
         """
         Initialize the cosmology class with cosmological parameters or a defined model.
 
-        Args:
-            redshift (float): Desired redshift
-            name (str): Load cosmology from a list of predetermined cosmologies. Currently implemented: Quijote
-            **params (**kwargs): Other parameters from CLASS.
         """
         ## Load parameters into a dictionary to pass to CLASS
         class_params = dict(**params)
@@ -79,3 +80,118 @@ class Cosmology(object):
         # get density in physical units at z = 0
         self.rho_critical = ((3.*100.*100.)/(8.*np.pi*6.67408e-11)) * (1000.*1000.*3.085677581491367399198952281E+22/1.9884754153381438E+30)
         self.rhoM = self.rho_critical*self.cosmo.Omega0_m()*self.cosmo.h()**2.
+
+    def linear_power(self,kh_vector,kh_min=0.):
+        """Compute the linear power spectrum from CLASS for a vector of input k.
+
+        If set, we remove any modes below some minimum k.
+
+        Args:
+            kh_vector (float): Vector of wavenumbers (in h/Mpc units) to compute linear power with.
+            kh_min (float): Value of k (in h/Mpc units) below which to set P(k) = 0, default: 0.
+
+        Returns:
+            float: Linear power spectrum in (Mpc/h)^3 units
+        """
+        print("don't recompute this?")
+
+        # Define output vector and filter modes with too-small k
+        output = np.zeros_like(kh_vector)
+        filt = np.where(kh_vector>kh_min)
+        N_k = len(filt[0])
+
+        # Compute Pk using CLASS (vectorized)
+        if not hasattr(self,'vector_linear_power'):
+            self.vector_linear_power = np.vectorize(lambda kh: self.cosmo.pk_lin(kh,self.z))
+
+        output[filt] = self.vector_linear_power(kh_vector[filt]*self.h)*self.h**3.
+        return output
+
+    def sigmaM(self,M_phys):
+        """Compute sigma(M,z)` from CLASS as a vector function.
+
+        Args:
+            M_phys (float): Physical mass in M_sun.
+            z (float): Redshift.
+
+        Returns:
+            float: sigma(M)
+        """
+        # convert to Lagrangian radius
+        r_phys = np.power((3.*M_phys)/(4.*np.pi*self.rhoM),1./3.)
+        sigma_func = self.vector_sigma_R(r_phys)
+        return sigma_func
+
+    def sigma_logM_int(self,logM):
+        """Return the value of sigma(M,z) using the prebuilt interpolators, which are constructed if not present.
+
+        Args:
+            logM (float): log10(M/Msun)
+
+        Returns:
+            float: sigma(M)
+        """
+        if not hasattr(self,'sigma_logM_int_func'):
+            self._interpolate_sigma_and_deriv()
+        return self._sigma_logM_int_func(logM)
+
+    def dlns_dlogM_int(self,logM):
+        """Return the value of d(ln sigma(M))/d(log10(M)) using the prebuilt interpolators, which are constructed if not present.
+
+        Args:
+            logM (float): log10(M/Msun)
+
+        Returns:
+            float: dln(sigma)/dlog(M)
+        """
+        if not hasattr(self,'dlns_dlogM_int_func'):
+            self._interpolate_sigma_and_deriv()
+        return self._dlns_dlogM_int_func(logM)
+
+    def _interpolate_sigma_and_deriv(self,logM_min=6,logM_max=17,npoints=int(1e5)):
+        """Create an interpolator function for d ln(sigma)/dlog10(M) and sigma(logM).
+        Note that mass is in physical units (without 1/h factor).
+
+        NB: This has no effect if the interpolator has already been computed.
+
+        Args:
+            logM_min (float): Minimum mass in log10(M/Msun)
+            logM_max (float): Maximum mass in log10(M/Msun)
+            npoints (int): Number of sampling points.
+
+        """
+
+        if not hasattr(self,'sigma_logM_int_func'):
+            print("Creating an interpolator for sigma(M) and its derivative.")
+            ## Compute log derivative by interpolation and numerical differentiation
+            # First compute the grid of M and sigma
+            M_grid = np.logspace(6,17,10000)
+            all_sigM = self.sigmaM(M_grid)
+            logM_grid = np.log10(M_grid)
+
+            # Define ln(sigma) and numerical derivatives
+            all_lns = np.log(all_sigM)
+            all_diff = -np.diff(all_lns)/np.diff(logM_grid)
+            mid_logM = 0.5*(logM_grid[:-1]+logM_grid[1:])
+
+            self._sigma_logM_int_func = interp1d(logM_grid,all_sigM)
+            self._dlns_dlogM_int_func = interp1d(mid_logM,all_diff)
+
+    def _h_over_h0(self):
+        """Return the value of H(z)/H(0) at the class redshift
+
+        Returns:
+            float: H(z)/H(0)
+        """
+        Ea = np.sqrt((self.cosmo.Omega0_cdm()+self.cosmo.Omega_b()+self.cosmo.Omega_Lambda()*pow(self.a,-3)+self.cosmo.Omega0_k()*self.a)/pow(self.a,3))
+        return Ea
+
+    def _Omega_m(self):
+        """Return the value of Omega_m(z) at the class redshift
+
+        Returns:
+        float: Omega_m(z)
+        """
+        hnorm = self._h_over_h0()
+        output = (self.cosmo.Omega0_cdm()+self.cosmo.Omega_b())/self.a**3/hnorm**2
+        return output
