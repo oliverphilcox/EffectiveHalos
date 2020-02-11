@@ -1,4 +1,4 @@
-class DatabaseManager(object):
+class test(object):
     """
     Create and manage a new sqlite database.
 
