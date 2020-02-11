@@ -8,12 +8,6 @@ class Cosmology(object):
 
     This can be initialized by a set of cosmological parameters or a pre-defined name.
 
-    Loaded cosmological models:
-
-    - Planck18: Bestfit cosmology from Planck 2018, using the baseline TT,TE,EE+lowE+lensing likelihood.
-    - Quijote: Fiducial cosmology from the Quijote simulations of Francisco Villaescusa-Navarro et al.
-    - Abacus: Fiducial cosmology from the Abacus simulations of Lehman Garrison et al.
-
     """
 
     def __init__(self,redshift,name="",**params):
@@ -26,4 +20,4 @@ class Cosmology(object):
             name (str): Load cosmology from a list of predetermined cosmologies. Currently implemented: Quijote
             **params (**kwargs): Other parameters from CLASS.
         """
-        pass
+        return 0
