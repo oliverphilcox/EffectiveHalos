@@ -99,6 +99,9 @@ class Cosmology:
         Args:
             kh_vector (float): Vector of wavenumbers (in h/Mpc units) to compute linear power with.
             kh_min (float): Value of k (in h/Mpc units) below which to set P(k) = 0, default: 0.
+
+        Returns:
+            float: Linear power spectrum in (Mpc/h)^3 units
         """
         print("don't recompute this?")
 
@@ -120,6 +123,9 @@ class Cosmology:
         Args:
             M_phys (float): Physical mass in M_sun.
             z (float): Redshift.
+
+        Returns:
+            float: sigma(M)
         """
         # convert to Lagrangian radius
         r_phys = np.power((3.*M_phys)/(4.*np.pi*self.rhoM),1./3.)
@@ -131,6 +137,9 @@ class Cosmology:
 
         Args:
             logM (float): log10(M/Msun)
+
+        Returns:
+            float: sigma(M)
         """
         if not hasattr(self,'sigma_logM_int_func'):
             self._interpolate_sigma_and_deriv()
@@ -141,6 +150,9 @@ class Cosmology:
 
         Args:
             logM (float): log10(M/Msun)
+
+        Returns:
+            float: dln(sigma)/dlog(M)
         """
         if not hasattr(self,'dlns_dlogM_int_func'):
             self._interpolate_sigma_and_deriv()
@@ -156,6 +168,7 @@ class Cosmology:
             logM_min (float): Minimum mass in log10(M/Msun)
             logM_max (float): Maximum mass in log10(M/Msun)
             npoints (int): Number of sampling points.
+
         """
 
         if not hasattr(self,'sigma_logM_int_func'):
