@@ -1,0 +1,422 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>PerturbedHalos.CountsCovariance &mdash; PerturbedHalos  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> PerturbedHalos
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../PerturbedHalos.html">PerturbedHalos package</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">PerturbedHalos</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>PerturbedHalos.CountsCovariance</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for PerturbedHalos.CountsCovariance</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">MassIntegrals</span><span class="p">,</span><span class="n">MassFunction</span><span class="p">,</span><span class="n">HaloPhysics</span><span class="p">,</span><span class="n">Cosmology</span><span class="p">,</span><span class="n">HaloPower</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy.interpolate</span> <span class="kn">import</span> <span class="n">interp1d</span>
+
+<div class="viewcode-block" id="CountsCovariance"><a class="viewcode-back" href="../../PerturbedHalos.html#PerturbedHalos.CountsCovariance.CountsCovariance">[docs]</a><span class="k">class</span> <span class="nc">CountsCovariance</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Class to compute the covariance of cluster counts and the non-linear power spectrum</span>
+<span class="sd">    using the halo model of Philcox et al. 2020</span>
+
+<span class="sd">    The model covariance is defined as</span>
+<span class="sd">        $$ cov_{no SSC}(N_i, P(k)) = I_1^1(k) [ 2 iJ_1^1(k) P_{NL}(k) W^2(kR) + ... ] + iJ_2^0(k,k) $$</span>
+
+<span class="sd">    where I_p^q and iJ_p^q are mass function integrals defined in the MassIntegrals class for mass bin i,</span>
+<span class="sd">    P_{NL} is the 1-loop non-linear power spectrum from Effective Field Theory</span>
+<span class="sd">    and W(kR) is a smoothing window on scale R. The ellipses refer to 1-loop bispectrum and trispectrum terms</span>
+<span class="sd">    which are usually ignored.</span>
+
+<span class="sd">    N_i is defined as the number of halos in a mass bin defined by [m_{low,i}, m_{high,i}]</span>
+
+<span class="sd">    There is an additional contribution from super-sample-covariance:</span>
+<span class="sd">        $$ cov_{SSC}(N_i, P(k)) = V sigma^2(V) iJ_0^1 [ I_1^1(k) I_1^{1,1}(k) W^2(kR)  + I_2^1(k) ] $$</span>
+<span class="sd">    where sigma^2(V) is the variance of the linear density field on scales with volume V.</span>
+
+<span class="sd">    Methods:</span>
+<span class="sd">    - __init__: Initialize with necessary classes, k-vector and masses.</span>
+<span class="sd">    - counts_covariance: Compute and return the covariance between N(m) and P(k) for the specfied mass and k-bins. This can optionally include super-sample covariances, and higher-order perturbative corrections.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">cosmology</span><span class="p">,</span><span class="n">mass_function</span><span class="p">,</span><span class="n">halo_physics</span><span class="p">,</span><span class="n">mass_integrals</span><span class="p">,</span><span class="n">kh_vector</span><span class="p">,</span><span class="n">mass_bins</span><span class="p">,</span><span class="n">volume</span><span class="p">,</span><span class="n">kh_min</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize the class loading properties from the other classes.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">        - cosmology: Instance of the Cosmology class containing relevant cosmology and functions.</span>
+<span class="sd">        - mass_function: Instance of the MassFunction class, containing the mass function and bias.</span>
+<span class="sd">        - halo_physics: Instance of the HaloPhysics class, containing the halo profiles and concentrations.</span>
+<span class="sd">        - mass_integrals: Instance of the MassIntegrals class, containing the mass integrals.</span>
+<span class="sd">        - kh_vector: Vector of wavenumbers (in h/Mpc units), for which power spectrum will be computed.</span>
+<span class="sd">        - mass_bins: Array of mass bin edges, in Msun/h units. Must have length N_bins + 1.</span>
+<span class="sd">        - volume: Volume of the survey in (Mpc/h)^3. The variance of the linear field will be computed for radius giving this volume</span>
+<span class="sd">        - kh_min: Minimum k vector in the simulation (or survey) region in h/Mpc units. Modes with kh&lt;kh_min are set to zero, default 0.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;do we really need to specify all these input classes? generate inside class?&#39;</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;also compute N(m) autocovariance?&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;think about how to do sigma^2&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Write attributes, if they&#39;re of the correct type</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cosmology</span><span class="p">,</span> <span class="n">Cosmology</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cosmology</span> <span class="o">=</span> <span class="n">cosmology</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;cosmology input must be an instance of the Cosmology class!&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mass_function</span><span class="p">,</span> <span class="n">MassFunction</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mass_function</span> <span class="o">=</span> <span class="n">mass_function</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;mass_function input must be an instance of the MassFunction class!&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">halo_physics</span><span class="p">,</span> <span class="n">HaloPhysics</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">halo_physics</span> <span class="o">=</span> <span class="n">halo_physics</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;halo_physics input must be an instance of the HaloPhysics class!&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mass_integrals</span><span class="p">,</span> <span class="n">MassIntegrals</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mass_integrals</span> <span class="o">=</span> <span class="n">mass_integrals</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;mass_integrals input must be an instance of the MassIntegrals class!&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Write useful attributes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kh_vector</span> <span class="o">=</span> <span class="n">kh_vector</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kh_min</span> <span class="o">=</span> <span class="n">kh_min</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mass_bins</span> <span class="o">=</span> <span class="n">mass_bins</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">N_bins</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">mass_bins</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">volume</span> <span class="o">=</span> <span class="n">volume</span>
+
+        <span class="c1"># Run some checks</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">mass_bins</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">&gt;=</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="mf">10.</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">mass_integrals</span><span class="o">.</span><span class="n">min_logM</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">cosmology</span><span class="o">.</span><span class="n">h</span><span class="p">,</span> <span class="s1">&#39;Minimum bin must be above MassIntegral limit!&#39;</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">mass_bins</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">&lt;=</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="mf">10.</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">mass_integrals</span><span class="o">.</span><span class="n">max_logM</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">cosmology</span><span class="o">.</span><span class="n">h</span><span class="p">,</span> <span class="s1">&#39;Maximum bin must be below MassIntegral limit!&#39;</span>
+
+        <span class="c1"># Compute linear power for the k-vector</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;should rename cosmology.linear_power to cosmology.compute_linear_power&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">linear_power</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cosmology</span><span class="o">.</span><span class="n">linear_power</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kh_vector</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">kh_min</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="c1"># Generate a power spectrum class with this k-vector</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">halo_power</span> <span class="o">=</span> <span class="n">HaloPower</span><span class="p">(</span><span class="n">cosmology</span><span class="p">,</span> <span class="n">mass_function</span><span class="p">,</span> <span class="n">halo_physics</span><span class="p">,</span> <span class="n">mass_integrals</span><span class="p">,</span> <span class="n">kh_vector</span><span class="p">,</span> <span class="n">kh_min</span><span class="p">)</span>
+
+<div class="viewcode-block" id="CountsCovariance.counts_covariance"><a class="viewcode-back" href="../../PerturbedHalos.html#PerturbedHalos.CountsCovariance.CountsCovariance.counts_covariance">[docs]</a>    <span class="k">def</span> <span class="nf">counts_covariance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cs2</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">use_SSC</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">pt_type</span> <span class="o">=</span> <span class="s1">&#39;EFT&#39;</span><span class="p">,</span> <span class="n">pade_resum</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">smooth_density</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">IR_resum</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Compute the full SSC+no-SSC covariance matrix of N_i and P(k) as defined in the class description.</span>
+
+<span class="sd">        If use_SSC = False, then we only return the non-SSC covariance.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">        - cs2: Squared-speed-of-sound counterterm in (Mpc/h)^2. (Unused if pt_type is not &quot;EFT&quot;)</span>
+<span class="sd">        - R: Smoothing scale in Mpc/h. This is a free parameter of the model. (Unused if smooth_density = False)</span>
+<span class="sd">        - use_SSC: Boolean, whether to include the super-sample covariance (SSC) terms, default: True</span>
+<span class="sd">        - pt_type: Which flavor of perturbation theory to adopt. Options &#39;EFT&#39; (linear + 1-loop + counterterm), &#39;SPT&#39; (linear + 1-loop), &#39;Linear&#39;, default: &#39;EFT&#39;</span>
+<span class="sd">        - pade_resum: If True, use a Pade resummation of the counterterm (k^2/(1+k^2)) P_lin rather than k^2 P_lin, default: True</span>
+<span class="sd">        - smooth_density: If True, smooth the density field on scale R, i.e. multiply power by W(kR)^2, default: True</span>
+<span class="sd">        - IR_resum: If True, perform IR resummation on the density field to resum non-perturbative long-wavelength modes, default: True</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Compute no-SSC covariance</span>
+        <span class="n">covariance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_no_ssc_covariance</span><span class="p">(</span><span class="n">cs2</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">pt_type</span><span class="p">,</span> <span class="n">pade_resum</span><span class="p">,</span> <span class="n">smooth_density</span><span class="p">,</span> <span class="n">IR_resum</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;It would probably be nicer to define these parameters on class initialization&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Compute SSC covariance, if required</span>
+        <span class="k">if</span> <span class="n">use_SSC</span><span class="p">:</span>
+            <span class="n">covariance</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_ssc_covariance</span><span class="p">(</span><span class="n">cs2</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">pt_type</span><span class="p">,</span> <span class="n">pade_resum</span><span class="p">,</span> <span class="n">smooth_density</span><span class="p">,</span> <span class="n">IR_resum</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">covariance</span></div>
+
+    <span class="k">def</span> <span class="nf">_compute_no_ssc_covariance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cs2</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">pt_type</span> <span class="o">=</span> <span class="s1">&#39;EFT&#39;</span><span class="p">,</span> <span class="n">pade_resum</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">smooth_density</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">IR_resum</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Compute the no-SSC covariance matrix of N_i and P(k) as defined in the class description.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">        - cs2: Squared-speed-of-sound counterterm in (Mpc/h)^2. (Unused if pt_type is not &quot;EFT&quot;)</span>
+<span class="sd">        - R: Smoothing scale in Mpc/h. This is a free parameter of the model. (Unused if smooth_density = False)</span>
+<span class="sd">        - pt_type: Which flavor of perturbation theory to adopt. Options &#39;EFT&#39; (linear + 1-loop + counterterm), &#39;SPT&#39; (linear + 1-loop), &#39;Linear&#39;, default: &#39;EFT&#39;</span>
+<span class="sd">        - pade_resum: If True, use a Pade resummation of the counterterm (k^2/(1+k^2)) P_lin rather than k^2 P_lin, default: True</span>
+<span class="sd">        - smooth_density: If True, smooth the density field on scale R, i.e. multiply power by W(kR)^2, default: True</span>
+<span class="sd">        - IR_resum: If True, perform IR resummation on the density field to resum non-perturbative long-wavelength modes, default: True</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Compute the non-linear power spectrum</span>
+        <span class="n">power_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">halo_power</span><span class="o">.</span><span class="n">non_linear_power</span><span class="p">(</span><span class="n">cs2</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">pt_type</span><span class="p">,</span> <span class="n">pade_resum</span><span class="p">,</span> <span class="n">smooth_density</span><span class="p">,</span> <span class="n">IR_resum</span><span class="p">)</span>
+
+        <span class="c1"># Compute relevant I_p^q integrals, if not already computed</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="s1">&#39;I_11&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">I_11</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mass_integrals</span><span class="o">.</span><span class="n">compute_I_11</span><span class="p">(</span><span class="n">apply_correction</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="c1"># Load mass integrals for each bin, if not already computed</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_load_mass_integrals</span><span class="p">()</span>
+
+        <span class="c1"># Compute iJ_p^q integrals in each mass bin and store</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="s1">&#39;all_iJ_11_array&#39;</span><span class="p">):</span>
+            <span class="c1"># Note that we don&#39;t apply the I_1^1 correction, since we expect the mass to be finite</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">all_iJ_11_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">all_mass_integrals</span><span class="p">[</span><span class="n">n_bin</span><span class="p">]</span><span class="o">.</span><span class="n">compute_I_11</span><span class="p">(</span><span class="n">apply_correction</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="k">for</span> <span class="n">n_bin</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N_bins</span><span class="p">)])</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="s1">&#39;all_iJ_20_array&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">all_iJ_20_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">all_mass_integrals</span><span class="p">[</span><span class="n">n_bin</span><span class="p">]</span><span class="o">.</span><span class="n">compute_I_20</span><span class="p">()</span> <span class="k">for</span> <span class="n">n_bin</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N_bins</span><span class="p">)])</span>
+
+        <span class="c1"># Now compute the covariance</span>
+        <span class="n">two_halo_term</span> <span class="o">=</span> <span class="mf">2.</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">I_11</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_iJ_11_array</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="o">*</span> <span class="n">power_model</span>
+        <span class="n">one_halo_term</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_iJ_20_array</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">two_halo_term</span> <span class="o">+</span> <span class="n">one_halo_term</span>
+
+    <span class="k">def</span> <span class="nf">_compute_ssc_covariance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cs2</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">pt_type</span> <span class="o">=</span> <span class="s1">&#39;EFT&#39;</span><span class="p">,</span> <span class="n">pade_resum</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">smooth_density</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">IR_resum</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Compute the SSC covariance matrix of N_i and P(k) as defined in the class description.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">        - cs2: Squared-speed-of-sound counterterm in (Mpc/h)^2. (Unused if pt_type is not &quot;EFT&quot;)</span>
+<span class="sd">        - R: Smoothing scale in Mpc/h. This is a free parameter of the model. (Unused if smooth_density = False)</span>
+<span class="sd">        - pt_type: Which flavor of perturbation theory to adopt. Options &#39;EFT&#39; (linear + 1-loop + counterterm), &#39;SPT&#39; (linear + 1-loop), &#39;Linear&#39;, default: &#39;EFT&#39;</span>
+<span class="sd">        - pade_resum: If True, use a Pade resummation of the counterterm (k^2/(1+k^2)) P_lin rather than k^2 P_lin, default: True</span>
+<span class="sd">        - smooth_density: If True, smooth the density field on scale R, i.e. multiply power by W(kR)^2, default: True</span>
+<span class="sd">        - IR_resum: If True, perform IR resummation on the density field to resum non-perturbative long-wavelength modes, default: True</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Compute the non-linear power spectrum</span>
+        <span class="n">power_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">halo_power</span><span class="o">.</span><span class="n">non_linear_power</span><span class="p">(</span><span class="n">cs2</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">pt_type</span> <span class="o">=</span> <span class="n">pt_type</span><span class="p">,</span> <span class="n">pade_resum</span> <span class="o">=</span> <span class="n">pade_resum</span><span class="p">,</span> <span class="n">smooth_density</span> <span class="o">=</span> <span class="n">smooth_density</span><span class="p">,</span> <span class="n">IR_resum</span> <span class="o">=</span> <span class="n">IR_resum</span><span class="p">)</span>
+
+        <span class="c1"># Compute relevant I_p^q integrals, if not already computed</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="s1">&#39;I_11&#39;</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;no need to load power twice?&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">I_11</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mass_integrals</span><span class="o">.</span><span class="n">compute_I_11</span><span class="p">(</span><span class="n">apply_correction</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="s1">&#39;I_21&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">I_21</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mass_integrals</span><span class="o">.</span><span class="n">compute_I_21</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="s1">&#39;I_111&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">I_111</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mass_integrals</span><span class="o">.</span><span class="n">compute_I_111</span><span class="p">()</span>
+
+        <span class="c1"># Load mass integrals for each bin, if not already computed</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_load_mass_integrals</span><span class="p">()</span>
+
+        <span class="c1"># Compute iJ_p^q integrals in each mass bin and store</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="s1">&#39;all_iJ_01_array&#39;</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;allow for more flexible sigma^2(V)?&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">all_iJ_01_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">all_mass_integrals</span><span class="p">[</span><span class="n">n_bin</span><span class="p">]</span><span class="o">.</span><span class="n">compute_I_01</span><span class="p">()</span> <span class="k">for</span> <span class="n">n_bin</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N_bins</span><span class="p">)])</span>
+
+        <span class="c1"># Now compute the covariance</span>
+        <span class="n">prefactor</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">volume</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_sigma2_volume</span><span class="p">()</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_iJ_01_array</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">three_halo_term</span> <span class="o">=</span> <span class="n">prefactor</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">I_11</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">I_111</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="o">*</span> <span class="n">power_model</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">two_halo_term</span> <span class="o">=</span> <span class="n">prefactor</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">I_21</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># return three_halo_term + two_halo_term</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;NEW SSC Linear Reponse Form - note that this violates consistency for I_12&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Tidy this up + add non-linear terms&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Create an interpolator for k^3 P(k)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="s1">&#39;log_derivative&#39;</span><span class="p">):</span>
+            <span class="n">all_k</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">10000</span><span class="p">)</span>
+            <span class="n">all_cal_P</span> <span class="o">=</span> <span class="n">all_k</span><span class="o">**</span><span class="mf">3.</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">cosmology</span><span class="o">.</span><span class="n">linear_power</span><span class="p">(</span><span class="n">all_k</span><span class="p">,</span><span class="mf">0.0</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mf">2.</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">**</span><span class="mf">2.</span><span class="p">)</span>
+            <span class="n">dlogP_dlogk</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">all_cal_P</span><span class="p">))</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">all_k</span><span class="p">))</span>
+            <span class="n">mid_k</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">all_k</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">+</span><span class="n">all_k</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">R</span> <span class="o">=</span> <span class="mf">68.</span><span class="o">/</span><span class="mf">21.</span> <span class="o">-</span> <span class="n">dlogP_dlogk</span><span class="o">/</span><span class="mf">3.</span>
+            <span class="n">R_interp</span> <span class="o">=</span> <span class="n">interp1d</span><span class="p">(</span><span class="n">mid_k</span><span class="p">,</span><span class="n">R</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log_derivative</span> <span class="o">=</span> <span class="n">R_interp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kh_vector</span><span class="p">)</span>
+
+        <span class="c1"># Compute I_12</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="s1">&#39;I_12&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">I_12</span> <span class="o">=</span> <span class="mf">0.</span><span class="c1">#self.mass_integrals.compute_I_12(apply_correction=True)</span>
+
+        <span class="n">dP_ddelta</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">I_11</span><span class="o">**</span><span class="mf">2.</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">log_derivative</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">linear_power</span><span class="o">+</span><span class="mf">2.</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">I_12</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">I_11</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">linear_power</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">I_21</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">prefactor</span> <span class="o">*</span> <span class="n">dP_ddelta</span>
+
+    <span class="k">def</span> <span class="nf">_compute_sigma2_volume</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Compute and return the variance of the linear power spectrum on the scale of the survey volume.</span>
+<span class="sd">        Here, we assume a periodic survey, such that the volume can be translated into an isotropic radius.</span>
+<span class="sd">        We compute sigma2(R) from CLASS.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="s1">&#39;sigma2_volume&#39;</span><span class="p">):</span>
+            <span class="n">R_survey</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="mf">3.</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">volume</span><span class="o">/</span><span class="p">(</span><span class="mf">4.</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">),</span><span class="mf">1.</span><span class="o">/</span><span class="mf">3.</span><span class="p">)</span> <span class="c1"># equivalent survey volume</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sigma2_volume</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cosmology</span><span class="o">.</span><span class="n">vector_sigma_R</span><span class="p">(</span><span class="n">R_survey</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">cosmology</span><span class="o">.</span><span class="n">h</span><span class="p">),</span><span class="mf">2.</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;OVERWRITING sigma^2(V)&#39;</span><span class="p">)</span>
+        <span class="c1">#return 4.717e-4</span>
+        <span class="k">return</span> <span class="mf">5.12e-4</span>
+
+    <span class="k">def</span> <span class="nf">_load_mass_integrals</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Load the instances of the MassIntegrals class for each mass bin.</span>
+<span class="sd">        These will be used to compute the iJ_p^q type integrals.</span>
+
+<span class="sd">        This is an empty function if these have al ready been computed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="s1">&#39;all_mass_integrals&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">all_mass_integrals</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="c1"># Iterate over all mass bins</span>
+            <span class="k">for</span> <span class="n">n_bin</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N_bins</span><span class="p">):</span>
+
+                <span class="c1"># Compute mass ranges and convert to Msun units</span>
+                <span class="n">min_logM</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mass_bins</span><span class="p">[</span><span class="n">n_bin</span><span class="p">]</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">cosmology</span><span class="o">.</span><span class="n">h</span><span class="p">)</span>
+                <span class="n">max_logM</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mass_bins</span><span class="p">[</span><span class="n">n_bin</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">cosmology</span><span class="o">.</span><span class="n">h</span><span class="p">)</span>
+
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;should keep N_mass free parameter here?&#39;</span><span class="p">)</span>
+                <span class="c1"># Load an instance of the MassIntegral class</span>
+                <span class="n">this_mass_integral</span> <span class="o">=</span> <span class="n">MassIntegrals</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cosmology</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">mass_function</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">halo_physics</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">kh_vector</span><span class="p">,</span>
+                                                <span class="n">min_logM</span><span class="o">=</span><span class="n">min_logM</span><span class="p">,</span> <span class="n">max_logM</span><span class="o">=</span><span class="n">max_logM</span><span class="p">,</span> <span class="n">N_mass</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="mf">1e3</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">all_mass_integrals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">this_mass_integral</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Oliver H. E. Philcox
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

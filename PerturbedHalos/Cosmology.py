@@ -13,11 +13,11 @@ class Cosmology:
     - Abacus: Fiducial cosmology from the Abacus simulations of Lehman Garrison et al.
 
     Methods:
-    - __init__: Initialize the class at a given redshift with a specified cosmology.
-    - linear_power: Compute the linear power spectrum for a given k vector.
-    - sigmaM: Compute sigma(M) from CLASS for input mass M.
-    - sigma_logM_int: Return an interpolated value of sigma(M) corresponding to an input log10(M) grid.
-    - dlns_dlogM_int: Return an interpolated value of d(ln(sigma(M)))/d(log10(M)) corresponding to an input log10(M) grid.
+        __init__: Initialize the class at a given redshift with a specified cosmology.
+        linear_power: Compute the linear power spectrum for a given k vector.
+        sigmaM: Compute sigma(M) from CLASS for input mass M.
+        sigma_logM_int: Return an interpolated value of sigma(M) corresponding to an input log10(M) grid.
+        dlns_dlogM_int: Return an interpolated value of d(ln(sigma(M)))/d(log10(M)) corresponding to an input log10(M) grid.
     """
 
     loaded_models = {'Quijote':{"h":0.6711,"omega_cdm":(0.3175 - 0.049)*0.6711**2,
@@ -33,10 +33,10 @@ class Cosmology:
 
         """Initialize the cosmology class with cosmological parameters or a defined model.
 
-        Parameters:
-        - redshift: Desired redshift
-        - name: Load cosmology from a list of predetermined cosmologies. Currently implemented: Quijote
-        - **params: Other parameters from CLASS.
+        Args:
+            redshift (float): Desired redshift
+            name (str): Load cosmology from a list of predetermined cosmologies. Currently implemented: Quijote
+            **params (dict): Other parameters from CLASS.
         """
 
         print('need to update class attributes + methods in the docstring...')
@@ -96,9 +96,9 @@ class Cosmology:
 
         If set, we remove any modes below some k_min.
 
-        Parameters:
-        - kh_vector: Vector of wavenumbers (in h/Mpc units) to compute linear power with.
-        - kh_min: Value of k (in h/Mpc units) below which to set P(k) = 0.
+        Args:
+            kh_vector (float): Vector of wavenumbers (in h/Mpc units) to compute linear power with.
+            kh_min (float): Value of k (in h/Mpc units) below which to set P(k) = 0, default: 0.
         """
         print("don't recompute this?")
 
@@ -117,9 +117,9 @@ class Cosmology:
     def sigmaM(self,M_phys):
         """Compute \sigma(M,z) from CLASS as a vector function.
 
-        Parameters:
-        - M_phys: Physical mass in M_sun.
-        - z: Redshift.
+        Args:
+            M_phys (float): Physical mass in M_sun.
+            z (float): Redshift.
         """
         # convert to Lagrangian radius
         r_phys = np.power((3.*M_phys)/(4.*np.pi*self.rhoM),1./3.)
@@ -129,8 +129,8 @@ class Cosmology:
     def sigma_logM_int(self,logM):
         """Return the value of sigma(M) using the prebuilt interpolators, which are constructed if not present.
 
-        Parameters:
-        - logM: log10(M/Msun)
+        Args:
+            logM (float): log10(M/Msun)
         """
         if not hasattr(self,'sigma_logM_int_func'):
             self._interpolate_sigma_and_deriv()
@@ -139,8 +139,8 @@ class Cosmology:
     def dlns_dlogM_int(self,logM):
         """Return the value of d(ln sigma(M))/d(log10(M)) using the prebuilt interpolators, which are constructed if not present.
 
-        Parameters:
-        - logM: log10(M/Msun)
+        Args:
+            logM (float): log10(M/Msun)
         """
         if not hasattr(self,'dlns_dlogM_int_func'):
             self._interpolate_sigma_and_deriv()
@@ -152,10 +152,10 @@ class Cosmology:
 
         NB: This has no effect if the interpolator has already been computed.
 
-        Parameters:
-        - logM_min: Minimum mass in log10(M/Msun)
-        - logM_max: Maximum mass in log10(M/Msun)
-        - npoints: Number of sampling points.
+        Args:
+            logM_min (float): Minimum mass in log10(M/Msun)
+            logM_max (float): Maximum mass in log10(M/Msun)
+            npoints (int): Number of sampling points.
         """
 
         if not hasattr(self,'sigma_logM_int_func'):

@@ -83,13 +83,13 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">PerturbedHalos package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#perturbedhalos-cosmology-module">PerturbedHalos.Cosmology module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#perturbedhalos-countscovariance-module">PerturbedHalos.CountsCovariance module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#perturbedhalos-halophysics-module">PerturbedHalos.HaloPhysics module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#perturbedhalos-halopower-module">PerturbedHalos.HaloPower module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#perturbedhalos-massfunction-module">PerturbedHalos.MassFunction module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#perturbedhalos-massintegrals-module">PerturbedHalos.MassIntegrals module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-contents">Module contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-PerturbedHalos.Cosmology">PerturbedHalos.Cosmology module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-PerturbedHalos.CountsCovariance">PerturbedHalos.CountsCovariance module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-PerturbedHalos.HaloPhysics">PerturbedHalos.HaloPhysics module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-PerturbedHalos.HaloPower">PerturbedHalos.HaloPower module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-PerturbedHalos.MassFunction">PerturbedHalos.MassFunction module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-PerturbedHalos.MassIntegrals">PerturbedHalos.MassIntegrals module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-PerturbedHalos">Module contents</a></li>
 </ul>
 </li>
 </ul>
@@ -161,26 +161,458 @@
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="perturbedhalos-cosmology-module">
-<h2>PerturbedHalos.Cosmology module<a class="headerlink" href="#perturbedhalos-cosmology-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-PerturbedHalos.Cosmology">
+<span id="perturbedhalos-cosmology-module"></span><h2>PerturbedHalos.Cosmology module<a class="headerlink" href="#module-PerturbedHalos.Cosmology" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="PerturbedHalos.Cosmology.Cosmology">
+<em class="property">class </em><code class="descclassname">PerturbedHalos.Cosmology.</code><code class="descname">Cosmology</code><span class="sig-paren">(</span><em>redshift</em>, <em>name=''</em>, <em>**params</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/Cosmology.html#Cosmology"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.Cosmology.Cosmology" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class to hold the basic cosmology and class attributes.</p>
+<p>This can be initialized by a set of cosmological parameters or a pre-defined name.</p>
+<p>Loaded cosmological models:
+- Planck18: Bestfit cosmology from Planck 2018, using the baseline TT,TE,EE+lowE+lensing likelihood.
+- Quijote: Fiducial cosmology from the Quijote simulations of Francisco Villaescusa-Navarro et al.
+- Abacus: Fiducial cosmology from the Abacus simulations of Lehman Garrison et al.</p>
+<dl class="method">
+<dt id="PerturbedHalos.Cosmology.Cosmology.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/Cosmology.html#Cosmology.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.Cosmology.Cosmology.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize the class at a given redshift with a specified cosmology.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="PerturbedHalos.Cosmology.Cosmology.linear_power">
+<code class="descname">linear_power</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/Cosmology.html#Cosmology.linear_power"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.Cosmology.Cosmology.linear_power" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the linear power spectrum for a given k vector.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="PerturbedHalos.Cosmology.Cosmology.sigmaM">
+<code class="descname">sigmaM</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/Cosmology.html#Cosmology.sigmaM"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.Cosmology.Cosmology.sigmaM" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute sigma(M) from CLASS for input mass M.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="PerturbedHalos.Cosmology.Cosmology.sigma_logM_int">
+<code class="descname">sigma_logM_int</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/Cosmology.html#Cosmology.sigma_logM_int"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.Cosmology.Cosmology.sigma_logM_int" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an interpolated value of sigma(M) corresponding to an input log10(M) grid.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="PerturbedHalos.Cosmology.Cosmology.dlns_dlogM_int">
+<code class="descname">dlns_dlogM_int</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/Cosmology.html#Cosmology.dlns_dlogM_int"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.Cosmology.Cosmology.dlns_dlogM_int" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an interpolated value of d(ln(sigma(M)))/d(log10(M)) corresponding to an input log10(M) grid.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">dlns_dlogM_int</code><span class="sig-paren">(</span><em>logM</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/Cosmology.html#Cosmology.dlns_dlogM_int"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Return the value of d(ln sigma(M))/d(log10(M)) using the prebuilt interpolators, which are constructed if not present.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>logM</strong> (<em>float</em>) – log10(M/Msun)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">linear_power</code><span class="sig-paren">(</span><em>kh_vector</em>, <em>kh_min=0.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/Cosmology.html#Cosmology.linear_power"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Compute the linear power spectrum from CLASS for a vector of input k.</p>
+<p>If set, we remove any modes below some k_min.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>kh_vector</strong> (<em>float</em>) – Vector of wavenumbers (in h/Mpc units) to compute linear power with.</li>
+<li><strong>kh_min</strong> (<em>float</em>) – Value of k (in h/Mpc units) below which to set P(k) = 0, default: 0.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="PerturbedHalos.Cosmology.Cosmology.loaded_models">
+<code class="descname">loaded_models</code><em class="property"> = {'Abacus': {'N_eff': 3.04, 'h': 0.6726, 'n_s': 0.9652, 'omega_b': 0.02222, 'omega_cdm': 0.1199, 'sigma8': 0.83}, 'Planck18': {'h': 0.6732, 'n_s': 0.96605, 'omega_b': 0.022383, 'omega_cdm': 0.12011, 'sigma8': 0.812}, 'Quijote': {'N_eff': 3.04, 'Omega_b': 0.049, 'h': 0.6711, 'n_s': 0.9624, 'omega_cdm': 0.12092574388500002, 'sigma8': 0.834}}</em><a class="headerlink" href="#PerturbedHalos.Cosmology.Cosmology.loaded_models" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">sigmaM</code><span class="sig-paren">(</span><em>M_phys</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/Cosmology.html#Cosmology.sigmaM"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Compute sigma(M,z) from CLASS as a vector function.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>M_phys</strong> (<em>float</em>) – Physical mass in M_sun.</li>
+<li><strong>z</strong> (<em>float</em>) – Redshift.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">sigma_logM_int</code><span class="sig-paren">(</span><em>logM</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/Cosmology.html#Cosmology.sigma_logM_int"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Return the value of sigma(M) using the prebuilt interpolators, which are constructed if not present.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>logM</strong> (<em>float</em>) – log10(M/Msun)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
 </div>
-<div class="section" id="perturbedhalos-countscovariance-module">
-<h2>PerturbedHalos.CountsCovariance module<a class="headerlink" href="#perturbedhalos-countscovariance-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-PerturbedHalos.CountsCovariance">
+<span id="perturbedhalos-countscovariance-module"></span><h2>PerturbedHalos.CountsCovariance module<a class="headerlink" href="#module-PerturbedHalos.CountsCovariance" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="PerturbedHalos.CountsCovariance.CountsCovariance">
+<em class="property">class </em><code class="descclassname">PerturbedHalos.CountsCovariance.</code><code class="descname">CountsCovariance</code><span class="sig-paren">(</span><em>cosmology</em>, <em>mass_function</em>, <em>halo_physics</em>, <em>mass_integrals</em>, <em>kh_vector</em>, <em>mass_bins</em>, <em>volume</em>, <em>kh_min=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/CountsCovariance.html#CountsCovariance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.CountsCovariance.CountsCovariance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class to compute the covariance of cluster counts and the non-linear power spectrum
+using the halo model of Philcox et al. 2020</p>
+<dl class="docutils">
+<dt>The model covariance is defined as</dt>
+<dd>$$ cov_{no SSC}(N_i, P(k)) = I_1^1(k) [ 2 iJ_1^1(k) P_{NL}(k) W^2(kR) + … ] + iJ_2^0(k,k) $$</dd>
+</dl>
+<p>where I_p^q and iJ_p^q are mass function integrals defined in the MassIntegrals class for mass bin i,
+P_{NL} is the 1-loop non-linear power spectrum from Effective Field Theory
+and W(kR) is a smoothing window on scale R. The ellipses refer to 1-loop bispectrum and trispectrum terms
+which are usually ignored.</p>
+<p>N_i is defined as the number of halos in a mass bin defined by [m_{low,i}, m_{high,i}]</p>
+<dl class="docutils">
+<dt>There is an additional contribution from super-sample-covariance:</dt>
+<dd>$$ cov_{SSC}(N_i, P(k)) = V sigma^2(V) iJ_0^1 [ I_1^1(k) I_1^{1,1}(k) W^2(kR)  + I_2^1(k) ] $$</dd>
+</dl>
+<p>where sigma^2(V) is the variance of the linear density field on scales with volume V.</p>
+<p>Methods:
+- __init__: Initialize with necessary classes, k-vector and masses.
+- counts_covariance: Compute and return the covariance between N(m) and P(k) for the specfied mass and k-bins. This can optionally include super-sample covariances, and higher-order perturbative corrections.</p>
+<dl class="method">
+<dt id="PerturbedHalos.CountsCovariance.CountsCovariance.counts_covariance">
+<code class="descname">counts_covariance</code><span class="sig-paren">(</span><em>cs2</em>, <em>R</em>, <em>use_SSC=True</em>, <em>pt_type='EFT'</em>, <em>pade_resum=True</em>, <em>smooth_density=True</em>, <em>IR_resum=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/CountsCovariance.html#CountsCovariance.counts_covariance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.CountsCovariance.CountsCovariance.counts_covariance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the full SSC+no-SSC covariance matrix of N_i and P(k) as defined in the class description.</p>
+<p>If use_SSC = False, then we only return the non-SSC covariance.</p>
+<p>Parameters:
+- cs2: Squared-speed-of-sound counterterm in (Mpc/h)^2. (Unused if pt_type is not “EFT”)
+- R: Smoothing scale in Mpc/h. This is a free parameter of the model. (Unused if smooth_density = False)
+- use_SSC: Boolean, whether to include the super-sample covariance (SSC) terms, default: True
+- pt_type: Which flavor of perturbation theory to adopt. Options ‘EFT’ (linear + 1-loop + counterterm), ‘SPT’ (linear + 1-loop), ‘Linear’, default: ‘EFT’
+- pade_resum: If True, use a Pade resummation of the counterterm (k^2/(1+k^2)) P_lin rather than k^2 P_lin, default: True
+- smooth_density: If True, smooth the density field on scale R, i.e. multiply power by W(kR)^2, default: True
+- IR_resum: If True, perform IR resummation on the density field to resum non-perturbative long-wavelength modes, default: True</p>
+</dd></dl>
+
+</dd></dl>
+
 </div>
-<div class="section" id="perturbedhalos-halophysics-module">
-<h2>PerturbedHalos.HaloPhysics module<a class="headerlink" href="#perturbedhalos-halophysics-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-PerturbedHalos.HaloPhysics">
+<span id="perturbedhalos-halophysics-module"></span><h2>PerturbedHalos.HaloPhysics module<a class="headerlink" href="#module-PerturbedHalos.HaloPhysics" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="PerturbedHalos.HaloPhysics.HaloPhysics">
+<em class="property">class </em><code class="descclassname">PerturbedHalos.HaloPhysics.</code><code class="descname">HaloPhysics</code><span class="sig-paren">(</span><em>cosmology</em>, <em>mass_function</em>, <em>concentration_name='Duffy'</em>, <em>profile_name='NFW'</em>, <em>**hyperparams</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/HaloPhysics.html#HaloPhysics"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.HaloPhysics.HaloPhysics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class to hold halo model quantities and relevant integrals.</p>
+<p>Implemented Concentration Functions:
+- ‘Duffy’: Duffy et al. (2008) for virial-density haloes (second section in Table 1)</p>
+<p>Implemented Halo Profiles:
+- ‘NFW’: Navarro, Frenk &amp; White (1997) universal halo profile. We use the virial collapse overdensity from Bryan &amp; Norman 1998 to construct this.</p>
+<p>Methods:
+- __init__: Initialize the class with loaded modules and choices of halo profile and concentration function.
+- halo_profile: Compute the halo profile in Fourier space, rho(k|M), from a given input M and k-vector.
+- halo_concentration: Compute the concentration parameter for a given mass halo.</p>
+<dl class="method">
+<dt id="PerturbedHalos.HaloPhysics.HaloPhysics.halo_concentration">
+<code class="descname">halo_concentration</code><span class="sig-paren">(</span><em>m_h</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/HaloPhysics.html#HaloPhysics.halo_concentration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.HaloPhysics.HaloPhysics.halo_concentration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the halo concentration c = r_virial / r_scale.</p>
+<p>For details of the available concentration parametrizations, see the class description.</p>
+<p>Parameters:
+- m_h: Mass in Msun/h units.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="PerturbedHalos.HaloPhysics.HaloPhysics.halo_profile">
+<code class="descname">halo_profile</code><span class="sig-paren">(</span><em>m_h</em>, <em>k_phys</em>, <em>norm_only=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/HaloPhysics.html#HaloPhysics.halo_profile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.HaloPhysics.HaloPhysics.halo_profile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the halo profile function in Fourier space; rho(k|m) = m/rhoM*u(k|m)
+where rhoM is the background matter density and u(k|m) is the halo profile.</p>
+<p>We assume halos have a virial collapse overdensity here.</p>
+<p>For details of the available profile parametrizations, see the class description.</p>
+<p>Parameters:
+- m_h: Mass in Msun/h units.
+- k_phys: Wavenumber in 1/Mpc units.
+- norm_only: Boolean, if set, just return the normalization factor m/rho_M, default: False</p>
+</dd></dl>
+
+</dd></dl>
+
 </div>
-<div class="section" id="perturbedhalos-halopower-module">
-<h2>PerturbedHalos.HaloPower module<a class="headerlink" href="#perturbedhalos-halopower-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-PerturbedHalos.HaloPower">
+<span id="perturbedhalos-halopower-module"></span><h2>PerturbedHalos.HaloPower module<a class="headerlink" href="#module-PerturbedHalos.HaloPower" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="PerturbedHalos.HaloPower.HaloPower">
+<em class="property">class </em><code class="descclassname">PerturbedHalos.HaloPower.</code><code class="descname">HaloPower</code><span class="sig-paren">(</span><em>cosmology</em>, <em>mass_function</em>, <em>halo_physics</em>, <em>mass_integrals</em>, <em>kh_vector</em>, <em>kh_min=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/HaloPower.html#HaloPower"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.HaloPower.HaloPower" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class to compute the non-linear power spectrum from the halo model of Philcox et al. 2020</p>
+<dl class="docutils">
+<dt>The model power is defined as</dt>
+<dd>$$ <a href="#id1"><span class="problematic" id="id2">P_</span></a>mathrm{model} = I_1^1(k)^2 P_{NL}(k) W^2(kR) + I_2^0(k,k) $$</dd>
+</dl>
+<p>where I_p^q are mass function integrals defined in the MassIntegrals class,
+P_{NL} is the 1-loop non-linear power spectrum from Effective Field Theory
+and W(kR) is a smoothing window on scale R.</p>
+<p>Methods:
+- __init__: Initialize with the relevant classes and k vector.
+- compute_one_loop_only_power: Return the 1-loop-only (Eulerian) power spectrum without IR-resummation.
+- compute_resummed_linear_power: Return the linear power spectrum including IR-resummation.
+- compute_resummed_one_loop_power: Return the linear-plus-one-loop power spectrum including IR-resummation.
+- non_linear_power: Return the perturbative non-linear effective field theory power spectrum, optionally including IR-resummation, smoothing and the UV counterterm
+- halo_power: Return the full halo model power spectrum of Philcox et al. 2020, optionally including higher-order perturbative effects.</p>
+<dl class="method">
+<dt id="PerturbedHalos.HaloPower.HaloPower.compute_one_loop_only_power">
+<code class="descname">compute_one_loop_only_power</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/HaloPower.html#HaloPower.compute_one_loop_only_power"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.HaloPower.HaloPower.compute_one_loop_only_power" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the one-loop SPT power from the linear power spectrum in the Cosmology class.
+This returns the one-loop power evaluated at the wavenumber vector specfied in the class initialization.
+When first called, this computes an interpolator function, which is used in this an subsequent calls.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="PerturbedHalos.HaloPower.HaloPower.compute_resummed_linear_power">
+<code class="descname">compute_resummed_linear_power</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/HaloPower.html#HaloPower.compute_resummed_linear_power"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.HaloPower.HaloPower.compute_resummed_linear_power" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the IR-resummed linear power spectrum, using the linear power spectrum in the Cosmology class.</p>
+<dl class="docutils">
+<dt>The output power is defined by</dt>
+<dd>$ <a href="#id3"><span class="problematic" id="id4">P_</span></a>mathrm{lin, IR} = <a href="#id5"><span class="problematic" id="id6">P_</span></a>mathrm{lin, nw}(k) + <a href="#id7"><span class="problematic" id="id8">P_</span></a>mathrm{lin, w}e^{-k^2Sigma^2} $</dd>
+</dl>
+<p>where ‘nw’ and ‘w’ refer to the no-wiggle and wiggle parts of the linear power spectrum
+and Sigma^2 is the BAO damping scale (computed in _prepare_IR_resummation)</p>
+<p>This returns the IR-resummed linear power, evaluated at the wavenumber vector that the class was initialized with.</p>
+<p>If already computed, the IR resummed linear power is simply returned.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="PerturbedHalos.HaloPower.HaloPower.compute_resummed_one_loop_power">
+<code class="descname">compute_resummed_one_loop_power</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/HaloPower.html#HaloPower.compute_resummed_one_loop_power"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.HaloPower.HaloPower.compute_resummed_one_loop_power" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the IR-resummed linear-plus-one-loop power spectrum, using the linear power spectrum in the Cosmology class.</p>
+<dl class="docutils">
+<dt>The output power is defined by</dt>
+<dd><dl class="first last docutils">
+<dt>$ <a href="#id9"><span class="problematic" id="id10">P_</span></a>mathrm{1-loop, IR} = <a href="#id11"><span class="problematic" id="id12">P_</span></a>mathrm{lin, nw}(k) + <a href="#id13"><span class="problematic" id="id14">P_</span></a>mathrm{1-loop, nw}(k)</dt>
+<dd><ul class="first last simple">
+<li>e^{-k^2Sigma^2} [ <a href="#id15"><span class="problematic" id="id16">P_</span></a>mathrm{lin, w}(k) (1 + k^2Sigma^2) + <a href="#id17"><span class="problematic" id="id18">P_</span></a>mathrm{1-loop,w}(k) ] $</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>where ‘nw’ and ‘w’ refer to the no-wiggle and wiggle parts of the linear / 1-loop power spectrum
+and Sigma^2 is the BAO damping scale (computed in _prepare_IR_resummation)</p>
+<p>This returns the IR-resummed linear+one-loop power, evaluated at the wavenumber vector that the class was initialized with.</p>
+<p>If already computed, the IR resummed linear+one-loop power is simply returned.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="PerturbedHalos.HaloPower.HaloPower.halo_power">
+<code class="descname">halo_power</code><span class="sig-paren">(</span><em>cs2</em>, <em>R</em>, <em>pt_type='EFT'</em>, <em>pade_resum=True</em>, <em>smooth_density=True</em>, <em>IR_resum=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/HaloPower.html#HaloPower.halo_power"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.HaloPower.HaloPower.halo_power" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the non-linear halo-model power spectrum to one-loop order, with IR corrections and counterterms.
+Whilst we recommend including all non-linear effects, these can be optionally removed with the Boolean parameters.</p>
+<p>This is similar to the ‘non_linear_power()’ function, but includes the halo mass integrals, and is the <em>complete</em>
+model of the matter power spectrum at one-loop-order in our approximations.
+Note that the function requires two free parameters; R and cs2, which cannot be predicted from theory.</p>
+<p>The function returns the halo model power spectrum estimate.</p>
+<p>For further details, see the class description.</p>
+<p>Parameters:
+- cs2: Squared-speed-of-sound counterterm in (Mpc/h)^2. (Unused if pt_type is not “EFT”)
+- R: Smoothing scale in Mpc/h. This is a free parameter of the model. (Unused if smooth_density = False)
+- pt_type: Which flavor of perturbation theory to adopt. Options ‘EFT’ (linear + 1-loop + counterterm), ‘SPT’ (linear + 1-loop), ‘Linear’, default: ‘EFT’
+- pade_resum: If True, use a Pade resummation of the counterterm (k^2/(1+k^2)) P_lin rather than k^2 P_lin, default: True
+- smooth_density: If True, smooth the density field on scale R, i.e. multiply power by W(kR)^2, default: True
+- IR_resum: If True, perform IR resummation on the density field to resum non-perturbative long-wavelength modes, default: True</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="PerturbedHalos.HaloPower.HaloPower.non_linear_power">
+<code class="descname">non_linear_power</code><span class="sig-paren">(</span><em>cs2</em>, <em>R</em>, <em>pt_type='EFT'</em>, <em>pade_resum=True</em>, <em>smooth_density=True</em>, <em>IR_resum=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/HaloPower.html#HaloPower.non_linear_power"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.HaloPower.HaloPower.non_linear_power" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the non-linear power spectrum to one-loop order, with IR corrections and counterterms.
+Whilst we recommend including all non-linear effects, these can be optionally removed with the Boolean parameters.</p>
+<dl class="docutils">
+<dt>Including all relevant effects, this is defined as</dt>
+<dd>$$ <a href="#id19"><span class="problematic" id="id20">P_</span></a>mathrm{NL}(k, R, cs2) = [<a href="#id21"><span class="problematic" id="id22">P_</span></a>mathrm{lin}(k) + <a href="#id23"><span class="problematic" id="id24">P_</span></a>mathrm{1-loop}(k) + <a href="#id25"><span class="problematic" id="id26">P_</span></a>mathrm{counterterm}(k;cs2)] * W(kR) $$</dd>
+<dt>where</dt>
+<dd>$$ <a href="#id27"><span class="problematic" id="id28">P_</span></a>mathrm{counterterm}(k;cs2) = - cs2 * k^2 / (1 + k^2) * <a href="#id29"><span class="problematic" id="id30">P_</span></a>mathrm{lin}(k) $$</dd>
+</dl>
+<p>is the counterterm, and IR resummation is applied to all spectra.</p>
+<p>This computes the relevant integrals if they haven’t already been computed.</p>
+<p>The function returns <a href="#id31"><span class="problematic" id="id32">P_</span></a>mathrm{NL} given R and cs2.</p>
+<p>Parameters:
+- cs2: Squared-speed-of-sound counterterm in (Mpc/h)^2. (Unused if pt_type is not “EFT”)
+- R: Smoothing scale in Mpc/h. This is a free parameter of the model. (Unused if smooth_density = False)
+- pt_type: Which flavor of perturbation theory to adopt. Options ‘EFT’ (linear + 1-loop + counterterm), ‘SPT’ (linear + 1-loop), ‘Linear’, default: ‘EFT’
+- pade_resum: If True, use a Pade resummation of the counterterm (k^2/(1+k^2)) P_lin rather than k^2 P_lin, default: True
+- smooth_density: If True, smooth the density field on scale R, i.e. multiply power by W(kR)^2, default: True
+- IR_resum: If True, perform IR resummation on the density field to resum non-perturbative long-wavelength modes, default: True</p>
+</dd></dl>
+
+</dd></dl>
+
 </div>
-<div class="section" id="perturbedhalos-massfunction-module">
-<h2>PerturbedHalos.MassFunction module<a class="headerlink" href="#perturbedhalos-massfunction-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-PerturbedHalos.MassFunction">
+<span id="perturbedhalos-massfunction-module"></span><h2>PerturbedHalos.MassFunction module<a class="headerlink" href="#module-PerturbedHalos.MassFunction" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="PerturbedHalos.MassFunction.MassFunction">
+<em class="property">class </em><code class="descclassname">PerturbedHalos.MassFunction.</code><code class="descname">MassFunction</code><span class="sig-paren">(</span><em>cosmology</em>, <em>mass_function_name='Crocce'</em>, <em>**mass_params</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/MassFunction.html#MassFunction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.MassFunction.MassFunction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class to hold a mass function for halos and associated bias.</p>
+<p>Implemented Mass Functions:
+- ‘Sheth-Tormen’: Sheth &amp; Tormen 1999 analytic mass function. This assumes virialized halos, and uses the critical density from Nakamura &amp; Suto 1997.
+- ‘Tinker’: Tinker et al. 2010, eq. 8. This assume a spherical overdensity, the value of which can be specified.
+- ‘Crocce’: Crocce et al. 2009, eq. 22. Calibrated from Friends-of-Friends halos with linking length 0.2
+- ‘Bhattacharya’: Bhattacharya et al. 2010, eq. 12. Calibrated from Friends-of-Friends halos with linking length 0.2</p>
+<p>Implemented Bias Functions:
+- ‘Sheth-Tormen’: Sheth-Tormen 2001, eq. 8 Associated to the ‘Sheth-Tormen’ mass function.
+- ‘Tinker’: Tinker et al. 2010, eq. 15. Associated to the ‘Tinker’ mass function.
+- ‘Crocce’: Peak-background split derivation from the ‘Crocce’ mass function of eq. 22, Crocce et al. 2009.
+- ‘Bhattacharya’: Bhattacharya et al. 2010, eq. 18. Associated to the ‘Bhattacharya’ mass function.</p>
+<p>Methods:
+- __init__: Initialize the function, specifying the mass function name and any hyperparameters.
+- mass_function: Return the halo mass function for an input mass, in the form dn/dlog10(m)
+- linear_halo_bias: Return the first-order bias for a given mass, in Eulerian co-ordinates.
+- second_order_bias: Return the second-order bias for a given mass, in Eulerian co-ordinates.</p>
+<dl class="method">
+<dt id="PerturbedHalos.MassFunction.MassFunction.linear_halo_bias">
+<code class="descname">linear_halo_bias</code><span class="sig-paren">(</span><em>m_h</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/MassFunction.html#MassFunction.linear_halo_bias"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.MassFunction.MassFunction.linear_halo_bias" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the linear halo bias, from the peak background split.
+Associated bias functions are available for each mass function, and more can be user-defined.
+See the class description for details of the loaded parametrizations.</p>
+<p>Parameters:
+- m_h: Mass in Msun/h units.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="PerturbedHalos.MassFunction.MassFunction.mass_function">
+<code class="descname">mass_function</code><span class="sig-paren">(</span><em>m_h</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/MassFunction.html#MassFunction.mass_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.MassFunction.MassFunction.mass_function" title="Permalink to this definition">¶</a></dt>
+<dd><p>We currently assume that all mass functions can be written as
+dn/dlogM = f(sigma_M) * rho_matter * d(ln sigma_M)/d(log10 M) / M
+where sigma_M^2 is the overdensity variance on spheres with a
+radius given by the Lagrangian radius for mass M.</p>
+<p>For details of the available parametrizations, see the class description.</p>
+<p>Parameters:
+- m_h: Mass in Msun/h units.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="PerturbedHalos.MassFunction.MassFunction.second_order_bias">
+<code class="descname">second_order_bias</code><span class="sig-paren">(</span><em>m_h</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/MassFunction.html#MassFunction.second_order_bias"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.MassFunction.MassFunction.second_order_bias" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the second order Eulerian bias, defined as 4/21 b1L + 1/2 b2L where b1L and b2L are the Lagrangian bias parameters.</p>
+<p>Associated bias functions are available for each mass function, and more can be user-defined.
+See the class description for details of the loaded parametrizations.</p>
+<p>Parameters:
+- m_h: Mass in Msun/h units.</p>
+</dd></dl>
+
+</dd></dl>
+
 </div>
-<div class="section" id="perturbedhalos-massintegrals-module">
-<h2>PerturbedHalos.MassIntegrals module<a class="headerlink" href="#perturbedhalos-massintegrals-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-PerturbedHalos.MassIntegrals">
+<span id="perturbedhalos-massintegrals-module"></span><h2>PerturbedHalos.MassIntegrals module<a class="headerlink" href="#module-PerturbedHalos.MassIntegrals" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="PerturbedHalos.MassIntegrals.MassIntegrals">
+<em class="property">class </em><code class="descclassname">PerturbedHalos.MassIntegrals.</code><code class="descname">MassIntegrals</code><span class="sig-paren">(</span><em>cosmology</em>, <em>mass_function</em>, <em>halo_physics</em>, <em>kh_vector</em>, <em>min_logM=6.001</em>, <em>max_logM=16.999</em>, <em>N_mass=10000</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/MassIntegrals.html#MassIntegrals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.MassIntegrals.MassIntegrals" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Class to compute and store the various mass integrals of the form</dt>
+<dd>$$I_p^{q1,q2}(k_1,…k_p) = int n(m)b^{(q1)}(m)b^{(q2)}</dd>
+</dl>
+<p>rac{m^p}{
+ho^p}u(k_1|m)..u(k_p|m)dm$$</p>
+<blockquote>
+<div><p>which are needed to compute the power spectrum model. Here b^{(q)} is the q-th order bias (with b^{0}=1),
+u(k|m) is the normalized halo profile and n(m) is the mass function.</p>
+<p>All integrals are performed via Simpson’s rule over a specified mass range, and are simply returned if they are already computed.</p>
+<dl class="docutils">
+<dt>For the I_1^{1,0} = I_1^1 integral, the integral must be corrected to ensure that we recover the bias consistency relation;</dt>
+<dd>$ I_1^1</dd>
+</dl>
+</div></blockquote>
+<p>ightarrow 1 $ as $ k
+ightarrow 0 $.</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>This requires an infinite mass range, so we instead approximate;</dt>
+<dd>$ I_1^1(k)_mathrm{corrected} = I_1^1(k) + ( 1 - I_1^1(0) ) u(k|m_min) / u(k|0) $</dd>
+</dl>
+<p>for normalized halo profile $u$.</p>
+<p>Methods:
+- __init__: Initialize the class specifying the k-vector and relevant attributes.
+- compute_I_00: Return the I_0^0 integral.
+- compute_I_01: Return the I_0^1 integral.
+- compute_I_11: Compute the I_1^1 integral for the k-vector specified in the class description, with the above correction if specified.
+- compute_I_111: Compute the I_1^{1,1} integral for the k-vector specified in the class description.
+- compute_I_12: Compute the I_1^1 integral for the k-vector specified in the class description, with the above correction if specified.
+- compute_I_20: Compute the I_1^2 integral for the k-vector specified in the class description.
+- compute_I_21: Compute the I_2^1 integral for the k-vector specified in the class description.</p>
+</div></blockquote>
+<dl class="method">
+<dt id="PerturbedHalos.MassIntegrals.MassIntegrals.compute_I_00">
+<code class="descname">compute_I_00</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/MassIntegrals.html#MassIntegrals.compute_I_00"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.MassIntegrals.MassIntegrals.compute_I_00" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the I_0^0 integral, if not already computed.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="PerturbedHalos.MassIntegrals.MassIntegrals.compute_I_01">
+<code class="descname">compute_I_01</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/MassIntegrals.html#MassIntegrals.compute_I_01"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.MassIntegrals.MassIntegrals.compute_I_01" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the I_0^1 integral, if not already computed.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="PerturbedHalos.MassIntegrals.MassIntegrals.compute_I_11">
+<code class="descname">compute_I_11</code><span class="sig-paren">(</span><em>apply_correction=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/MassIntegrals.html#MassIntegrals.compute_I_11"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.MassIntegrals.MassIntegrals.compute_I_11" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the I_1^1(k) integral, if not already computed. Also apply the correction noted in the class header.</p>
+<p>When computing {}_i J_1^1 type integrals (over a finite mass bin), the correction should <em>not</em> be applied.</p>
+<p>Parameters:
+- apply_correction (Boolean): Whether to apply the correction in the class header to ensure the bias consistency relation is upheld.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="PerturbedHalos.MassIntegrals.MassIntegrals.compute_I_111">
+<code class="descname">compute_I_111</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/MassIntegrals.html#MassIntegrals.compute_I_111"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.MassIntegrals.MassIntegrals.compute_I_111" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the I_1^{1,1} integral, if not already computed.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="PerturbedHalos.MassIntegrals.MassIntegrals.compute_I_12">
+<code class="descname">compute_I_12</code><span class="sig-paren">(</span><em>apply_correction=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/MassIntegrals.html#MassIntegrals.compute_I_12"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.MassIntegrals.MassIntegrals.compute_I_12" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the I_1^2 integral, if not already computed.</p>
+<p>When computing {}_i J_1^2 type integrals (over a finite mass bin), the correction should <em>not</em> be applied.</p>
+<p>Parameters:
+- apply_correction (Boolean): Whether to apply the correction in the class header to ensure the bias consistency relation is upheld.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="PerturbedHalos.MassIntegrals.MassIntegrals.compute_I_20">
+<code class="descname">compute_I_20</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/MassIntegrals.html#MassIntegrals.compute_I_20"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.MassIntegrals.MassIntegrals.compute_I_20" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the I_2^0(k,k) integral, if not already computed.
+Note that we assume both k vectors are the same here.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="PerturbedHalos.MassIntegrals.MassIntegrals.compute_I_21">
+<code class="descname">compute_I_21</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/MassIntegrals.html#MassIntegrals.compute_I_21"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.MassIntegrals.MassIntegrals.compute_I_21" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the I_2^1 integral, if not already computed.
+Note that we assume both k vectors are the same here.</p>
+</dd></dl>
+
+</dd></dl>
+
 </div>
-<div class="section" id="module-contents">
-<h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-PerturbedHalos">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-PerturbedHalos" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 
