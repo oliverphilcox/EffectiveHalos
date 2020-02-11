@@ -150,7 +150,22 @@
 
 <span class="sd">    This can be initialized by a set of cosmological parameters or a pre-defined name.</span>
 
+<span class="sd">    Loaded cosmological models:</span>
+
+<span class="sd">    - Planck18: Bestfit cosmology from Planck 2018, using the baseline TT,TE,EE+lowE+lensing likelihood.</span>
+<span class="sd">    - Quijote: Fiducial cosmology from the Quijote simulations of Francisco Villaescusa-Navarro et al.</span>
+<span class="sd">    - Abacus: Fiducial cosmology from the Abacus simulations of Lehman Garrison et al.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">loaded_models</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Quijote&#39;</span><span class="p">:{</span><span class="s2">&quot;h&quot;</span><span class="p">:</span><span class="mf">0.6711</span><span class="p">,</span><span class="s2">&quot;omega_cdm&quot;</span><span class="p">:(</span><span class="mf">0.3175</span> <span class="o">-</span> <span class="mf">0.049</span><span class="p">)</span><span class="o">*</span><span class="mf">0.6711</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span>
+                                <span class="s2">&quot;Omega_b&quot;</span><span class="p">:</span><span class="mf">0.049</span><span class="p">,</span> <span class="s2">&quot;sigma8&quot;</span><span class="p">:</span><span class="mf">0.834</span><span class="p">,</span><span class="s2">&quot;n_s&quot;</span><span class="p">:</span><span class="mf">0.9624</span><span class="p">,</span>
+                                <span class="s2">&quot;N_eff&quot;</span><span class="p">:</span><span class="mf">3.04</span><span class="p">},</span>
+                     <span class="s1">&#39;Abacus&#39;</span><span class="p">:{</span><span class="s2">&quot;h&quot;</span><span class="p">:</span><span class="mf">0.6726</span><span class="p">,</span><span class="s2">&quot;omega_cdm&quot;</span><span class="p">:</span><span class="mf">0.1199</span><span class="p">,</span>
+                                <span class="s2">&quot;omega_b&quot;</span><span class="p">:</span><span class="mf">0.02222</span><span class="p">,</span><span class="s2">&quot;n_s&quot;</span><span class="p">:</span><span class="mf">0.9652</span><span class="p">,</span><span class="s2">&quot;sigma8&quot;</span><span class="p">:</span><span class="mf">0.830</span><span class="p">,</span>
+                                <span class="s2">&quot;N_eff&quot;</span><span class="p">:</span><span class="mf">3.04</span><span class="p">},</span>
+                     <span class="s1">&#39;Planck18&#39;</span><span class="p">:{</span><span class="s2">&quot;h&quot;</span><span class="p">:</span><span class="mf">0.6732</span><span class="p">,</span><span class="s2">&quot;omega_cdm&quot;</span><span class="p">:</span><span class="mf">0.12011</span><span class="p">,</span><span class="s2">&quot;omega_b&quot;</span><span class="p">:</span><span class="mf">0.022383</span><span class="p">,</span>
+                                <span class="s2">&quot;n_s&quot;</span><span class="p">:</span><span class="mf">0.96605</span><span class="p">,</span><span class="s2">&quot;sigma8&quot;</span><span class="p">:</span><span class="mf">0.8120</span><span class="p">}}</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">redshift</span><span class="p">,</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="o">**</span><span class="n">params</span><span class="p">):</span>
 
