@@ -20,5 +20,4 @@ Todo:
    :maxdepth: 2
    :caption: Contents:
 
-   module
-   modules
+   PerturbedHalos

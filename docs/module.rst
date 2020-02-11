@@ -1,4 +1,0 @@
-Module Documentation
-=======================
-
-.. autoclass:: PerturbedHalos
