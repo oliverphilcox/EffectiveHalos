@@ -155,17 +155,17 @@
 
 <span class="sd">    Implemented Mass Functions:</span>
 
-<span class="sd">    - &#39;Sheth-Tormen&#39;: Sheth &amp; Tormen 1999 analytic mass function. This assumes virialized halos, and uses the critical density from Nakamura &amp; Suto 1997.</span>
-<span class="sd">    - &#39;Tinker&#39;: Tinker et al. 2010, eq. 8. This assume a spherical overdensity, the value of which can be specified.</span>
-<span class="sd">    - &#39;Crocce&#39;: Crocce et al. 2009, eq. 22. Calibrated from Friends-of-Friends halos with linking length 0.2</span>
-<span class="sd">    - &#39;Bhattacharya&#39;: Bhattacharya et al. 2010, eq. 12. Calibrated from Friends-of-Friends halos with linking length 0.2</span>
+<span class="sd">    - **Sheth-Tormen**: Sheth &amp; Tormen 1999 analytic mass function. This assumes virialized halos, and uses the critical density from Nakamura &amp; Suto 1997.</span>
+<span class="sd">    - **Tinker**: Tinker et al. 2010, eq. 8. This assume a spherical overdensity, the value of which can be specified.</span>
+<span class="sd">    - **Crocce**: Crocce et al. 2009, eq. 22. Calibrated from Friends-of-Friends halos with linking length 0.2</span>
+<span class="sd">    - **Bhattacharya**: Bhattacharya et al. 2010, eq. 12. Calibrated from Friends-of-Friends halos with linking length 0.2</span>
 
 <span class="sd">    Implemented Bias Functions:</span>
 
-<span class="sd">    - &#39;Sheth-Tormen&#39;: Sheth-Tormen 2001, eq. 8 Associated to the &#39;Sheth-Tormen&#39; mass function.</span>
-<span class="sd">    - &#39;Tinker&#39;: Tinker et al. 2010, eq. 15. Associated to the &#39;Tinker&#39; mass function.</span>
-<span class="sd">    - &#39;Crocce&#39;: Peak-background split derivation from the &#39;Crocce&#39; mass function of eq. 22, Crocce et al. 2009.</span>
-<span class="sd">    - &#39;Bhattacharya&#39;: Bhattacharya et al. 2010, eq. 18. Associated to the &#39;Bhattacharya&#39; mass function.</span>
+<span class="sd">    - **Sheth-Tormen** Sheth-Tormen 2001, eq. 8 Associated to the &#39;Sheth-Tormen&#39; mass function.</span>
+<span class="sd">    - **Tinker**: Tinker et al. 2010, eq. 15. Associated to the &#39;Tinker&#39; mass function.</span>
+<span class="sd">    - **Crocce**: Peak-background split derivation from the &#39;Crocce&#39; mass function of eq. 22, Crocce et al. 2009.</span>
+<span class="sd">    - **Bhattacharya**: Bhattacharya et al. 2010, eq. 18. Associated to the &#39;Bhattacharya&#39; mass function.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        cosmology (Cosmology): Class instance containing relevant cosmological information</span>
@@ -207,9 +207,9 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the mass function, equal to the number density of halos per unit logarithmic mass interval. This assumes the existence of a universal mass function, with::</span>
 
-<span class="sd">            dn/d\log_{10}M = f(\sigma(M))\bar{\rho}_M/M d\ln\sigma(M)/d\log_{10}(M)</span>
+<span class="sd">            dn/d\log_{10}M = f(\sigma(M))\bar{\{rho}}_M/M d\ln\sigma(M)/d\log_{10}(M)</span>
 
-<span class="sd">        where :math:`f` is the universal mass function, :math:`\bar{\rho}_M` is the mean matter density at redshift zero and :math:`\sigma(M)^2` is the overdensity variance on spheres with a radius given by the Lagrangian radius for mass :math:`M`.</span>
+<span class="sd">        where :math:`f` is the universal mass function, :math:`\bar{\{rho}}_M` is the mean matter density at redshift zero and :math:`\sigma(M)^2` is the overdensity variance on spheres with a radius given by the Lagrangian radius for mass :math:`M`.</span>
 
 <span class="sd">        For details of the available mass function parametrizations, see the class description.</span>
 
@@ -280,7 +280,7 @@
             <span class="k">return</span> <span class="mf">1.</span> <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">a0</span><span class="o">*</span><span class="n">nu</span><span class="o">**</span><span class="mf">2.</span><span class="o">+</span><span class="mf">2.</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">p0</span><span class="o">/</span><span class="p">(</span><span class="mf">1.</span><span class="o">+</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">a0</span><span class="o">*</span><span class="n">nu</span><span class="o">**</span><span class="mf">2.</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">p0</span><span class="p">))</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">q0</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">delta_c</span></div>
 
 <div class="viewcode-block" id="MassFunction.second_order_bias"><a class="viewcode-back" href="../../test.html#PerturbedHalos.MassFunction.MassFunction.second_order_bias">[docs]</a>    <span class="k">def</span> <span class="nf">second_order_bias</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">m_h</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Compute the second order Eulerian bias, defined as :math:`\frac{4}{21}b_1^L + \frac{1}{2} b_2^L` where :math:`b_1^L` and :math:`b_2^L` are the Lagrangian bias parameters.</span>
+        <span class="sd">&quot;&quot;&quot; Compute the second order Eulerian bias, defined as :math:`\{frac}{4}{21}b_1^L + \{frac}{1}{2} b_2^L` where :math:`b_1^L` and :math:`b_2^L` are the Lagrangian bias parameters.</span>
 
 <span class="sd">        Associated bias functions are available for each mass function, and more can be user-defined. See the class description for details of the loaded parametrizations.</span>
 

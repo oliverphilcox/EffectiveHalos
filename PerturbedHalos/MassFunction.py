@@ -8,17 +8,17 @@ class MassFunction:
 
     Implemented Mass Functions:
 
-    - 'Sheth-Tormen': Sheth & Tormen 1999 analytic mass function. This assumes virialized halos, and uses the critical density from Nakamura & Suto 1997.
-    - 'Tinker': Tinker et al. 2010, eq. 8. This assume a spherical overdensity, the value of which can be specified.
-    - 'Crocce': Crocce et al. 2009, eq. 22. Calibrated from Friends-of-Friends halos with linking length 0.2
-    - 'Bhattacharya': Bhattacharya et al. 2010, eq. 12. Calibrated from Friends-of-Friends halos with linking length 0.2
+    - **Sheth-Tormen**: Sheth & Tormen 1999 analytic mass function. This assumes virialized halos, and uses the critical density from Nakamura & Suto 1997.
+    - **Tinker**: Tinker et al. 2010, eq. 8. This assume a spherical overdensity, the value of which can be specified.
+    - **Crocce**: Crocce et al. 2009, eq. 22. Calibrated from Friends-of-Friends halos with linking length 0.2
+    - **Bhattacharya**: Bhattacharya et al. 2010, eq. 12. Calibrated from Friends-of-Friends halos with linking length 0.2
 
     Implemented Bias Functions:
 
-    - 'Sheth-Tormen': Sheth-Tormen 2001, eq. 8 Associated to the 'Sheth-Tormen' mass function.
-    - 'Tinker': Tinker et al. 2010, eq. 15. Associated to the 'Tinker' mass function.
-    - 'Crocce': Peak-background split derivation from the 'Crocce' mass function of eq. 22, Crocce et al. 2009.
-    - 'Bhattacharya': Bhattacharya et al. 2010, eq. 18. Associated to the 'Bhattacharya' mass function.
+    - **Sheth-Tormen** Sheth-Tormen 2001, eq. 8 Associated to the 'Sheth-Tormen' mass function.
+    - **Tinker**: Tinker et al. 2010, eq. 15. Associated to the 'Tinker' mass function.
+    - **Crocce**: Peak-background split derivation from the 'Crocce' mass function of eq. 22, Crocce et al. 2009.
+    - **Bhattacharya**: Bhattacharya et al. 2010, eq. 18. Associated to the 'Bhattacharya' mass function.
 
     Args:
         cosmology (Cosmology): Class instance containing relevant cosmological information
@@ -60,9 +60,9 @@ class MassFunction:
         """
         Return the mass function, equal to the number density of halos per unit logarithmic mass interval. This assumes the existence of a universal mass function, with::
 
-            dn/d\log_{10}M = f(\sigma(M))\bar{\rho}_M/M d\ln\sigma(M)/d\log_{10}(M)
+            dn/d\log_{10}M = f(\sigma(M))\bar{\{rho}}_M/M d\ln\sigma(M)/d\log_{10}(M)
 
-        where :math:`f` is the universal mass function, :math:`\bar{\rho}_M` is the mean matter density at redshift zero and :math:`\sigma(M)^2` is the overdensity variance on spheres with a radius given by the Lagrangian radius for mass :math:`M`.
+        where :math:`f` is the universal mass function, :math:`\bar{\{rho}}_M` is the mean matter density at redshift zero and :math:`\sigma(M)^2` is the overdensity variance on spheres with a radius given by the Lagrangian radius for mass :math:`M`.
 
         For details of the available mass function parametrizations, see the class description.
 
@@ -133,7 +133,7 @@ class MassFunction:
             return 1. + (self.a0*nu**2.+2.*self.p0/(1.+np.power(self.a0*nu**2.,self.p0))-self.q0) / self.delta_c
 
     def second_order_bias(self,m_h):
-        """ Compute the second order Eulerian bias, defined as :math:`\frac{4}{21}b_1^L + \frac{1}{2} b_2^L` where :math:`b_1^L` and :math:`b_2^L` are the Lagrangian bias parameters.
+        """ Compute the second order Eulerian bias, defined as :math:`\{frac}{4}{21}b_1^L + \{frac}{1}{2} b_2^L` where :math:`b_1^L` and :math:`b_2^L` are the Lagrangian bias parameters.
 
         Associated bias functions are available for each mass function, and more can be user-defined. See the class description for details of the loaded parametrizations.
 
