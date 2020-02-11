@@ -1,15 +1,15 @@
 Python API
 ============
 
-Cosmology Module
------------------
+Cosmology
+----------
 
 .. automodule:: PerturbedHalos.Cosmology
   :members:
 
 
-Mass Function Module
----------------------
+Mass Function
+--------------
 
 .. automodule:: PerturbedHalos.MassFunction
   :members:

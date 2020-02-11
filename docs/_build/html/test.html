@@ -83,8 +83,8 @@
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Python API</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#module-PerturbedHalos.Cosmology">Cosmology Module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-PerturbedHalos.MassFunction">Mass Function Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-PerturbedHalos.Cosmology">Cosmology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-PerturbedHalos.MassFunction">Mass Function</a></li>
 </ul>
 </li>
 </ul>
@@ -154,7 +154,7 @@
   <div class="section" id="python-api">
 <h1>Python API<a class="headerlink" href="#python-api" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="module-PerturbedHalos.Cosmology">
-<span id="cosmology-module"></span><h2>Cosmology Module<a class="headerlink" href="#module-PerturbedHalos.Cosmology" title="Permalink to this headline">¶</a></h2>
+<span id="cosmology"></span><h2>Cosmology<a class="headerlink" href="#module-PerturbedHalos.Cosmology" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="PerturbedHalos.Cosmology.Cosmology">
 <em class="property">class </em><code class="descclassname">PerturbedHalos.Cosmology.</code><code class="descname">Cosmology</code><span class="sig-paren">(</span><em>redshift</em>, <em>name=''</em>, <em>**params</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/Cosmology.html#Cosmology"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.Cosmology.Cosmology" title="Permalink to this definition">¶</a></dt>
@@ -267,7 +267,7 @@
 
 </div>
 <div class="section" id="module-PerturbedHalos.MassFunction">
-<span id="mass-function-module"></span><h2>Mass Function Module<a class="headerlink" href="#module-PerturbedHalos.MassFunction" title="Permalink to this headline">¶</a></h2>
+<span id="mass-function"></span><h2>Mass Function<a class="headerlink" href="#module-PerturbedHalos.MassFunction" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="PerturbedHalos.MassFunction.MassFunction">
 <em class="property">class </em><code class="descclassname">PerturbedHalos.MassFunction.</code><code class="descname">MassFunction</code><span class="sig-paren">(</span><em>cosmology</em>, <em>mass_function_name='Crocce'</em>, <em>**mass_params</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/MassFunction.html#MassFunction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.MassFunction.MassFunction" title="Permalink to this definition">¶</a></dt>
@@ -322,26 +322,27 @@
 <dl class="method">
 <dt id="PerturbedHalos.MassFunction.MassFunction.mass_function">
 <code class="descname">mass_function</code><span class="sig-paren">(</span><em>m_h</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/MassFunction.html#MassFunction.mass_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.MassFunction.MassFunction.mass_function" title="Permalink to this definition">¶</a></dt>
-<dd><blockquote>
-<div><p>Return the mass function, equal to the number density of halos per unit logarithmic mass interval. This assumes the existence of a universal mass function, with</p>
+<dd><p>Return the mass function, equal to the number density of halos per unit logarithmic mass interval. This assumes the existence of a universal mass function, with</p>
 <div class="math notranslate nohighlight">
-\[dn/d\log_{10}M = f(\sigma(M))ar{\]</div>
-</div></blockquote>
-<p>ho}_M/M dlnsigma(M)/dlog_{10}(M)</p>
-<blockquote>
-<div>where <span class="math notranslate nohighlight">\(f\)</span> is the universal mass function, :math:<a href="#id1"><span class="problematic" id="id2">`</span></a>ar{</div></blockquote>
-<p>ho}_M` is the mean matter density at redshift zero and <span class="math notranslate nohighlight">\(\sigma^2(M)\)</span> is the overdensity variance on spheres with a radius given by the Lagrangian radius for mass <span class="math notranslate nohighlight">\(M\)</span>.</p>
-<blockquote>
-<div><p>For details of the available mass function parametrizations, see the class description.</p>
-<dl class="docutils">
-<dt>Note:</dt>
-<dd>We return the mass function <span class="math notranslate nohighlight">\(dn/d\log_{10}(M)\)</span> for later computational ease.</dd>
-<dt>Args:</dt>
-<dd>m_h (float): Mass in <span class="math notranslate nohighlight">\(h^{-1}M_\odot\)</span> units.</dd>
-<dt>Returns:</dt>
-<dd>float: Mass function, <span class="math notranslate nohighlight">\(dn/d\log_{10}(M)\)</span> in <span class="math notranslate nohighlight">\(\mathrm{Mpc}^{-3}\)</span> units</dd>
-</dl>
-</div></blockquote>
+\[dn/d\log_{10}M = f(\sigma(M))\bar{\rho}_M/M d\ln\sigma(M)/d\log_{10}(M)\]</div>
+<p>where <span class="math notranslate nohighlight">\(f\)</span> is the universal mass function, <span class="math notranslate nohighlight">\(\bar{\rho}_M\)</span> is the mean matter density at redshift zero and <span class="math notranslate nohighlight">\(\sigma^2(M)\)</span> is the overdensity variance on spheres with a radius given by the Lagrangian radius for mass <span class="math notranslate nohighlight">\(M\)</span>.</p>
+<p>For details of the available mass function parametrizations, see the class description.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">We return the mass function <span class="math notranslate nohighlight">\(dn/d\log_{10}(M)\)</span> for later computational ease.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>m_h</strong> (<em>float</em>) – Mass in <span class="math notranslate nohighlight">\(h^{-1}M_\odot\)</span> units.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Mass function, <span class="math notranslate nohighlight">\(dn/d\log_{10}(M)\)</span> in <span class="math notranslate nohighlight">\(\mathrm{Mpc}^{-3}\)</span> units</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
