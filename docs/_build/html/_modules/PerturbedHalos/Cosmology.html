@@ -149,7 +149,7 @@
 <span class="kn">from</span> <span class="nn">classy</span> <span class="kn">import</span> <span class="n">Class</span>
 <span class="kn">from</span> <span class="nn">scipy.interpolate</span> <span class="kn">import</span> <span class="n">interp1d</span>
 
-<div class="viewcode-block" id="Cosmology"><a class="viewcode-back" href="../../PerturbedHalos.html#PerturbedHalos.Cosmology.Cosmology">[docs]</a><span class="k">class</span> <span class="nc">Cosmology</span><span class="p">:</span>
+<div class="viewcode-block" id="Cosmology"><a class="viewcode-back" href="../../test.html#PerturbedHalos.Cosmology.Cosmology">[docs]</a><span class="k">class</span> <span class="nc">Cosmology</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Class to hold the basic cosmology and class attributes.</span>
 
 <span class="sd">    This can be initialized by a set of cosmological parameters or a pre-defined name.</span>
@@ -176,7 +176,7 @@
                      <span class="s1">&#39;Planck18&#39;</span><span class="p">:{</span><span class="s2">&quot;h&quot;</span><span class="p">:</span><span class="mf">0.6732</span><span class="p">,</span><span class="s2">&quot;omega_cdm&quot;</span><span class="p">:</span><span class="mf">0.12011</span><span class="p">,</span><span class="s2">&quot;omega_b&quot;</span><span class="p">:</span><span class="mf">0.022383</span><span class="p">,</span>
                                 <span class="s2">&quot;n_s&quot;</span><span class="p">:</span><span class="mf">0.96605</span><span class="p">,</span><span class="s2">&quot;sigma8&quot;</span><span class="p">:</span><span class="mf">0.8120</span><span class="p">}}</span>
 
-<div class="viewcode-block" id="Cosmology.__init__"><a class="viewcode-back" href="../../PerturbedHalos.html#PerturbedHalos.Cosmology.Cosmology.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">redshift</span><span class="p">,</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="o">**</span><span class="n">params</span><span class="p">):</span>
+<div class="viewcode-block" id="Cosmology.__init__"><a class="viewcode-back" href="../../test.html#PerturbedHalos.Cosmology.Cosmology.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">redshift</span><span class="p">,</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="o">**</span><span class="n">params</span><span class="p">):</span>
 
         <span class="sd">&quot;&quot;&quot;Initialize the cosmology class with cosmological parameters or a defined model.</span>
 
@@ -238,7 +238,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">rho_critical</span> <span class="o">=</span> <span class="p">((</span><span class="mf">3.</span><span class="o">*</span><span class="mf">100.</span><span class="o">*</span><span class="mf">100.</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mf">8.</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="mf">6.67408e-11</span><span class="p">))</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1000.</span><span class="o">*</span><span class="mf">1000.</span><span class="o">*</span><span class="mf">3.085677581491367399198952281E+22</span><span class="o">/</span><span class="mf">1.9884754153381438E+30</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">rhoM</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rho_critical</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">cosmo</span><span class="o">.</span><span class="n">Omega0_m</span><span class="p">()</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">cosmo</span><span class="o">.</span><span class="n">h</span><span class="p">()</span><span class="o">**</span><span class="mf">2.</span></div>
 
-<div class="viewcode-block" id="Cosmology.linear_power"><a class="viewcode-back" href="../../PerturbedHalos.html#PerturbedHalos.Cosmology.Cosmology.linear_power">[docs]</a>    <span class="k">def</span> <span class="nf">linear_power</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">kh_vector</span><span class="p">,</span><span class="n">kh_min</span><span class="o">=</span><span class="mf">0.</span><span class="p">):</span>
+<div class="viewcode-block" id="Cosmology.linear_power"><a class="viewcode-back" href="../../test.html#PerturbedHalos.Cosmology.Cosmology.linear_power">[docs]</a>    <span class="k">def</span> <span class="nf">linear_power</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">kh_vector</span><span class="p">,</span><span class="n">kh_min</span><span class="o">=</span><span class="mf">0.</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Compute the linear power spectrum from CLASS for a vector of input k.</span>
 
 <span class="sd">        If set, we remove any modes below some k_min.</span>
@@ -264,7 +264,7 @@
         <span class="n">output</span><span class="p">[</span><span class="n">filt</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vector_linear_power</span><span class="p">(</span><span class="n">kh_vector</span><span class="p">[</span><span class="n">filt</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">h</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">h</span><span class="o">**</span><span class="mf">3.</span>
         <span class="k">return</span> <span class="n">output</span></div>
 
-<div class="viewcode-block" id="Cosmology.sigmaM"><a class="viewcode-back" href="../../PerturbedHalos.html#PerturbedHalos.Cosmology.Cosmology.sigmaM">[docs]</a>    <span class="k">def</span> <span class="nf">sigmaM</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">M_phys</span><span class="p">):</span>
+<div class="viewcode-block" id="Cosmology.sigmaM"><a class="viewcode-back" href="../../test.html#PerturbedHalos.Cosmology.Cosmology.sigmaM">[docs]</a>    <span class="k">def</span> <span class="nf">sigmaM</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">M_phys</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Compute \sigma(M,z) from CLASS as a vector function.</span>
 
 <span class="sd">        Args:</span>
@@ -279,7 +279,7 @@
         <span class="n">sigma_func</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vector_sigma_R</span><span class="p">(</span><span class="n">r_phys</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">sigma_func</span></div>
 
-<div class="viewcode-block" id="Cosmology.sigma_logM_int"><a class="viewcode-back" href="../../PerturbedHalos.html#PerturbedHalos.Cosmology.Cosmology.sigma_logM_int">[docs]</a>    <span class="k">def</span> <span class="nf">sigma_logM_int</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">logM</span><span class="p">):</span>
+<div class="viewcode-block" id="Cosmology.sigma_logM_int"><a class="viewcode-back" href="../../test.html#PerturbedHalos.Cosmology.Cosmology.sigma_logM_int">[docs]</a>    <span class="k">def</span> <span class="nf">sigma_logM_int</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">logM</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return the value of sigma(M) using the prebuilt interpolators, which are constructed if not present.</span>
 
 <span class="sd">        Args:</span>
@@ -292,7 +292,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_interpolate_sigma_and_deriv</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sigma_logM_int_func</span><span class="p">(</span><span class="n">logM</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Cosmology.dlns_dlogM_int"><a class="viewcode-back" href="../../PerturbedHalos.html#PerturbedHalos.Cosmology.Cosmology.dlns_dlogM_int">[docs]</a>    <span class="k">def</span> <span class="nf">dlns_dlogM_int</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">logM</span><span class="p">):</span>
+<div class="viewcode-block" id="Cosmology.dlns_dlogM_int"><a class="viewcode-back" href="../../test.html#PerturbedHalos.Cosmology.Cosmology.dlns_dlogM_int">[docs]</a>    <span class="k">def</span> <span class="nf">dlns_dlogM_int</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">logM</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return the value of d(ln sigma(M))/d(log10(M)) using the prebuilt interpolators, which are constructed if not present.</span>
 
 <span class="sd">        Args:</span>
