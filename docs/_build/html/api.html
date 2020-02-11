@@ -87,6 +87,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#module-PerturbedHalos.MassFunction">Mass Function</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-PerturbedHalos.HaloPhysics">Halo Physics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-PerturbedHalos.MassIntegrals">Mass Integrals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-PerturbedHalos.HaloPower">Halo Power</a></li>
 </ul>
 </li>
 </ul>
@@ -596,6 +597,136 @@ where <span class="math notranslate nohighlight">\(\bar{\rho}_M\)</span> is the 
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Array of <span class="math notranslate nohighlight">\(I_2^1\)</span> values for each k.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-PerturbedHalos.HaloPower">
+<span id="halo-power"></span><h2>Halo Power<a class="headerlink" href="#module-PerturbedHalos.HaloPower" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="PerturbedHalos.HaloPower.HaloPower">
+<em class="property">class </em><code class="descclassname">PerturbedHalos.HaloPower.</code><code class="descname">HaloPower</code><span class="sig-paren">(</span><em>cosmology</em>, <em>mass_function</em>, <em>halo_physics</em>, <em>mass_integrals</em>, <em>kh_vector</em>, <em>kh_min=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/HaloPower.html#HaloPower"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.HaloPower.HaloPower" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class to compute the non-linear power spectrum from the halo model of Philcox et al. 2020.</p>
+<p>The model power is defined as</p>
+<div class="math notranslate nohighlight">
+\[P_\mathrm{model} = I_1^1(k)^2 P_{NL}(k) W^2(kR) + I_2^0(k,k)\]</div>
+<p>where <span class="math notranslate nohighlight">\(I_p^q\)</span> are mass function integrals defined in the MassIntegrals class, <span class="math notranslate nohighlight">\(P_{NL}\)</span> is the 1-loop non-linear power spectrum from Effective Field Theory and <span class="math notranslate nohighlight">\(W(kR)\)</span> is a smoothing window on scale R.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>cosmology</strong> (<a class="reference internal" href="#PerturbedHalos.Cosmology.Cosmology" title="PerturbedHalos.Cosmology.Cosmology"><em>Cosmology</em></a>) – Instance of the Cosmology class containing relevant cosmology and functions.</li>
+<li><strong>mass_function</strong> (<a class="reference internal" href="#PerturbedHalos.MassFunction.MassFunction" title="PerturbedHalos.MassFunction.MassFunction"><em>MassFunction</em></a>) – Instance of the MassFunction class, containing the mass function and bias.</li>
+<li><strong>halo_physics</strong> (<a class="reference internal" href="#PerturbedHalos.HaloPhysics.HaloPhysics" title="PerturbedHalos.HaloPhysics.HaloPhysics"><em>HaloPhysics</em></a>) – Instance of the HaloPhysics class, containing the halo profiles and concentrations.</li>
+<li><strong>mass_integrals</strong> (<em>mass_integrals</em>) – Instance of the MassIntegrals class, containing the mass integrals.</li>
+<li><strong>kh_vector</strong> (<em>float</em>) – Vector of wavenumbers (in <span class="math notranslate nohighlight">\(h/\mathrm{Mpc}\)</span> units), for which power spectrum will be computed.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body"><p class="first last"><strong>kh_min</strong> – Minimum k vector in the simulation (or survey) region in <span class="math notranslate nohighlight">\(h/\mathrm{Mpc}\)</span> units. Modes below kh_min are set to zero, default: 0.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="PerturbedHalos.HaloPower.HaloPower.compute_one_loop_only_power">
+<code class="descname">compute_one_loop_only_power</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/HaloPower.html#HaloPower.compute_one_loop_only_power"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.HaloPower.HaloPower.compute_one_loop_only_power" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the one-loop SPT power from the linear power spectrum in the Cosmology class.
+This returns the one-loop power evaluated at the wavenumber vector specfied in the class initialization.
+When first called, this computes an interpolator function, which is used in this an subsequent calls.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="PerturbedHalos.HaloPower.HaloPower.compute_resummed_linear_power">
+<code class="descname">compute_resummed_linear_power</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/HaloPower.html#HaloPower.compute_resummed_linear_power"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.HaloPower.HaloPower.compute_resummed_linear_power" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the IR-resummed linear power spectrum, using the linear power spectrum in the Cosmology class.</p>
+<dl class="docutils">
+<dt>The output power is defined by</dt>
+<dd>$ <a href="#id1"><span class="problematic" id="id2">P_</span></a>mathrm{lin, IR} = <a href="#id3"><span class="problematic" id="id4">P_</span></a>mathrm{lin, nw}(k) + <a href="#id5"><span class="problematic" id="id6">P_</span></a>mathrm{lin, w}e^{-k^2Sigma^2} $</dd>
+</dl>
+<p>where ‘nw’ and ‘w’ refer to the no-wiggle and wiggle parts of the linear power spectrum
+and Sigma^2 is the BAO damping scale (computed in _prepare_IR_resummation)</p>
+<p>This returns the IR-resummed linear power, evaluated at the wavenumber vector that the class was initialized with.</p>
+<p>If already computed, the IR resummed linear power is simply returned.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="PerturbedHalos.HaloPower.HaloPower.compute_resummed_one_loop_power">
+<code class="descname">compute_resummed_one_loop_power</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/HaloPower.html#HaloPower.compute_resummed_one_loop_power"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.HaloPower.HaloPower.compute_resummed_one_loop_power" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the IR-resummed linear-plus-one-loop power spectrum, using the linear power spectrum in the Cosmology class.</p>
+<dl class="docutils">
+<dt>The output power is defined by</dt>
+<dd><dl class="first last docutils">
+<dt>$ <a href="#id7"><span class="problematic" id="id8">P_</span></a>mathrm{1-loop, IR} = <a href="#id9"><span class="problematic" id="id10">P_</span></a>mathrm{lin, nw}(k) + <a href="#id11"><span class="problematic" id="id12">P_</span></a>mathrm{1-loop, nw}(k)</dt>
+<dd><ul class="first last simple">
+<li>e^{-k^2Sigma^2} [ <a href="#id13"><span class="problematic" id="id14">P_</span></a>mathrm{lin, w}(k) (1 + k^2Sigma^2) + <a href="#id15"><span class="problematic" id="id16">P_</span></a>mathrm{1-loop,w}(k) ] $</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>where ‘nw’ and ‘w’ refer to the no-wiggle and wiggle parts of the linear / 1-loop power spectrum
+and Sigma^2 is the BAO damping scale (computed in _prepare_IR_resummation)</p>
+<p>This returns the IR-resummed linear+one-loop power, evaluated at the wavenumber vector that the class was initialized with.</p>
+<p>If already computed, the IR resummed linear+one-loop power is simply returned.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="PerturbedHalos.HaloPower.HaloPower.halo_power">
+<code class="descname">halo_power</code><span class="sig-paren">(</span><em>cs2</em>, <em>R</em>, <em>pt_type='EFT'</em>, <em>pade_resum=True</em>, <em>smooth_density=True</em>, <em>IR_resum=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/HaloPower.html#HaloPower.halo_power"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.HaloPower.HaloPower.halo_power" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the non-linear halo-model power spectrum to one-loop order, with IR corrections and counterterms.
+Whilst we recommend including all non-linear effects, these can be optionally removed with the Boolean parameters.</p>
+<p>This is similar to the ‘non_linear_power()’ function, but includes the halo mass integrals, and is the <em>complete</em>
+model of the matter power spectrum at one-loop-order in our approximations.
+Note that the function requires two free parameters; R and cs2, which cannot be predicted from theory.</p>
+<p>The function returns the halo model power spectrum estimate.</p>
+<p>For further details, see the class description.</p>
+<p>Parameters:
+- cs2: Squared-speed-of-sound counterterm in (Mpc/h)^2. (Unused if pt_type is not “EFT”)
+- R: Smoothing scale in Mpc/h. This is a free parameter of the model. (Unused if smooth_density = False)
+- pt_type: Which flavor of perturbation theory to adopt. Options ‘EFT’ (linear + 1-loop + counterterm), ‘SPT’ (linear + 1-loop), ‘Linear’, default: ‘EFT’
+- pade_resum: If True, use a Pade resummation of the counterterm (k^2/(1+k^2)) P_lin rather than k^2 P_lin, default: True
+- smooth_density: If True, smooth the density field on scale R, i.e. multiply power by W(kR)^2, default: True
+- IR_resum: If True, perform IR resummation on the density field to resum non-perturbative long-wavelength modes, default: True</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="PerturbedHalos.HaloPower.HaloPower.non_linear_power">
+<code class="descname">non_linear_power</code><span class="sig-paren">(</span><em>cs2</em>, <em>R</em>, <em>pt_type='EFT'</em>, <em>pade_resum=True</em>, <em>smooth_density=True</em>, <em>IR_resum=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/HaloPower.html#HaloPower.non_linear_power"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.HaloPower.HaloPower.non_linear_power" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the non-linear power spectrum to one-loop order, with IR corrections and counterterms. Whilst we recommend including all non-linear effects, these can be optionally removed with the Boolean parameters.</p>
+<p>Including all relevant effects, this is defined as</p>
+<div class="math notranslate nohighlight">
+\[P_\mathrm{NL}(k, R, c_s^2) = [P_\mathrm{lin}(k) + P_\mathrm{1-loop}(k) + P_\mathrm{counterterm}(k;c_s^2)] W(kR)\]</div>
+<p>where</p>
+<div class="math notranslate nohighlight">
+\[P_\mathrm{counterterm}(k;cs2) = - c_s^2 * \frac{k^2 }{(1 + k^2)} P_\mathrm{lin}(k)\]</div>
+<p>is the counterterm, and IR resummation is applied to all spectra.</p>
+<p>This computes the relevant integrals if they haven’t already been computed.</p>
+<p>The function returns <span class="math notranslate nohighlight">\(P_\mathrm{NL}\)</span> given smoothing scale R and effective squared sound-speed <span class="math notranslate nohighlight">\(c_s^2\)</span>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>cs2</strong> (<em>float</em>) – Squared-speed-of-sound counterterm in <span class="math notranslate nohighlight">\((h^{-1}Mpc)^2\)</span> units. (Unused if pt_type is not “EFT”)</li>
+<li><strong>R</strong> (<em>float</em>) – Smoothing scale in <span class="math notranslate nohighlight">\(h^{-1}Mpc\)</span>. This is a free parameter of the model. (Unused if smooth_density = False)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first last simple">
+<li><strong>pt_type</strong> (<em>str</em>) – Which flavor of perturbation theory to adopt. Options ‘EFT’ (linear + 1-loop + counterterm), ‘SPT’ (linear + 1-loop), ‘Linear’, default: ‘EFT’</li>
+<li><strong>pade_resum</strong> (<em>bool</em>) – If True, use a Pade resummation of the counterterm <span class="math notranslate nohighlight">\(k^2/(1+k^2) P_\mathrm{lin}(k)\)</span> rather than <span class="math notranslate nohighlight">\(k^2 P_\mathrm{lin}(k)\)</span>, default: True</li>
+<li><strong>smooth_density</strong> (<em>bool</em>) – If True, smooth the density field on scale R, i.e. multiply power by <span class="math notranslate nohighlight">\(W(kR)^2\)</span>, default: True</li>
+<li><strong>IR_resum</strong> (<em>bool</em>) – If True, perform IR resummation on the density field to resum non-perturbative long-wavelength modes, default: True</li>
+</ul>
+</td>
 </tr>
 </tbody>
 </table>

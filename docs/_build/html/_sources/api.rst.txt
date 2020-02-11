@@ -26,3 +26,9 @@ Mass Integrals
 
 .. automodule:: PerturbedHalos.MassIntegrals
   :members:
+
+Halo Power
+-----------
+
+.. automodule:: PerturbedHalos.HaloPower
+  :members:
