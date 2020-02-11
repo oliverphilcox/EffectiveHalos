@@ -158,8 +158,7 @@
 <dl class="class">
 <dt id="PerturbedHalos.Cosmology.Cosmology">
 <em class="property">class </em><code class="descclassname">PerturbedHalos.Cosmology.</code><code class="descname">Cosmology</code><span class="sig-paren">(</span><em>redshift</em>, <em>name=''</em>, <em>**params</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/Cosmology.html#Cosmology"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.Cosmology.Cosmology" title="Permalink to this definition">¶</a></dt>
-<dd><p>Class to hold the basic cosmology and class attributes.</p>
-<p>This can be initialized by a set of cosmological parameters or a pre-defined name.</p>
+<dd><p>Class to hold the basic cosmology and CLASS attributes. This can be initialized by a set of cosmological parameters or a pre-defined cosmology.</p>
 <p>Loaded cosmological models:</p>
 <ul class="simple">
 <li><strong>Planck18</strong>: Bestfit cosmology from Planck 2018, using the baseline TT,TE,EE+lowE+lensing likelihood.</li>
@@ -172,7 +171,7 @@
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>redshift</strong> (<em>float</em>) – Desired redshift</li>
-<li><strong>name</strong> (<em>str</em>) – Load cosmology from a list of predetermined cosmologies. Currently implemented: Quijote</li>
+<li><strong>name</strong> (<em>str</em>) – Load cosmology from a list of predetermined cosmologies (see above).</li>
 <li><strong>params</strong> (<em>kwargs</em>) – Other parameters from CLASS.</li>
 </ul>
 </td>

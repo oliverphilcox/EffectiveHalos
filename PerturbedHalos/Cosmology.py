@@ -3,9 +3,7 @@ from classy import Class
 
 class Cosmology(object):
     """
-    Class to hold the basic cosmology and class attributes.
-
-    This can be initialized by a set of cosmological parameters or a pre-defined name.
+    Class to hold the basic cosmology and CLASS attributes. This can be initialized by a set of cosmological parameters or a pre-defined cosmology.
 
     Loaded cosmological models:
 
@@ -15,7 +13,7 @@ class Cosmology(object):
 
     Args:
         redshift (float): Desired redshift
-        name (str): Load cosmology from a list of predetermined cosmologies. Currently implemented: Quijote
+        name (str): Load cosmology from a list of predetermined cosmologies (see above).
         params (kwargs): Other parameters from CLASS.
 
     """
