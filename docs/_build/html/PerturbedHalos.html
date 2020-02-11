@@ -84,8 +84,8 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">PerturbedHalos package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-PerturbedHalos.Cosmology">PerturbedHalos.Cosmology module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-PerturbedHalos">Module contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#perturbedhalos-cosmology-module">PerturbedHalos.Cosmology module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-contents">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="test.html">Test import</a></li>
@@ -158,137 +158,11 @@
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-PerturbedHalos.Cosmology">
-<span id="perturbedhalos-cosmology-module"></span><h2>PerturbedHalos.Cosmology module<a class="headerlink" href="#module-PerturbedHalos.Cosmology" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="PerturbedHalos.Cosmology.Cosmology">
-<em class="property">class </em><code class="descclassname">PerturbedHalos.Cosmology.</code><code class="descname">Cosmology</code><span class="sig-paren">(</span><em>redshift</em>, <em>name=''</em>, <em>**params</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/Cosmology.html#Cosmology"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.Cosmology.Cosmology" title="Permalink to this definition">¶</a></dt>
-<dd><p>Class to hold the basic cosmology and class attributes.</p>
-<p>This can be initialized by a set of cosmological parameters or a pre-defined name.</p>
-<p>Loaded cosmological models:
-- Planck18: Bestfit cosmology from Planck 2018, using the baseline TT,TE,EE+lowE+lensing likelihood.
-- Quijote: Fiducial cosmology from the Quijote simulations of Francisco Villaescusa-Navarro et al.
-- Abacus: Fiducial cosmology from the Abacus simulations of Lehman Garrison et al.</p>
-<dl class="method">
-<dt id="PerturbedHalos.Cosmology.Cosmology.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/Cosmology.html#Cosmology.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.Cosmology.Cosmology.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialize the class at a given redshift with a specified cosmology.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="PerturbedHalos.Cosmology.Cosmology.linear_power">
-<code class="descname">linear_power</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/Cosmology.html#Cosmology.linear_power"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.Cosmology.Cosmology.linear_power" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute the linear power spectrum for a given k vector.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="PerturbedHalos.Cosmology.Cosmology.sigmaM">
-<code class="descname">sigmaM</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/Cosmology.html#Cosmology.sigmaM"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.Cosmology.Cosmology.sigmaM" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute sigma(M) from CLASS for input mass M.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="PerturbedHalos.Cosmology.Cosmology.sigma_logM_int">
-<code class="descname">sigma_logM_int</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/Cosmology.html#Cosmology.sigma_logM_int"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.Cosmology.Cosmology.sigma_logM_int" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return an interpolated value of sigma(M) corresponding to an input log10(M) grid.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="PerturbedHalos.Cosmology.Cosmology.dlns_dlogM_int">
-<code class="descname">dlns_dlogM_int</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/Cosmology.html#Cosmology.dlns_dlogM_int"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.Cosmology.Cosmology.dlns_dlogM_int" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return an interpolated value of d(ln(sigma(M)))/d(log10(M)) corresponding to an input log10(M) grid.</p>
-</dd></dl>
-
-<dl class="method">
-<dt>
-<code class="descname">dlns_dlogM_int</code><span class="sig-paren">(</span><em>logM</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/Cosmology.html#Cosmology.dlns_dlogM_int"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>Return the value of d(ln sigma(M))/d(log10(M)) using the prebuilt interpolators, which are constructed if not present.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>logM</strong> (<em>float</em>) – log10(M/Msun)</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">dln(sigma)/dlog(M)</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">float</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt>
-<code class="descname">linear_power</code><span class="sig-paren">(</span><em>kh_vector</em>, <em>kh_min=0.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/Cosmology.html#Cosmology.linear_power"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>Compute the linear power spectrum from CLASS for a vector of input k.</p>
-<p>If set, we remove any modes below some k_min.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>kh_vector</strong> (<em>float</em>) – Vector of wavenumbers (in h/Mpc units) to compute linear power with.</li>
-<li><strong>kh_min</strong> (<em>float</em>) – Value of k (in h/Mpc units) below which to set P(k) = 0, default: 0.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Linear power spectrum in (Mpc/h)^3 units</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">float</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt>
-<code class="descname">sigmaM</code><span class="sig-paren">(</span><em>M_phys</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/Cosmology.html#Cosmology.sigmaM"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>Compute sigma(M,z) from CLASS as a vector function.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>M_phys</strong> (<em>float</em>) – Physical mass in M_sun.</li>
-<li><strong>z</strong> (<em>float</em>) – Redshift.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">sigma(M)</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">float</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt>
-<code class="descname">sigma_logM_int</code><span class="sig-paren">(</span><em>logM</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/Cosmology.html#Cosmology.sigma_logM_int"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>Return the value of sigma(M) using the prebuilt interpolators, which are constructed if not present.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>logM</strong> (<em>float</em>) – log10(M/Msun)</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">sigma(M)</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">float</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-</dd></dl>
-
+<div class="section" id="perturbedhalos-cosmology-module">
+<h2>PerturbedHalos.Cosmology module<a class="headerlink" href="#perturbedhalos-cosmology-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-PerturbedHalos">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-PerturbedHalos" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-contents">
+<h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 
