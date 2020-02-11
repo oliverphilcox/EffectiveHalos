@@ -60,7 +60,6 @@ class HaloPower:
         self.kh_min = kh_min
 
         # Compute linear power for the k-vector
-        print('should rename cosmology.linear_power to cosmology.compute_linear_power')
         self.linear_power = self.cosmology.compute_linear_power(self.kh_vector).copy()
 
     def non_linear_power(self,cs2,R,pt_type = 'EFT',pade_resum = True, smooth_density = True, IR_resum = True):
@@ -68,7 +67,7 @@ class HaloPower:
         Compute the non-linear power spectrum to one-loop order, with IR corrections and counterterms. Whilst we recommend including all non-linear effects, these can be optionally removed with the Boolean parameters. Setting (pt_type='Linear', pade_resum=False, smooth_density=False, IR_resum = False) recovers the standard halo model prediction.
 
         Including all relevant effects, this is defined as
-
+ 
         .. math::
 
             P_\mathrm{NL}(k, R, c_s^2) = [P_\mathrm{lin}(k) + P_\mathrm{1-loop}(k) + P_\mathrm{counterterm}(k;c_s^2)] W(kR)

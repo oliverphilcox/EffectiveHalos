@@ -81,6 +81,8 @@
             
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Basic Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../api.html">Python API</a></li>
 </ul>
 
@@ -207,7 +209,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">kh_min</span> <span class="o">=</span> <span class="n">kh_min</span>
 
         <span class="c1"># Compute linear power for the k-vector</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;should rename cosmology.linear_power to cosmology.compute_linear_power&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">linear_power</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cosmology</span><span class="o">.</span><span class="n">compute_linear_power</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kh_vector</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
 <div class="viewcode-block" id="HaloPower.non_linear_power"><a class="viewcode-back" href="../../api.html#PerturbedHalos.HaloPower.HaloPower.non_linear_power">[docs]</a>    <span class="k">def</span> <span class="nf">non_linear_power</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">cs2</span><span class="p">,</span><span class="n">R</span><span class="p">,</span><span class="n">pt_type</span> <span class="o">=</span> <span class="s1">&#39;EFT&#39;</span><span class="p">,</span><span class="n">pade_resum</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">smooth_density</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">IR_resum</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
@@ -215,7 +216,7 @@
 <span class="sd">        Compute the non-linear power spectrum to one-loop order, with IR corrections and counterterms. Whilst we recommend including all non-linear effects, these can be optionally removed with the Boolean parameters. Setting (pt_type=&#39;Linear&#39;, pade_resum=False, smooth_density=False, IR_resum = False) recovers the standard halo model prediction.</span>
 
 <span class="sd">        Including all relevant effects, this is defined as</span>
-
+<span class="sd"> </span>
 <span class="sd">        .. math::</span>
 
 <span class="sd">            P_\mathrm{NL}(k, R, c_s^2) = [P_\mathrm{lin}(k) + P_\mathrm{1-loop}(k) + P_\mathrm{counterterm}(k;c_s^2)] W(kR)</span>
