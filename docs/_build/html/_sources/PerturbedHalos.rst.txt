@@ -1,6 +1,9 @@
 PerturbedHalos package
 ======================
 
+.. automodule:: myproject.main
+   :members:
+
 Submodules
 ----------
 

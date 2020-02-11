@@ -13,11 +13,9 @@ Todo:
 - Add requirements
 - Write documentation
 
-.. automodule:: PerturbedHalos
-    :members:
-
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
    PerturbedHalos
+   test
