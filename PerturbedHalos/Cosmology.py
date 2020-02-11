@@ -88,7 +88,7 @@ class Cosmology(object):
 
         Args:
             kh_vector (float): Vector of wavenumbers (in h/Mpc units) to compute linear power with.
-            kh_min (float): Value of k (in h/Mpc units) below which to set P(k) = 0, default: 0.
+            kh_min (float): Value of k (in h/Mpc units) below which to set :math:`P(k)`` = 0, default: 0.
 
         Returns:
             float: Linear power spectrum in (Mpc/h)^3 units
@@ -108,14 +108,14 @@ class Cosmology(object):
         return output
 
     def sigmaM(self,M_phys):
-        """Compute sigma(M,z)` from CLASS as a vector function.
+        """Compute :math:`\sigma(M,z)` from CLASS as a vector function.
 
         Args:
-            M_phys (float): Physical mass in M_sun.
+            M_phys (float): Physical mass in :math:`M/M_\odot`
             z (float): Redshift.
 
         Returns:
-            float: sigma(M)
+            float: :math:`\sigma(M,z)`
         """
         # convert to Lagrangian radius
         r_phys = np.power((3.*M_phys)/(4.*np.pi*self.rhoM),1./3.)
@@ -126,37 +126,37 @@ class Cosmology(object):
         """Return the value of :math:`\sigma(M,z)` using the prebuilt interpolators, which are constructed if not present.
 
         Args:
-            logM (float): log10(M/Msun)
+            logM (float): :math:`\log_{10}(M/M_\odot)`
 
         Returns:
-            float: sigma(M)
+            float: :math:`\sigma(M,z)`
         """
         if not hasattr(self,'sigma_logM_int_func'):
             self._interpolate_sigma_and_deriv()
         return self._sigma_logM_int_func(logM)
 
     def dlns_dlogM_int(self,logM):
-        """Return the value of d(ln sigma(M))/d(log10(M)) using the prebuilt interpolators, which are constructed if not present.
+        """Return the value of :math:`d\ln\sigma/d\log M` using the prebuilt interpolators, which are constructed if not present.
 
         Args:
-            logM (float): log10(M/Msun)
+            logM (float): :math:`\log_{10}(M/M_\odot)`
 
         Returns:
-            float: dln(sigma)/dlog(M)
+            float: :math:`d\ln\sigma/d\log M`
         """
         if not hasattr(self,'dlns_dlogM_int_func'):
             self._interpolate_sigma_and_deriv()
         return self._dlns_dlogM_int_func(logM)
 
     def _interpolate_sigma_and_deriv(self,logM_min=6,logM_max=17,npoints=int(1e5)):
-        """Create an interpolator function for d ln(sigma)/dlog10(M) and sigma(logM).
+        """Create an interpolator function for :math:`d\ln\sigma/d\log M` and :math:`sigma(M)`.
         Note that mass is in physical units (without 1/h factor).
 
         NB: This has no effect if the interpolator has already been computed.
 
         Args:
-            logM_min (float): Minimum mass in log10(M/Msun)
-            logM_max (float): Maximum mass in log10(M/Msun)
+            logM_min (float): Minimum mass in :math:`\log_{10}(M/M_\odot)`
+            logM_max (float): Maximum mass in :math:`\log_{10}(M/M_\odot)`
             npoints (int): Number of sampling points.
 
         """
@@ -178,7 +178,7 @@ class Cosmology(object):
             self._dlns_dlogM_int_func = interp1d(mid_logM,all_diff)
 
     def _h_over_h0(self):
-        """Return the value of H(z)/H(0) at the class redshift
+        """Return the value of :math:`H(z)/H(0)` at the class redshift
 
         Returns:
             float: H(z)/H(0)
@@ -187,7 +187,7 @@ class Cosmology(object):
         return Ea
 
     def _Omega_m(self):
-        """Return the value of Omega_m(z) at the class redshift
+        """Return the value of :math:`\Omega_m(z)` at the class redshift
 
         Returns:
         float: Omega_m(z)

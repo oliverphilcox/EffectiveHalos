@@ -235,7 +235,7 @@
 
 <span class="sd">        Args:</span>
 <span class="sd">            kh_vector (float): Vector of wavenumbers (in h/Mpc units) to compute linear power with.</span>
-<span class="sd">            kh_min (float): Value of k (in h/Mpc units) below which to set P(k) = 0, default: 0.</span>
+<span class="sd">            kh_min (float): Value of k (in h/Mpc units) below which to set :math:`P(k)`` = 0, default: 0.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            float: Linear power spectrum in (Mpc/h)^3 units</span>
@@ -255,14 +255,14 @@
         <span class="k">return</span> <span class="n">output</span></div>
 
 <div class="viewcode-block" id="Cosmology.sigmaM"><a class="viewcode-back" href="../../test.html#PerturbedHalos.Cosmology.Cosmology.sigmaM">[docs]</a>    <span class="k">def</span> <span class="nf">sigmaM</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">M_phys</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Compute sigma(M,z)` from CLASS as a vector function.</span>
+        <span class="sd">&quot;&quot;&quot;Compute :math:`\sigma(M,z)` from CLASS as a vector function.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            M_phys (float): Physical mass in M_sun.</span>
+<span class="sd">            M_phys (float): Physical mass in :math:`M/M_\odot`</span>
 <span class="sd">            z (float): Redshift.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            float: sigma(M)</span>
+<span class="sd">            float: :math:`\sigma(M,z)`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># convert to Lagrangian radius</span>
         <span class="n">r_phys</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">((</span><span class="mf">3.</span><span class="o">*</span><span class="n">M_phys</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mf">4.</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">rhoM</span><span class="p">),</span><span class="mf">1.</span><span class="o">/</span><span class="mf">3.</span><span class="p">)</span>
@@ -273,37 +273,37 @@
         <span class="sd">&quot;&quot;&quot;Return the value of :math:`\sigma(M,z)` using the prebuilt interpolators, which are constructed if not present.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            logM (float): log10(M/Msun)</span>
+<span class="sd">            logM (float): :math:`\log_{10}(M/M_\odot)`</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            float: sigma(M)</span>
+<span class="sd">            float: :math:`\sigma(M,z)`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="s1">&#39;sigma_logM_int_func&#39;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_interpolate_sigma_and_deriv</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sigma_logM_int_func</span><span class="p">(</span><span class="n">logM</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Cosmology.dlns_dlogM_int"><a class="viewcode-back" href="../../test.html#PerturbedHalos.Cosmology.Cosmology.dlns_dlogM_int">[docs]</a>    <span class="k">def</span> <span class="nf">dlns_dlogM_int</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">logM</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return the value of d(ln sigma(M))/d(log10(M)) using the prebuilt interpolators, which are constructed if not present.</span>
+        <span class="sd">&quot;&quot;&quot;Return the value of :math:`d\ln\sigma/d\log M` using the prebuilt interpolators, which are constructed if not present.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            logM (float): log10(M/Msun)</span>
+<span class="sd">            logM (float): :math:`\log_{10}(M/M_\odot)`</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            float: dln(sigma)/dlog(M)</span>
+<span class="sd">            float: :math:`d\ln\sigma/d\log M`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="s1">&#39;dlns_dlogM_int_func&#39;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_interpolate_sigma_and_deriv</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dlns_dlogM_int_func</span><span class="p">(</span><span class="n">logM</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_interpolate_sigma_and_deriv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">logM_min</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span><span class="n">logM_max</span><span class="o">=</span><span class="mi">17</span><span class="p">,</span><span class="n">npoints</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="mf">1e5</span><span class="p">)):</span>
-        <span class="sd">&quot;&quot;&quot;Create an interpolator function for d ln(sigma)/dlog10(M) and sigma(logM).</span>
+        <span class="sd">&quot;&quot;&quot;Create an interpolator function for :math:`d\ln\sigma/d\log M` and :math:`sigma(M)`.</span>
 <span class="sd">        Note that mass is in physical units (without 1/h factor).</span>
 
 <span class="sd">        NB: This has no effect if the interpolator has already been computed.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            logM_min (float): Minimum mass in log10(M/Msun)</span>
-<span class="sd">            logM_max (float): Maximum mass in log10(M/Msun)</span>
+<span class="sd">            logM_min (float): Minimum mass in :math:`\log_{10}(M/M_\odot)`</span>
+<span class="sd">            logM_max (float): Maximum mass in :math:`\log_{10}(M/M_\odot)`</span>
 <span class="sd">            npoints (int): Number of sampling points.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -325,7 +325,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_dlns_dlogM_int_func</span> <span class="o">=</span> <span class="n">interp1d</span><span class="p">(</span><span class="n">mid_logM</span><span class="p">,</span><span class="n">all_diff</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_h_over_h0</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return the value of H(z)/H(0) at the class redshift</span>
+        <span class="sd">&quot;&quot;&quot;Return the value of :math:`H(z)/H(0)` at the class redshift</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            float: H(z)/H(0)</span>
@@ -334,7 +334,7 @@
         <span class="k">return</span> <span class="n">Ea</span>
 
     <span class="k">def</span> <span class="nf">_Omega_m</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return the value of Omega_m(z) at the class redshift</span>
+        <span class="sd">&quot;&quot;&quot;Return the value of :math:`\Omega_m(z)` at the class redshift</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">        float: Omega_m(z)</span>
