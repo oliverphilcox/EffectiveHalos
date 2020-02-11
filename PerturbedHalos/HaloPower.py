@@ -9,36 +9,33 @@ sys.path.append('/home/ophilcox/FAST-PT/')
 import FASTPT as FASTPT
 
 class HaloPower:
-    """Class to compute the non-linear power spectrum from the halo model of Philcox et al. 2020
+    """Class to compute the non-linear power spectrum from the halo model of Philcox et al. 2020.
 
     The model power is defined as
-        $$ P_\mathrm{model} = I_1^1(k)^2 P_{NL}(k) W^2(kR) + I_2^0(k,k) $$
 
-    where I_p^q are mass function integrals defined in the MassIntegrals class,
-    P_{NL} is the 1-loop non-linear power spectrum from Effective Field Theory
-    and W(kR) is a smoothing window on scale R.
+    .. math::
 
-    Methods:
-    - __init__: Initialize with the relevant classes and k vector.
-    - compute_one_loop_only_power: Return the 1-loop-only (Eulerian) power spectrum without IR-resummation.
-    - compute_resummed_linear_power: Return the linear power spectrum including IR-resummation.
-    - compute_resummed_one_loop_power: Return the linear-plus-one-loop power spectrum including IR-resummation.
-    - non_linear_power: Return the perturbative non-linear effective field theory power spectrum, optionally including IR-resummation, smoothing and the UV counterterm
-    - halo_power: Return the full halo model power spectrum of Philcox et al. 2020, optionally including higher-order perturbative effects.
+        P_\mathrm{model} = I_1^1(k)^2 P_{NL}(k) W^2(kR) + I_2^0(k,k)
+
+    where :math:`I_p^q` are mass function integrals defined in the MassIntegrals class, :math:`P_{NL}`` is the 1-loop non-linear power spectrum from Effective Field Theory and :math:`W(kR)` is a smoothing window on scale R.
+
+    Args:
+        cosmology (Cosmology): Instance of the Cosmology class containing relevant cosmology and functions.
+        mass_function (MassFunction): Instance of the MassFunction class, containing the mass function and bias.
+        halo_physics (HaloPhysics): Instance of the HaloPhysics class, containing the halo profiles and concentrations.
+        mass_integrals (mass_integrals): Instance of the MassIntegrals class, containing the mass integrals.
+        kh_vector (float): Vector of wavenumbers (in :math:`h/\mathrm{Mpc}` units), for which power spectrum will be computed.
+
+    Keyword Args:
+        kh_min: Minimum k vector in the simulation (or survey) region in :math:`h/\mathrm{Mpc}` units. Modes below kh_min are set to zero, default: 0.
+
     """
 
     def __init__(self,cosmology,mass_function,halo_physics,mass_integrals,kh_vector,kh_min=0):
         """Initialize the class loading properties from the other classes.
-
-        Parameters:
-        - cosmology: Instance of the Cosmology class containing relevant cosmology and functions.
-        - mass_function: Instance of the MassFunction class, containing the mass function and bias.
-        - halo_physics: Instance of the HaloPhysics class, containing the halo profiles and concentrations.
-        - mass_integrals: Instance of the MassIntegrals class, containing the mass integrals.
-        - kh_vector: Vector of wavenumbers (in h/Mpc units), for which power spectrum will be computed.
-        - kh_min: Minimum k vector in the simulation (or survey) region in h/Mpc units. Modes with kh<kh_min are set to zero, default: 0.
         """
-        print('do we really need to specify all these input classes?')
+        print('do we really need to specify all these input classes? - load mass integrals directly')
+        print('need to add FAST-PT to path in better way than above')
         print("either take kh-vector from mass_integrals class or don't respecify")
 
         # Write attributes, if they're of the correct type
@@ -68,26 +65,39 @@ class HaloPower:
         self.linear_power = self.cosmology.linear_power(self.kh_vector).copy()
 
     def non_linear_power(self,cs2,R,pt_type = 'EFT',pade_resum = True, smooth_density = True, IR_resum = True):
-        """Compute the non-linear power spectrum to one-loop order, with IR corrections and counterterms.
-        Whilst we recommend including all non-linear effects, these can be optionally removed with the Boolean parameters.
+        """
+        Compute the non-linear power spectrum to one-loop order, with IR corrections and counterterms. Whilst we recommend including all non-linear effects, these can be optionally removed with the Boolean parameters.
 
         Including all relevant effects, this is defined as
-            $$ P_\mathrm{NL}(k, R, cs2) = [P_\mathrm{lin}(k) + P_\mathrm{1-loop}(k) + P_\mathrm{counterterm}(k;cs2)] * W(kR) $$
+
+        .. math::
+
+            P_\mathrm{NL}(k, R, c_s^2) = [P_\mathrm{lin}(k) + P_\mathrm{1-loop}(k) + P_\mathrm{counterterm}(k;c_s^2)] W(kR)
+
         where
-            $$ P_\mathrm{counterterm}(k;cs2) = - cs2 * k^2 / (1 + k^2) * P_\mathrm{lin}(k) $$
+
+        .. math::
+
+            P_\mathrm{counterterm}(k;c_s^2) = - c_s^2 * \\frac{k^2 }{(1 + k^2)} P_\mathrm{lin}(k)
+
         is the counterterm, and IR resummation is applied to all spectra.
 
         This computes the relevant integrals if they haven't already been computed.
 
-        The function returns P_\mathrm{NL} given R and cs2.
+        The function returns :math:`P_\mathrm{NL}` given smoothing scale R and effective squared sound-speed :math:`c_s^2`.
 
-        Parameters:
-        - cs2: Squared-speed-of-sound counterterm in (Mpc/h)^2. (Unused if pt_type is not "EFT")
-        - R: Smoothing scale in Mpc/h. This is a free parameter of the model. (Unused if smooth_density = False)
-        - pt_type: Which flavor of perturbation theory to adopt. Options 'EFT' (linear + 1-loop + counterterm), 'SPT' (linear + 1-loop), 'Linear', default: 'EFT'
-        - pade_resum: If True, use a Pade resummation of the counterterm (k^2/(1+k^2)) P_lin rather than k^2 P_lin, default: True
-        - smooth_density: If True, smooth the density field on scale R, i.e. multiply power by W(kR)^2, default: True
-        - IR_resum: If True, perform IR resummation on the density field to resum non-perturbative long-wavelength modes, default: True
+        Args:
+            cs2 (float): Squared-speed-of-sound counterterm in :math:`(h^{-1}Mpc)^2` units. (Unused if pt_type is not "EFT")
+            R (float): Smoothing scale in :math:`h^{-1}Mpc`. This is a free parameter of the model. (Unused if smooth_density = False)
+
+        Keyword Args:
+            pt_type (str): Which flavor of perturbation theory to adopt. Options 'EFT' (linear + 1-loop + counterterm), 'SPT' (linear + 1-loop), 'Linear', default: 'EFT'
+            pade_resum (bool): If True, use a Pade resummation of the counterterm :math:`k^2/(1+k^2) P_\mathrm{lin}` rather than :math:`k^2 P_\mathrm{lin}(k)`, default: True
+            smooth_density (bool): If True, smooth the density field on scale R, i.e. multiply power by W(kR)^2, default: True
+            IR_resum (bool): If True, perform IR resummation on the density field to resum non-perturbative long-wavelength modes, default: True
+
+        Returns:
+            float: Non-linear power spectrum :math:`P_\mathrm{NL}` evaluated at the input k-vector.
         """
 
         if not IR_resum:
@@ -124,24 +134,25 @@ class HaloPower:
         return output
 
     def halo_power(self,cs2,R,pt_type = 'EFT',pade_resum = True, smooth_density = True, IR_resum = True):
-        """Compute the non-linear halo-model power spectrum to one-loop order, with IR corrections and counterterms.
-        Whilst we recommend including all non-linear effects, these can be optionally removed with the Boolean parameters.
+        """
+        Compute the non-linear halo-model power spectrum to one-loop order, with IR corrections and counterterms. Whilst we recommend including all non-linear effects, these can be optionally removed with the Boolean parameters.
 
-        This is similar to the 'non_linear_power()' function, but includes the halo mass integrals, and is the *complete*
-        model of the matter power spectrum at one-loop-order in our approximations.
-        Note that the function requires two free parameters; R and cs2, which cannot be predicted from theory.
-
-        The function returns the halo model power spectrum estimate.
+        This is similar to the 'non_linear_power()' function, but includes the halo mass integrals, and is the *complete* model of the matter power spectrum at one-loop-order in our approximations. Note that the function requires two free parameters; the smoothing scale R and the effective squared sound-speed :math:`c_s^2`, which cannot be predicted from theory. (Note that :math:`c_s^2<0` is permissible).
 
         For further details, see the class description.
 
-        Parameters:
-        - cs2: Squared-speed-of-sound counterterm in (Mpc/h)^2. (Unused if pt_type is not "EFT")
-        - R: Smoothing scale in Mpc/h. This is a free parameter of the model. (Unused if smooth_density = False)
-        - pt_type: Which flavor of perturbation theory to adopt. Options 'EFT' (linear + 1-loop + counterterm), 'SPT' (linear + 1-loop), 'Linear', default: 'EFT'
-        - pade_resum: If True, use a Pade resummation of the counterterm (k^2/(1+k^2)) P_lin rather than k^2 P_lin, default: True
-        - smooth_density: If True, smooth the density field on scale R, i.e. multiply power by W(kR)^2, default: True
-        - IR_resum: If True, perform IR resummation on the density field to resum non-perturbative long-wavelength modes, default: True
+        Args:
+            cs2 (float): Squared-speed-of-sound counterterm in :math:`(h^{-1}Mpc)^2` units. (Unused if pt_type is not "EFT")
+            R (float): Smoothing scale in :math:`h^{-1}Mpc`. This is a free parameter of the model. (Unused if smooth_density = False)
+
+        Keyword Args:
+            pt_type (str): Which flavor of perturbation theory to adopt. Options 'EFT' (linear + 1-loop + counterterm), 'SPT' (linear + 1-loop), 'Linear', default: 'EFT'
+            pade_resum (bool): If True, use a Pade resummation of the counterterm :math:`k^2/(1+k^2) P_\mathrm{lin}` rather than :math:`k^2 P_\mathrm{lin}(k)`, default: True
+            smooth_density (bool): If True, smooth the density field on scale R, i.e. multiply power by W(kR)^2, default: True
+            IR_resum (bool): If True, perform IR resummation on the density field to resum non-perturbative long-wavelength modes, default: True
+
+        Returns:
+            float: Non-linear halo model power spectrum :math:`P_\mathrm{halo}` evaluated at the input k-vector.
         """
 
         # Compute the non-linear power spectrum
@@ -159,9 +170,11 @@ class HaloPower:
         return p_non_linear*self.I_11.copy()*self.I_11.copy() + self.I_20.copy()
 
     def compute_one_loop_only_power(self):
-        """Compute the one-loop SPT power from the linear power spectrum in the Cosmology class.
-        This returns the one-loop power evaluated at the wavenumber vector specfied in the class initialization.
-        When first called, this computes an interpolator function, which is used in this an subsequent calls.
+        """
+        Compute the one-loop SPT power from the linear power spectrum in the Cosmology class. This returns the one-loop power evaluated at the wavenumber vector specfied in the class initialization. When first called, this computes an interpolator function, which is used in this and subsequent calls.
+
+        Returns:
+            float: Vector of 1-loop power :math:`P_\mathrm{1-loop}`(k) for the input k-vector.
         """
 
         if not hasattr(self,'one_loop_only_power'):
@@ -171,16 +184,21 @@ class HaloPower:
         return self.one_loop_only_power.copy()
 
     def compute_resummed_linear_power(self):
-        """Compute the IR-resummed linear power spectrum, using the linear power spectrum in the Cosmology class.
+        """
+        Compute the IR-resummed linear power spectrum, using the linear power spectrum in the Cosmology class.
 
         The output power is defined by
-            $ P_\mathrm{lin, IR} = P_\mathrm{lin, nw}(k) + P_\mathrm{lin, w}e^{-k^2\Sigma^2} $
-        where 'nw' and 'w' refer to the no-wiggle and wiggle parts of the linear power spectrum
-        and Sigma^2 is the BAO damping scale (computed in _prepare_IR_resummation)
 
-        This returns the IR-resummed linear power, evaluated at the wavenumber vector that the class was initialized with.
+        .. math::
+
+            P_\mathrm{lin, IR} = P_\mathrm{lin, nw}(k) + P_\mathrm{lin, w}e^{-k^2\Sigma^2}
+
+        where 'nw' and 'w' refer to the no-wiggle and wiggle parts of the linear power spectrum and :math:`\Sigma^2` is the BAO damping scale (computed in the _prepare_IR_resummation function)
 
         If already computed, the IR resummed linear power is simply returned.
+
+        Returns:
+            float: Vector of IR-resummed linear power :math:`P_\mathrm{lin,IR}(k)` for the input k-vector.
         """
 
         if not hasattr(self,'resummed_linear_power'):
@@ -199,17 +217,19 @@ class HaloPower:
         return self.resummed_linear_power.copy()
 
     def compute_resummed_one_loop_power(self):
-        """Compute the IR-resummed linear-plus-one-loop power spectrum, using the linear power spectrum in the Cosmology class.
+        """
+        Compute the IR-resummed linear-plus-one-loop power spectrum, using the linear power spectrum in the Cosmology class.
 
         The output power is defined by
-            $ P_\mathrm{1-loop, IR} = P_\mathrm{lin, nw}(k) + P_\mathrm{1-loop, nw}(k)
-                                     + e^{-k^2\Sigma^2} [ P_\mathrm{lin, w}(k) (1 + k^2\Sigma^2) + P_\mathrm{1-loop,w}(k) ] $
-        where 'nw' and 'w' refer to the no-wiggle and wiggle parts of the linear / 1-loop power spectrum
-        and Sigma^2 is the BAO damping scale (computed in _prepare_IR_resummation)
 
-        This returns the IR-resummed linear+one-loop power, evaluated at the wavenumber vector that the class was initialized with.
+        .. math::
 
-        If already computed, the IR resummed linear+one-loop power is simply returned.
+            P_\mathrm{lin-plus-1-loop, IR} = P_\mathrm{lin, nw}(k) + P_\mathrm{1-loop, nw}(k) + e^{-k^2\Sigma^2} [ P_\mathrm{lin, w}(k) (1 + k^2\Sigma^2) + P_\mathrm{1-loop,w}(k) ]
+
+        where 'nw' and 'w' refer to the no-wiggle and wiggle parts of the linear / 1-loop power spectrum and :math:`Sigma^2` is the BAO damping scale (computed in the _prepare_IR_resummation function)
+
+        Returns:
+            float: Vector of IR-resummed linear-plus-one-loop power :math:`P_\mathrm{lin-plus-1-loop,IR}(k)` for the input k-vector.
         """
 
         if not hasattr(self,'resummed_one_loop_power'):
@@ -233,30 +253,35 @@ class HaloPower:
         return self.resummed_one_loop_power.copy()
 
     def _compute_smoothing_function(self,R):
-            """Compute the smoothing function W(kR), for smoothing scale R.
-            This accounts for the smoothing of the density field on scale R and is the Fourier
-            transform of a spherical top-hat of scale R.
+            """
+            Compute the smoothing function :math:`W(kR)`, for smoothing scale R. This accounts for the smoothing of the density field on scale R and is the Fourier transform of a spherical top-hat of scale R.
 
-            Parameters:
-            - R: Smoothing scale in Mpc/h units.
+            Args:
+                R: Smoothing scale in :math:`h^{-1}\mathrm{Mpc}` units.
+
+            Returns:
+                float: :math:`W(kR)` evaluated on the input k-vector.
             """
             kR = self.kh_vector*R
             return  3.*(np.sin(kR)-kR*np.cos(kR))/kR**3.
 
     def _one_loop_only_power_interpolater(self,linear_spectrum, N_interpolate=50,k_cut=3,N_k = 1000):
-        """Compute the one-loop SPT power interpolator, using the FAST-PT module.
-        This is computed from an input linear power spectrum.
+        """
+        Compute the one-loop SPT power interpolator, using the FAST-PT module. This is computed from an input linear power spectrum.
 
-        Note that the FAST-PT output contains large oscillations at high-k.
-        To alleviate this, we perform smoothing interpolation above some k.
+        Note that the FAST-PT output contains large oscillations at high-k. To alleviate this, we perform smoothing interpolation above some k.
 
-        The function returns an interpolator for the SPT power.
+        Args:
+            linear_spectrum (function): Function taking input wavenumber in h/Mpc units and returning a linear power spectrum.
 
-        Parameters:
-        - linear_spectrum: Function taking input wavenumber in h/Mpc units and returning a linear power spectrum.
-        - N_interpolate: Width of smoothing kernel to apply, default: 20.
-        - k_cut: Minimum k (in h/Mpc units) from which to apply smoothing interpolation, default: 3.
-        - N_k: Number of k values used for interpolation.
+        Keyword Args:
+            N_interpolate (int): Width of smoothing kernel to apply, default: 20.
+            k_cut (float): Minimum k (in :math:`h/\mathrm{Mpc}` units) from which to apply smoothing interpolation, default: 3.
+            N_k (int): Number of k values used for interpolation.
+
+        Returns:
+            scipy.interp1d: An interpolator for the SPT power given an input k (in :math:`h/\mathrm{Mpc}` units).
+
         """
         print('need nice way of importing FASTPT from user installation')
         print('need nice way of setting interpolation parameters?')
@@ -290,20 +315,22 @@ class HaloPower:
         return interp1d(combined_k,combined_power)
 
     def _prepare_IR_resummation(self,N_k=5000,kh_max=1.):
-        """Compute relevant quantities to allow IR resummation of the non-linear power spectrum to be performed.
-        This computes the no-wiggle power spectrum, from the 4th order polynomial scheme of Hamann et al. 2010.
+        """
+        Compute relevant quantities to allow IR resummation of the non-linear power spectrum to be performed. This computes the no-wiggle power spectrum, from the 4th order polynomial scheme of Hamann et al. 2010.
 
-        A group of spectra for the no-wiggle linear and no-wiggle 1-loop power are output for later use.
-        The BAO damping scale
+        A group of spectra for the no-wiggle linear and no-wiggle 1-loop power are output for later use. The BAO damping scale
 
-            $$ \Sigma^2 =  \frac{1}{6\pi^2}\int_0^\Lambda dq\,P_\mathrm{NL}^{nw}(q)\left[1-j_0(q\ell_\mathrm{BAO})+2j_2(q\ell_\mathrm{BAO})\right] $$
+        .. math::
+
+            \Sigma^2 =  \frac{1}{6\pi^2}\int_0^\Lambda dq\,P_\mathrm{NL}^{nw}(q)\left[1-j_0(q\ell_\mathrm{BAO})+2j_2(q\ell_\mathrm{BAO})\right]
+
         is also computed.
 
-        This function is empty if spectra and Sigma^2 have already been computed.
+        This function is empty if spectra and :math:`Sigma^2` have already been computed.
 
-        Parameters:
-        - N_k: Number of points over which to compute no-wiggle power spectrum, default: 5000
-        - kh_max: Maximum k (in h/Mpc units) to which to apply the no-wiggle decomposition, default: 1. Beyond k_max, we assume wiggles are negligible, so P_{no-wiggle} = P_{full}]
+        Keyword Args:
+            N_k (int): Number of points over which to compute no-wiggle power spectrum, default: 5000
+            kh_max (float): Maximum k (in :math:`h/\mathrm{Mpc}` units) to which to apply the no-wiggle decomposition, default: 1. Beyond k_max, we assume wiggles are negligible, so :math:`P_\mathrm{no-wiggle} = P_\mathrm{full}`]
         """
 
         if not hasattr(self,'linear_no_wiggle_power') and not hasattr(self,'one_loop_only_no_wiggle_power') and not hasattr(self,'BAO_damping'):
