@@ -1,3 +1,5 @@
+import numpy as np
+
 class Cosmology(object):
     """
     Class to hold the basic cosmology and class attributes.
@@ -88,10 +90,10 @@ class Cosmology(object):
 
         Args:
             kh_vector (float): Vector of wavenumbers (in h/Mpc units) to compute linear power with.
-            kh_min (float): Value of k (in h/Mpc units) below which to set :math:`P(k)`` = 0, default: 0.
+            kh_min (float): Value of k (in h/Mpc units) below which to set :math:`P(k) = 0`, default: 0.
 
         Returns:
-            float: Linear power spectrum in (Mpc/h)^3 units
+            float: Linear power spectrum in :math:`(\mathrm{Mpc}/h)^3` units
         """
         print("don't recompute this?")
 
@@ -111,7 +113,7 @@ class Cosmology(object):
         """Compute :math:`\sigma(M,z)` from CLASS as a vector function.
 
         Args:
-            M_phys (float): Physical mass in :math:`M/M_\odot`
+            M_phys (float): Physical mass in :math:`M_\odot` units.
             z (float): Redshift.
 
         Returns:
@@ -126,7 +128,7 @@ class Cosmology(object):
         """Return the value of :math:`\sigma(M,z)` using the prebuilt interpolators, which are constructed if not present.
 
         Args:
-            logM (float): :math:`\log_{10}(M/M_\odot)`
+            logM (float): Input :math:`\log_{10}(M/M_\odot)`
 
         Returns:
             float: :math:`\sigma(M,z)`
@@ -139,7 +141,7 @@ class Cosmology(object):
         """Return the value of :math:`d\ln\sigma/d\log M` using the prebuilt interpolators, which are constructed if not present.
 
         Args:
-            logM (float): :math:`\log_{10}(M/M_\odot)`
+            logM (float): Input :math:`\log_{10}(M/M_\odot)`
 
         Returns:
             float: :math:`d\ln\sigma/d\log M`

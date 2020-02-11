@@ -145,7 +145,9 @@
            <div itemprop="articleBody">
             
   <h1>Source code for PerturbedHalos.Cosmology</h1><div class="highlight"><pre>
-<div class="viewcode-block" id="Cosmology"><a class="viewcode-back" href="../../test.html#PerturbedHalos.Cosmology.Cosmology">[docs]</a><span></span><span class="k">class</span> <span class="nc">Cosmology</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<div class="viewcode-block" id="Cosmology"><a class="viewcode-back" href="../../test.html#PerturbedHalos.Cosmology.Cosmology">[docs]</a><span class="k">class</span> <span class="nc">Cosmology</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class to hold the basic cosmology and class attributes.</span>
 
@@ -235,10 +237,10 @@
 
 <span class="sd">        Args:</span>
 <span class="sd">            kh_vector (float): Vector of wavenumbers (in h/Mpc units) to compute linear power with.</span>
-<span class="sd">            kh_min (float): Value of k (in h/Mpc units) below which to set :math:`P(k)`` = 0, default: 0.</span>
+<span class="sd">            kh_min (float): Value of k (in h/Mpc units) below which to set :math:`P(k) = 0`, default: 0.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            float: Linear power spectrum in (Mpc/h)^3 units</span>
+<span class="sd">            float: Linear power spectrum in :math:`(\mathrm{Mpc}/h)^3` units</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;don&#39;t recompute this?&quot;</span><span class="p">)</span>
 
@@ -258,7 +260,7 @@
         <span class="sd">&quot;&quot;&quot;Compute :math:`\sigma(M,z)` from CLASS as a vector function.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            M_phys (float): Physical mass in :math:`M/M_\odot`</span>
+<span class="sd">            M_phys (float): Physical mass in :math:`M_\odot` units.</span>
 <span class="sd">            z (float): Redshift.</span>
 
 <span class="sd">        Returns:</span>
@@ -273,7 +275,7 @@
         <span class="sd">&quot;&quot;&quot;Return the value of :math:`\sigma(M,z)` using the prebuilt interpolators, which are constructed if not present.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            logM (float): :math:`\log_{10}(M/M_\odot)`</span>
+<span class="sd">            logM (float): Input :math:`\log_{10}(M/M_\odot)`</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            float: :math:`\sigma(M,z)`</span>
@@ -286,7 +288,7 @@
         <span class="sd">&quot;&quot;&quot;Return the value of :math:`d\ln\sigma/d\log M` using the prebuilt interpolators, which are constructed if not present.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            logM (float): :math:`\log_{10}(M/M_\odot)`</span>
+<span class="sd">            logM (float): Input :math:`\log_{10}(M/M_\odot)`</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            float: :math:`d\ln\sigma/d\log M`</span>

@@ -187,7 +187,7 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>logM</strong> (<em>float</em>) – <span class="math notranslate nohighlight">\(\log_{10}(M/M_\odot)\)</span></td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>logM</strong> (<em>float</em>) – Input <span class="math notranslate nohighlight">\(\log_{10}(M/M_\odot)\)</span></td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><span class="math notranslate nohighlight">\(d\ln\sigma/d\log M\)</span></td>
 </tr>
@@ -208,11 +208,11 @@
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>kh_vector</strong> (<em>float</em>) – Vector of wavenumbers (in h/Mpc units) to compute linear power with.</li>
-<li><strong>kh_min</strong> (<em>float</em>) – Value of k (in h/Mpc units) below which to set <span class="math notranslate nohighlight">\(P(k)\)</span> = 0, default: 0.</li>
+<li><strong>kh_min</strong> (<em>float</em>) – Value of k (in h/Mpc units) below which to set <span class="math notranslate nohighlight">\(P(k) = 0\)</span>, default: 0.</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Linear power spectrum in (Mpc/h)^3 units</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Linear power spectrum in <span class="math notranslate nohighlight">\((\mathrm{Mpc}/h)^3\)</span> units</p>
 </td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">float</p>
@@ -231,7 +231,7 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>M_phys</strong> (<em>float</em>) – Physical mass in <span class="math notranslate nohighlight">\(M/M_\odot\)</span></li>
+<li><strong>M_phys</strong> (<em>float</em>) – Physical mass in <span class="math notranslate nohighlight">\(M_\odot\)</span> units.</li>
 <li><strong>z</strong> (<em>float</em>) – Redshift.</li>
 </ul>
 </td>
@@ -254,7 +254,7 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>logM</strong> (<em>float</em>) – <span class="math notranslate nohighlight">\(\log_{10}(M/M_\odot)\)</span></td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>logM</strong> (<em>float</em>) – Input <span class="math notranslate nohighlight">\(\log_{10}(M/M_\odot)\)</span></td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><span class="math notranslate nohighlight">\(\sigma(M,z)\)</span></td>
 </tr>
