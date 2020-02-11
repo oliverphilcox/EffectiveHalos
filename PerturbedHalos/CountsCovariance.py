@@ -31,7 +31,7 @@ class CountsCovariance:
         mass_integrals (MassIntegrals): Class containing the mass integrals.
         kh_vector (float): Vector of wavenumbers (in :math:`h/\mathrm{Mpc}` units), for which power spectrum will be computed.
         mass_bins (float): Array of mass bin edges, in :math:`h^{-1}M_\mathrm{sun}` units. Must have length N_bins + 1.
-        volume: Volume of the survey in :math:`(h^{-1}\mathrm{Mpc})^3. The variance of the linear field will be computed for radius giving this volume
+        volume: Volume of the survey in :math:`(h^{-1}\mathrm{Mpc})^3`. The variance of the linear field will be computed for radius giving this volume
 
     Keyword Args:
         kh_min: Minimum k vector in the simulation (or survey) region in :math:`h/\mathrm{Mpc}` units. Modes below kh_min are set to zero, default 0.
