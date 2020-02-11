@@ -172,7 +172,7 @@ class HaloPower:
         Compute the one-loop SPT power from the linear power spectrum in the Cosmology class. This returns the one-loop power evaluated at the wavenumber vector specfied in the class initialization. When first called, this computes an interpolator function, which is used in this and subsequent calls.
 
         Returns:
-            float: Vector of 1-loop power :math:`P_\mathrm{1-loop}`(k) for the input k-vector.
+            float: Vector of 1-loop power :math:`P_\mathrm{1-loop}(k)` for the input k-vector.
         """
 
         if not hasattr(self,'one_loop_only_power'):
