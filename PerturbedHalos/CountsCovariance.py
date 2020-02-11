@@ -89,7 +89,7 @@ class CountsCovariance:
         If use_SSC = False, then we only return the non-SSC covariance.
 
         Args:
-            cs2 (float): Squared-speed-of-sound :math:`c_s^2` counterterm in :math:`(h^{-1}\mathrm{Mpc})^2. (Unused if pt_type is not "EFT")
+            cs2 (float): Squared-speed-of-sound :math:`c_s^2` counterterm in :math:`(h^{-1}\mathrm{Mpc})^2` units. (Unused if pt_type is not "EFT")
             R (float): Smoothing scale in :math:h^{-1}`\mathrm{Mpc}`. This is a free parameter of the model. (Unused if smooth_density = False)
 
         Keyword Args:
@@ -116,7 +116,7 @@ class CountsCovariance:
         """Compute the no-SSC covariance matrix of :math:`N_i,P(k)` as defined in the class description.
 
         Args:
-            cs2 (float): Squared-speed-of-sound :math:`c_s^2` counterterm in :math:`(h^{-1}\mathrm{Mpc})^2. (Unused if pt_type is not "EFT")
+            cs2 (float): Squared-speed-of-sound :math:`c_s^2` counterterm in :math:`(h^{-1}\mathrm{Mpc})^2` units. (Unused if pt_type is not "EFT")
             R (float): Smoothing scale in :math:h^{-1}`\mathrm{Mpc}`. This is a free parameter of the model. (Unused if smooth_density = False)
 
         Keyword Args:
@@ -156,7 +156,7 @@ class CountsCovariance:
         """Compute the SSC covariance matrix of :math:`N_i,P(k)` as defined in the class description.
 
         Args:
-            cs2 (float): Squared-speed-of-sound :math:`c_s^2` counterterm in :math:`(h^{-1}\mathrm{Mpc})^2. (Unused if pt_type is not "EFT")
+            cs2 (float): Squared-speed-of-sound :math:`c_s^2` counterterm in :math:`(h^{-1}\mathrm{Mpc})^2` units. (Unused if pt_type is not "EFT")
             R (float): Smoothing scale in :math:h^{-1}`\mathrm{Mpc}`. This is a free parameter of the model. (Unused if smooth_density = False)
 
         Keyword Args:

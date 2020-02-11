@@ -85,7 +85,7 @@ class HaloPower:
         This computes the relevant integrals if they haven't already been computed. The function returns :math:`P_\mathrm{NL}` given smoothing scale R and effective squared sound-speed :math:`c_s^2`.
 
         Args:
-            cs2 (float): Squared-speed-of-sound counterterm in :math:`(h^{-1}Mpc)^2` units. (Unused if pt_type is not "EFT")
+            cs2 (float): Squared-speed-of-sound counterterm :math:`c_s^2` in :math:`(h^{-1}\mathrm{Mpc})^2` units. (Unused if pt_type is not "EFT")
             R (float): Smoothing scale in :math:`h^{-1}Mpc`. This is a free parameter of the model. (Unused if smooth_density = False)
 
         Keyword Args:
@@ -140,7 +140,7 @@ class HaloPower:
         For further details, see the class description.
 
         Args:
-            cs2 (float): Squared-speed-of-sound counterterm in :math:`(h^{-1}Mpc)^2` units. (Unused if pt_type is not "EFT")
+            cs2 (float): Squared-speed-of-sound counterterm :math:`c_s^2` in :math:`(h^{-1}\mathrm{Mpc})^2` units. (Unused if pt_type is not "EFT")
             R (float): Smoothing scale in :math:`h^{-1}Mpc`. This is a free parameter of the model. (Unused if smooth_density = False)
 
         Keyword Args:

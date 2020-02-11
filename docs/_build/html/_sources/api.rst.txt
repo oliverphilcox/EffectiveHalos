@@ -1,40 +1,40 @@
 Python API
 ============
 
-Cosmology
-----------
+Cosmology Module
+----------------
 
 .. automodule:: PerturbedHalos.Cosmology
   :members:
 
 
-Mass Function
---------------
+Mass Function Module
+---------------------
 
 .. automodule:: PerturbedHalos.MassFunction
   :members:
 
-Halo Physics
---------------
+Halo Physics Module
+--------------------
 
 .. automodule:: PerturbedHalos.HaloPhysics
   :members:
 
 
-Mass Integrals
---------------
+Mass Integrals Module
+----------------------
 
 .. automodule:: PerturbedHalos.MassIntegrals
   :members:
 
-Halo Power
------------
+Halo Power Module
+------------------
 
 .. automodule:: PerturbedHalos.HaloPower
   :members:
 
-Counts Covariance
-------------------
+Counts Covariance Module
+-------------------------
 
 .. automodule:: PerturbedHalos.CountsCovariance
   :members:
