@@ -123,7 +123,7 @@ class Cosmology(object):
         return sigma_func
 
     def sigma_logM_int(self,logM):
-        """Return the value of sigma(M,z) using the prebuilt interpolators, which are constructed if not present.
+        """Return the value of :math:`\sigma(M,z)` using the prebuilt interpolators, which are constructed if not present.
 
         Args:
             logM (float): log10(M/Msun)
