@@ -83,6 +83,7 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Test import</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#module-PerturbedHalos.Cosmology">Cosmology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-PerturbedHalos.test">test</a></li>
 </ul>
 </li>
 </ul>
@@ -158,10 +159,45 @@
 <em class="property">class </em><code class="descclassname">PerturbedHalos.Cosmology.</code><code class="descname">Cosmology</code><span class="sig-paren">(</span><em>redshift</em>, <em>name=''</em>, <em>**params</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/Cosmology.html#Cosmology"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.Cosmology.Cosmology" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class to hold the basic cosmology and class attributes.</p>
 <p>This can be initialized by a set of cosmological parameters or a pre-defined name.</p>
-<p>Loaded cosmological models:
-- Planck18: Bestfit cosmology from Planck 2018, using the baseline TT,TE,EE+lowE+lensing likelihood.
-- Quijote: Fiducial cosmology from the Quijote simulations of Francisco Villaescusa-Navarro et al.
-- Abacus: Fiducial cosmology from the Abacus simulations of Lehman Garrison et al.</p>
+<p>Loaded cosmological models:</p>
+<ul class="simple">
+<li>Planck18: Bestfit cosmology from Planck 2018, using the baseline TT,TE,EE+lowE+lensing likelihood.</li>
+<li>Quijote: Fiducial cosmology from the Quijote simulations of Francisco Villaescusa-Navarro et al.</li>
+<li>Abacus: Fiducial cosmology from the Abacus simulations of Lehman Garrison et al.</li>
+</ul>
+</dd></dl>
+
+</div>
+<div class="section" id="module-PerturbedHalos.test">
+<span id="test"></span><h2>test<a class="headerlink" href="#module-PerturbedHalos.test" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="PerturbedHalos.test.DatabaseManager">
+<em class="property">class </em><code class="descclassname">PerturbedHalos.test.</code><code class="descname">DatabaseManager</code><a class="reference internal" href="_modules/PerturbedHalos/test.html#DatabaseManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.test.DatabaseManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create and manage a new sqlite database.</p>
+<dl class="method">
+<dt id="PerturbedHalos.test.DatabaseManager.method">
+<code class="descname">method</code><span class="sig-paren">(</span><em>index</em>, <em>string</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/test.html#DatabaseManager.method"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.test.DatabaseManager.method" title="Permalink to this definition">¶</a></dt>
+<dd><p>A simple method.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>input</strong> (<em>int</em>) – an input</li>
+<li><strong>input2</strong> (<em>str</em>) – another input</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Unity</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">int</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </dd></dl>
 
 </div>
