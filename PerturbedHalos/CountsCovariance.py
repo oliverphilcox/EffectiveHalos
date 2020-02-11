@@ -19,7 +19,8 @@ class CountsCovariance:
     There is an additional contribution from super-sample-covariance:
 
     .. math::
-        \mathrm{cov}_\mathrm{SSC}(N_i, P(k)) = V \sigma^2(V) iJ_0^1 [ I_1^1(k) I_1^{1,1}(k) W^2(kR)  + I_2^1(k) ] $$
+
+        \mathrm{cov}_\mathrm{SSC}(N_i, P(k)) = V \sigma^2(V) iJ_0^1 [ I_1^1(k) I_1^{1,1}(k) W^2(kR)  + I_2^1(k) ]
 
     where :math:`\sigma^2(V)` is the variance of the linear density field on scales with volume V.
 
