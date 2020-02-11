@@ -72,7 +72,7 @@ class MassFunction:
             For efficiency, we return the mass function :math:`\\frac{dn}{d\log_{10}(M)}` rather than the standard form :math:`\\frac{dn}{dM}`.
 
         Args:
-            m_h (float): Mass in :math:`h^{-1}M_\odot` units.
+            m_h (float): Mass in :math:`h^{-1}M_\mathrm{sun}` units.
 
         Returns:
             float: Mass function, :math:`dn/d\log_{10}(M)` in :math:`\mathrm{Mpc}^{-3}` units
@@ -111,7 +111,7 @@ class MassFunction:
         Associated bias functions are available for each mass function, and more can be user-defined. See the class description for details of the loaded parametrizations.
 
         Args:
-            m_h (float): Mass in :math:`h^{-1}M_\odot` units.
+            m_h (float): Mass in :math:`h^{-1}M_\mathrm{sun}` units.
 
         Returns:
             float: Linear Eulerian halo bias (dimensionless)
@@ -141,7 +141,7 @@ class MassFunction:
         Associated bias functions are available for each mass function, and more can be user-defined. See the class description for details of the loaded parametrizations.
 
         Parameters:
-        - m_h: Mass in :math:`h^{-1}M_\odot` units.
+        - m_h: Mass in :math:`h^{-1}M_\mathrm{sun}` units.
         """
 
         m = m_h/self.h
@@ -171,7 +171,7 @@ class MassFunction:
         """Load internal mass function parameters.
 
         Args:
-            mass_function (str): Mass function name.
+            mass_function (str): Mass function name (see class description for options).
             mass_dict (dict): Dictionary of additional parameters.
 
         """

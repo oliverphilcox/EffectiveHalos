@@ -154,13 +154,13 @@
 <span class="sd">    Class to hold the basic cosmology and CLASS attributes. This can be initialized by a set of cosmological parameters or a pre-defined cosmology.</span>
 
 <span class="sd">    Loaded cosmological models:</span>
-<span class="sd">    </span>
+
 <span class="sd">    - **Planck18**: Bestfit cosmology from Planck 2018, using the baseline TT,TE,EE+lowE+lensing likelihood.</span>
 <span class="sd">    - **Quijote**: Fiducial cosmology from the Quijote simulations of Francisco Villaescusa-Navarro et al.</span>
 <span class="sd">    - **Abacus**: Fiducial cosmology from the Abacus simulations of Lehman Garrison et al.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        redshift (float): Desired redshift</span>
+<span class="sd">        redshift (float): Desired redshift :math:`z`</span>
 <span class="sd">        name (str): Load cosmology from a list of predetermined cosmologies (see above).</span>
 <span class="sd">        params (kwargs): Other parameters from CLASS.</span>
 
@@ -181,6 +181,7 @@
 <span class="sd">        Initialize the cosmology class with cosmological parameters or a defined model.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;need to distinguish float + np.ndarray in this + other class docstrings&#39;</span><span class="p">)</span>
         <span class="c1">## Load parameters into a dictionary to pass to CLASS</span>
         <span class="n">class_params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="o">**</span><span class="n">params</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
@@ -260,7 +261,7 @@
         <span class="sd">&quot;&quot;&quot;Compute :math:`\sigma(M,z)` from CLASS as a vector function.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            M_phys (float): Physical mass in :math:`M_\odot` units.</span>
+<span class="sd">            M_phys (float): Physical mass in :math:`M_\mathrm{sun}` units.</span>
 <span class="sd">            z (float): Redshift.</span>
 
 <span class="sd">        Returns:</span>
@@ -275,7 +276,7 @@
         <span class="sd">&quot;&quot;&quot;Return the value of :math:`\sigma(M,z)` using the prebuilt interpolators, which are constructed if not present.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            logM (float): Input :math:`\log_{10}(M/M_\odot)`</span>
+<span class="sd">            logM (float): Input :math:`\log_{10}(M/M_\mathrm{sun})`</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            float: :math:`\sigma(M,z)`</span>
@@ -288,7 +289,7 @@
         <span class="sd">&quot;&quot;&quot;Return the value of :math:`d\ln\sigma/d\log M` using the prebuilt interpolators, which are constructed if not present.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            logM (float): Input :math:`\log_{10}(M/M_\odot)`</span>
+<span class="sd">            logM (float): Input :math:`\log_{10}(M/M_\mathrm{sun})`</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            float: :math:`d\ln\sigma/d\log M`</span>
@@ -304,8 +305,8 @@
 <span class="sd">        NB: This has no effect if the interpolator has already been computed.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            logM_min (float): Minimum mass in :math:`\log_{10}(M/M_\odot)`</span>
-<span class="sd">            logM_max (float): Maximum mass in :math:`\log_{10}(M/M_\odot)`</span>
+<span class="sd">            logM_min (float): Minimum mass in :math:`\log_{10}(M/M_\mathrm{sun})`</span>
+<span class="sd">            logM_max (float): Maximum mass in :math:`\log_{10}(M/M_\mathrm{sun})`</span>
 <span class="sd">            npoints (int): Number of sampling points.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -330,7 +331,7 @@
         <span class="sd">&quot;&quot;&quot;Return the value of :math:`H(z)/H(0)` at the class redshift</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            float: H(z)/H(0)</span>
+<span class="sd">            float: :math:`H(z)/H(0)`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">Ea</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">cosmo</span><span class="o">.</span><span class="n">Omega0_cdm</span><span class="p">()</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">cosmo</span><span class="o">.</span><span class="n">Omega_b</span><span class="p">()</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">cosmo</span><span class="o">.</span><span class="n">Omega_Lambda</span><span class="p">()</span><span class="o">*</span><span class="nb">pow</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="p">,</span><span class="o">-</span><span class="mi">3</span><span class="p">)</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">cosmo</span><span class="o">.</span><span class="n">Omega0_k</span><span class="p">()</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="p">)</span><span class="o">/</span><span class="nb">pow</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">Ea</span>
@@ -339,7 +340,7 @@
         <span class="sd">&quot;&quot;&quot;Return the value of :math:`\Omega_m(z)` at the class redshift</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">        float: Omega_m(z)</span>
+<span class="sd">            float: :math:`\Omega_m(z)`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">hnorm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_h_over_h0</span><span class="p">()</span>
         <span class="n">output</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cosmo</span><span class="o">.</span><span class="n">Omega0_cdm</span><span class="p">()</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">cosmo</span><span class="o">.</span><span class="n">Omega_b</span><span class="p">())</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="o">**</span><span class="mi">3</span><span class="o">/</span><span class="n">hnorm</span><span class="o">**</span><span class="mi">2</span>

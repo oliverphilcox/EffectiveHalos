@@ -4,7 +4,8 @@ from scipy.special import sici
 import numpy as np
 
 class HaloPhysics:
-    """Class to hold halo model quantities and relevant integrals.
+    """
+    Class to hold halo model quantities and relevant integrals.
 
     Implemented Concentration Functions:
 
@@ -21,10 +22,10 @@ class HaloPhysics:
         profile_name (str): Halo profile parametrization to use (see above), default: 'NFW'
         hyperparams (kwargs): Any additional parameters to pass to the class (see below).
 
-    Optional Args:
-        logM_min (float): Minimum mass in :math:`\log_{10}(M/M_{\odot})`, default: 6
-        logM_max (float): Maximum mass in :math:`\log_{10}(M/M_{\odot})`, default: 17
-        npoints (int): Number of sampling points for sigma(M) interpolation, default: 1e5
+    Keyword Args:
+        logM_min (float): Minimum mass in :math`\log_{10}(M/M_\mathrm{sun})`, default: 6
+        logM_max (float): Maximum mass in :math:`\log_{10}(M/M_\mathrm{sun})`, default: 17
+        npoints (int): Number of sampling points for :math:`\sigma(M)` interpolation, default: 1e5
         tinker_overdensity (int): (Only for the Tinker mass function): spherical overdensity defining halos, default: 200
 
     """
@@ -68,7 +69,7 @@ class HaloPhysics:
         self.a = self.cosmology.a
 
     def halo_profile(self,m_h,k_phys,norm_only=False):
-        """Compute the halo profile function in Fourier space; :math:`\\rho(k|m) = \\frac{m}{\\bar{\\rho_M}}u(k|m)`
+        """Compute the halo profile function in Fourier space; :math:`\\rho(k|m) = \\frac{m}{\\bar{\\rho}_M}u(k|m)`
         where :math:`\\bar{\\rho}_M`` is the background matter density and :math:`u(k|m)` is the halo profile.
 
         We assume halos have a virial collapse overdensity here, based on the parametrization of Bryan & Norman 1998.
@@ -76,12 +77,12 @@ class HaloPhysics:
         For details of the available profile parametrizations, see the class description.
 
         Args:
-            m_h (float): Mass in :math:`h^{-1}M_{\odot}` units.
+            m_h (float): Mass in :math:`h^{-1}M_\mathrm{sun}` units.
             k_phys (float): Physical wavenumber in 1/Mpc units.
-            norm_only (bool): Boolean, if set, just return the normalization factor :math:`\\frac{m}{\\bar{\\rho}_M}`, default: False
+            norm_only (bool): Boolean, if set, just return the normalization factor :math:`m/\\bar{\\rho}_M`, default: False
 
         Returns:
-            float: Halo profile :math:`\\rho(k|m)` or :math:`\\frac{m}{\\bar{\\rho}_M}`, if the norm_only parameter is set.
+            float: Halo profile :math:`\\rho(k|m)` or :math:`m/\\bar{\\rho}_M`, if the norm_only parameter is set.
         """
         m = m_h/self.h # in Msun units
 

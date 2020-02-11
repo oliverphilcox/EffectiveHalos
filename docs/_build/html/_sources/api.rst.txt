@@ -19,3 +19,10 @@ Halo Physics
 
 .. automodule:: PerturbedHalos.HaloPhysics
   :members:
+
+
+Mass Integrals
+--------------
+
+.. automodule:: PerturbedHalos.MassIntegrals
+  :members:

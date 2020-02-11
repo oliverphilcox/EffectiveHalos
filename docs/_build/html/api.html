@@ -86,6 +86,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#module-PerturbedHalos.Cosmology">Cosmology</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-PerturbedHalos.MassFunction">Mass Function</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-PerturbedHalos.HaloPhysics">Halo Physics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-PerturbedHalos.MassIntegrals">Mass Integrals</a></li>
 </ul>
 </li>
 </ul>
@@ -171,7 +172,7 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>redshift</strong> (<em>float</em>) – Desired redshift</li>
+<li><strong>redshift</strong> (<em>float</em>) – Desired redshift <span class="math notranslate nohighlight">\(z\)</span></li>
 <li><strong>name</strong> (<em>str</em>) – Load cosmology from a list of predetermined cosmologies (see above).</li>
 <li><strong>params</strong> (<em>kwargs</em>) – Other parameters from CLASS.</li>
 </ul>
@@ -187,7 +188,7 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>logM</strong> (<em>float</em>) – Input <span class="math notranslate nohighlight">\(\log_{10}(M/M_\odot)\)</span></td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>logM</strong> (<em>float</em>) – Input <span class="math notranslate nohighlight">\(\log_{10}(M/M_\mathrm{sun})\)</span></td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><span class="math notranslate nohighlight">\(d\ln\sigma/d\log M\)</span></td>
 </tr>
@@ -231,7 +232,7 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>M_phys</strong> (<em>float</em>) – Physical mass in <span class="math notranslate nohighlight">\(M_\odot\)</span> units.</li>
+<li><strong>M_phys</strong> (<em>float</em>) – Physical mass in <span class="math notranslate nohighlight">\(M_\mathrm{sun}\)</span> units.</li>
 <li><strong>z</strong> (<em>float</em>) – Redshift.</li>
 </ul>
 </td>
@@ -254,7 +255,7 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>logM</strong> (<em>float</em>) – Input <span class="math notranslate nohighlight">\(\log_{10}(M/M_\odot)\)</span></td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>logM</strong> (<em>float</em>) – Input <span class="math notranslate nohighlight">\(\log_{10}(M/M_\mathrm{sun})\)</span></td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><span class="math notranslate nohighlight">\(\sigma(M,z)\)</span></td>
 </tr>
@@ -310,7 +311,7 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>m_h</strong> (<em>float</em>) – Mass in <span class="math notranslate nohighlight">\(h^{-1}M_\odot\)</span> units.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>m_h</strong> (<em>float</em>) – Mass in <span class="math notranslate nohighlight">\(h^{-1}M_\mathrm{sun}\)</span> units.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Linear Eulerian halo bias (dimensionless)</td>
 </tr>
@@ -336,7 +337,7 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>m_h</strong> (<em>float</em>) – Mass in <span class="math notranslate nohighlight">\(h^{-1}M_\odot\)</span> units.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>m_h</strong> (<em>float</em>) – Mass in <span class="math notranslate nohighlight">\(h^{-1}M_\mathrm{sun}\)</span> units.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Mass function, <span class="math notranslate nohighlight">\(dn/d\log_{10}(M)\)</span> in <span class="math notranslate nohighlight">\(\mathrm{Mpc}^{-3}\)</span> units</td>
 </tr>
@@ -352,7 +353,7 @@
 <dd><p>Compute the second order Eulerian bias, defined as <span class="math notranslate nohighlight">\(\frac{4}{21}b_1^L + \frac{1}{2}b_2^L\)</span> where <span class="math notranslate nohighlight">\(b_1^L\)</span> and <span class="math notranslate nohighlight">\(b_2^L\)</span> are the Lagrangian bias parameters.</p>
 <p>Associated bias functions are available for each mass function, and more can be user-defined. See the class description for details of the loaded parametrizations.</p>
 <p>Parameters:
-- m_h: Mass in <span class="math notranslate nohighlight">\(h^{-1}M_\odot\)</span> units.</p>
+- m_h: Mass in <span class="math notranslate nohighlight">\(h^{-1}M_\mathrm{sun}\)</span> units.</p>
 </dd></dl>
 
 </dd></dl>
@@ -376,7 +377,7 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>cosmology</strong> (<a class="reference internal" href="#PerturbedHalos.Cosmology.Cosmology" title="PerturbedHalos.Cosmology.Cosmology"><em>Cosmology</em></a>) – Instance of the Cosmology class containing relevant cosmology and functions.</li>
 <li><strong>mass_function</strong> (<a class="reference internal" href="#PerturbedHalos.MassFunction.MassFunction" title="PerturbedHalos.MassFunction.MassFunction"><em>MassFunction</em></a>) – Instance of the MassFunction class, containing the mass function and bias</li>
 <li><strong>concentration_name</strong> (<em>str</em>) – Concentration parametrization to use (see above), default: ‘Duffy’</li>
@@ -385,15 +386,17 @@
 </ul>
 </td>
 </tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first last simple">
+<li><strong>logM_min</strong> (<em>float</em>) – Minimum mass in :math`log_{10}(M/<a href="#id3"><span class="problematic" id="id4">M_</span></a>mathrm{sun})`, default: 6</li>
+<li><strong>logM_max</strong> (<em>float</em>) – Maximum mass in <span class="math notranslate nohighlight">\(\log_{10}(M/M_\mathrm{sun})\)</span>, default: 17</li>
+<li><strong>npoints</strong> (<em>int</em>) – Number of sampling points for <span class="math notranslate nohighlight">\(\sigma(M)\)</span> interpolation, default: 1e5</li>
+<li><strong>tinker_overdensity</strong> (<em>int</em>) – (Only for the Tinker mass function): spherical overdensity defining halos, default: 200</li>
+</ul>
+</td>
+</tr>
 </tbody>
 </table>
-<dl class="docutils">
-<dt>Optional Args:</dt>
-<dd>logM_min (float): Minimum mass in <span class="math notranslate nohighlight">\(\log_{10}(M/M_{\odot})\)</span>, default: 6
-logM_max (float): Maximum mass in <span class="math notranslate nohighlight">\(\log_{10}(M/M_{\odot})\)</span>, default: 17
-npoints (int): Number of sampling points for sigma(M) interpolation, default: 1e5
-tinker_overdensity (int): (Only for the Tinker mass function): spherical overdensity defining halos, default: 200</dd>
-</dl>
 <dl class="method">
 <dt id="PerturbedHalos.HaloPhysics.HaloPhysics.halo_concentration">
 <code class="descname">halo_concentration</code><span class="sig-paren">(</span><em>m_h</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/HaloPhysics.html#HaloPhysics.halo_concentration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.HaloPhysics.HaloPhysics.halo_concentration" title="Permalink to this definition">¶</a></dt>
@@ -412,7 +415,7 @@ tinker_overdensity (int): (Only for the Tinker mass function): spherical overden
 <dl class="method">
 <dt id="PerturbedHalos.HaloPhysics.HaloPhysics.halo_profile">
 <code class="descname">halo_profile</code><span class="sig-paren">(</span><em>m_h</em>, <em>k_phys</em>, <em>norm_only=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/HaloPhysics.html#HaloPhysics.halo_profile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.HaloPhysics.HaloPhysics.halo_profile" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute the halo profile function in Fourier space; <span class="math notranslate nohighlight">\(\rho(k|m) = \frac{m}{\bar{\rho_M}}u(k|m)\)</span>
+<dd><p>Compute the halo profile function in Fourier space; <span class="math notranslate nohighlight">\(\rho(k|m) = \frac{m}{\bar{\rho}_M}u(k|m)\)</span>
 where <span class="math notranslate nohighlight">\(\bar{\rho}_M\)</span> is the background matter density and <span class="math notranslate nohighlight">\(u(k|m)\)</span> is the halo profile.</p>
 <p>We assume halos have a virial collapse overdensity here, based on the parametrization of Bryan &amp; Norman 1998.</p>
 <p>For details of the available profile parametrizations, see the class description.</p>
@@ -421,17 +424,179 @@ where <span class="math notranslate nohighlight">\(\bar{\rho}_M\)</span> is the 
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>m_h</strong> (<em>float</em>) – Mass in <span class="math notranslate nohighlight">\(h^{-1}M_{\odot}\)</span> units.</li>
+<li><strong>m_h</strong> (<em>float</em>) – Mass in <span class="math notranslate nohighlight">\(h^{-1}M_\mathrm{sun}\)</span> units.</li>
 <li><strong>k_phys</strong> (<em>float</em>) – Physical wavenumber in 1/Mpc units.</li>
-<li><strong>norm_only</strong> (<em>bool</em>) – Boolean, if set, just return the normalization factor <span class="math notranslate nohighlight">\(\frac{m}{\bar{\rho}_M}\)</span>, default: False</li>
+<li><strong>norm_only</strong> (<em>bool</em>) – Boolean, if set, just return the normalization factor <span class="math notranslate nohighlight">\(m/\bar{\rho}_M\)</span>, default: False</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Halo profile <span class="math notranslate nohighlight">\(\rho(k|m)\)</span> or <span class="math notranslate nohighlight">\(\frac{m}{\bar{\rho}_M}\)</span>, if the norm_only parameter is set.</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Halo profile <span class="math notranslate nohighlight">\(\rho(k|m)\)</span> or <span class="math notranslate nohighlight">\(m/\bar{\rho}_M\)</span>, if the norm_only parameter is set.</p>
 </td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">float</p>
 </td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-PerturbedHalos.MassIntegrals">
+<span id="mass-integrals"></span><h2>Mass Integrals<a class="headerlink" href="#module-PerturbedHalos.MassIntegrals" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="PerturbedHalos.MassIntegrals.MassIntegrals">
+<em class="property">class </em><code class="descclassname">PerturbedHalos.MassIntegrals.</code><code class="descname">MassIntegrals</code><span class="sig-paren">(</span><em>cosmology</em>, <em>mass_function</em>, <em>halo_physics</em>, <em>kh_vector</em>, <em>min_logM=6.001</em>, <em>max_logM=16.999</em>, <em>N_mass=10000</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/MassIntegrals.html#MassIntegrals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.MassIntegrals.MassIntegrals" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Class to compute and store the various mass integrals of the form</dt>
+<dd><div class="first math notranslate nohighlight">
+\[I_p^{q1,q2}(k_1,...k_p) = \int n(m)b^{(q1)}(m)b^{(q2)}\frac{m^p}{\rho_M^p}u(k_1|m)..u(k_p|m)dm\]</div>
+<p>which are needed to compute the power spectrum model. Here <span class="math notranslate nohighlight">\(b^{(q)}\)</span> is the q-th order bias (with <span class="math notranslate nohighlight">\(b^{0}=1\)</span>),
+<span class="math notranslate nohighlight">\(u(k|m)\)</span> is the normalized halo profile and <span class="math notranslate nohighlight">\(n(m)\)</span> is the mass function.</p>
+<p>All integrals are performed via Simpson’s rule over a specified mass range, and are simply returned if they are already computed.</p>
+<p class="last">For the <span class="math notranslate nohighlight">\(I_1^{1,0} = I_1^1\)</span> integral, the integral must be corrected to ensure that we recover the bias consistency relation :math:<a href="#id1"><span class="problematic" id="id2">`</span></a>I_1^1</p>
+</dd>
+</dl>
+<p>ightarrow 1` as <span class="math notranslate nohighlight">\(k
+ightarrow 0\)</span>.</p>
+<blockquote>
+<div><p>This requires an infinite mass range, so we instead approximate;
+.. math:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>\<span class="n">left</span><span class="o">|</span><span class="n">I_1</span><span class="o">^</span><span class="mi">1</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>ight|_{mathrm{corrected}} = I_1^1(k) + ( 1 - I_1^1(0) ) u(k|m_min) / u(k|0)</p>
+<blockquote>
+<div><p>for normalized halo profile <span class="math notranslate nohighlight">\(u\)</span>.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>cosmology (Cosmology): Instance of the Cosmology class containing relevant cosmology and functions.
+mass_function (MassFunction): Instance of the MassFunction class, containing the mass function and bias.
+halo_physics (HaloPhysics): Instance of the HaloPhysics class, containing the halo profiles and concentrations.
+kh_vector (float): Array (or float) of wavenumbers in <span class="math notranslate nohighlight">\(h\mathrm{Mpc}^{-1}\)</span> units from which to compute mass integrals.</dd>
+<dt>Keyword Args:</dt>
+<dd>min_logM (float): Minimum mass in <span class="math notranslate nohighlight">\(\log_{10}(M/M_\mathrm{sun})\)</span> units, default: 6.001.
+max_logM (float): Maximum mass in <span class="math notranslate nohighlight">\(\log_{10}(M/M_\mathrm{sun})\)</span> units, default: 16.999.
+N_mass (int): Number of logarithmically spaced mass grid points, default: 10000.</dd>
+</dl>
+</div></blockquote>
+<dl class="method">
+<dt id="PerturbedHalos.MassIntegrals.MassIntegrals.compute_I_00">
+<code class="descname">compute_I_00</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/MassIntegrals.html#MassIntegrals.compute_I_00"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.MassIntegrals.MassIntegrals.compute_I_00" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the I_0^0 integral, if not already computed.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Value of <span class="math notranslate nohighlight">\(I_0^0\)</span></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PerturbedHalos.MassIntegrals.MassIntegrals.compute_I_01">
+<code class="descname">compute_I_01</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/MassIntegrals.html#MassIntegrals.compute_I_01"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.MassIntegrals.MassIntegrals.compute_I_01" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the I_0^1 integral, if not already computed.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Value of <span class="math notranslate nohighlight">\(I_0^1\)</span></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PerturbedHalos.MassIntegrals.MassIntegrals.compute_I_11">
+<code class="descname">compute_I_11</code><span class="sig-paren">(</span><em>apply_correction=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/MassIntegrals.html#MassIntegrals.compute_I_11"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.MassIntegrals.MassIntegrals.compute_I_11" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the <span class="math notranslate nohighlight">\(I_1^1(k)\)</span> integral, if not already computed. Also apply the correction noted in the class header if required.</p>
+<p>When computing <span class="math notranslate nohighlight">\({}_i J_1^1\)</span> type integrals (over a finite mass bin), the correction should <em>not</em> be applied.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body"><strong>apply_correction</strong> (<em>bool</em>) – Whether to apply the correction in the class header to ensure the bias consistency relation is upheld.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Array of <span class="math notranslate nohighlight">\(I_1^1\)</span> values for each k.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PerturbedHalos.MassIntegrals.MassIntegrals.compute_I_111">
+<code class="descname">compute_I_111</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/MassIntegrals.html#MassIntegrals.compute_I_111"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.MassIntegrals.MassIntegrals.compute_I_111" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the <span class="math notranslate nohighlight">\(I_1^{1,1}\)</span> integral, if not already computed.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Array of <span class="math notranslate nohighlight">\(I_1^{1,1}\)</span> values for each k.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PerturbedHalos.MassIntegrals.MassIntegrals.compute_I_12">
+<code class="descname">compute_I_12</code><span class="sig-paren">(</span><em>apply_correction=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/MassIntegrals.html#MassIntegrals.compute_I_12"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.MassIntegrals.MassIntegrals.compute_I_12" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the <span class="math notranslate nohighlight">\(I_1^2(k)\)</span> integral, if not already computed. Also apply the correction noted in the class header if required.</p>
+<p>When computing <span class="math notranslate nohighlight">\({}_i J_1^2\)</span> type integrals (over a finite mass bin), the correction should <em>not</em> be applied.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body"><strong>apply_correction</strong> (<em>bool</em>) – Whether to apply the correction in the class header to ensure the bias consistency relation is upheld.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Array of <span class="math notranslate nohighlight">\(I_1^2\)</span> values for each k.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PerturbedHalos.MassIntegrals.MassIntegrals.compute_I_20">
+<code class="descname">compute_I_20</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/MassIntegrals.html#MassIntegrals.compute_I_20"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.MassIntegrals.MassIntegrals.compute_I_20" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the <span class="math notranslate nohighlight">\(I_2^0\)</span> integral, if not already computed. Note that we assume both k-vectors are the same here.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Array of <span class="math notranslate nohighlight">\(I_2^0\)</span> values for each k.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PerturbedHalos.MassIntegrals.MassIntegrals.compute_I_21">
+<code class="descname">compute_I_21</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/MassIntegrals.html#MassIntegrals.compute_I_21"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.MassIntegrals.MassIntegrals.compute_I_21" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the <span class="math notranslate nohighlight">\(I_2^1\)</span> integral, if not already computed. Note that we assume both k-vectors are the same here.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Array of <span class="math notranslate nohighlight">\(I_2^1\)</span> values for each k.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">float</td>
 </tr>
 </tbody>
 </table>

@@ -7,13 +7,13 @@ class Cosmology(object):
     Class to hold the basic cosmology and CLASS attributes. This can be initialized by a set of cosmological parameters or a pre-defined cosmology.
 
     Loaded cosmological models:
-    
+
     - **Planck18**: Bestfit cosmology from Planck 2018, using the baseline TT,TE,EE+lowE+lensing likelihood.
     - **Quijote**: Fiducial cosmology from the Quijote simulations of Francisco Villaescusa-Navarro et al.
     - **Abacus**: Fiducial cosmology from the Abacus simulations of Lehman Garrison et al.
 
     Args:
-        redshift (float): Desired redshift
+        redshift (float): Desired redshift :math:`z`
         name (str): Load cosmology from a list of predetermined cosmologies (see above).
         params (kwargs): Other parameters from CLASS.
 
@@ -34,6 +34,7 @@ class Cosmology(object):
         Initialize the cosmology class with cosmological parameters or a defined model.
 
         """
+        print('need to distinguish float + np.ndarray in this + other class docstrings')
         ## Load parameters into a dictionary to pass to CLASS
         class_params = dict(**params)
         if len(name)>0:
@@ -113,7 +114,7 @@ class Cosmology(object):
         """Compute :math:`\sigma(M,z)` from CLASS as a vector function.
 
         Args:
-            M_phys (float): Physical mass in :math:`M_\odot` units.
+            M_phys (float): Physical mass in :math:`M_\mathrm{sun}` units.
             z (float): Redshift.
 
         Returns:
@@ -128,7 +129,7 @@ class Cosmology(object):
         """Return the value of :math:`\sigma(M,z)` using the prebuilt interpolators, which are constructed if not present.
 
         Args:
-            logM (float): Input :math:`\log_{10}(M/M_\odot)`
+            logM (float): Input :math:`\log_{10}(M/M_\mathrm{sun})`
 
         Returns:
             float: :math:`\sigma(M,z)`
@@ -141,7 +142,7 @@ class Cosmology(object):
         """Return the value of :math:`d\ln\sigma/d\log M` using the prebuilt interpolators, which are constructed if not present.
 
         Args:
-            logM (float): Input :math:`\log_{10}(M/M_\odot)`
+            logM (float): Input :math:`\log_{10}(M/M_\mathrm{sun})`
 
         Returns:
             float: :math:`d\ln\sigma/d\log M`
@@ -157,8 +158,8 @@ class Cosmology(object):
         NB: This has no effect if the interpolator has already been computed.
 
         Args:
-            logM_min (float): Minimum mass in :math:`\log_{10}(M/M_\odot)`
-            logM_max (float): Maximum mass in :math:`\log_{10}(M/M_\odot)`
+            logM_min (float): Minimum mass in :math:`\log_{10}(M/M_\mathrm{sun})`
+            logM_max (float): Maximum mass in :math:`\log_{10}(M/M_\mathrm{sun})`
             npoints (int): Number of sampling points.
 
         """
@@ -183,7 +184,7 @@ class Cosmology(object):
         """Return the value of :math:`H(z)/H(0)` at the class redshift
 
         Returns:
-            float: H(z)/H(0)
+            float: :math:`H(z)/H(0)`
         """
         Ea = np.sqrt((self.cosmo.Omega0_cdm()+self.cosmo.Omega_b()+self.cosmo.Omega_Lambda()*pow(self.a,-3)+self.cosmo.Omega0_k()*self.a)/pow(self.a,3))
         return Ea
@@ -192,7 +193,7 @@ class Cosmology(object):
         """Return the value of :math:`\Omega_m(z)` at the class redshift
 
         Returns:
-        float: Omega_m(z)
+            float: :math:`\Omega_m(z)`
         """
         hnorm = self._h_over_h0()
         output = (self.cosmo.Omega0_cdm()+self.cosmo.Omega_b())/self.a**3/hnorm**2

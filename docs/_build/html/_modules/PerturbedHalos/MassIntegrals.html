@@ -1,0 +1,469 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>PerturbedHalos.MassIntegrals &mdash; PerturbedHalos  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> PerturbedHalos
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">Python API</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">PerturbedHalos</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>PerturbedHalos.MassIntegrals</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for PerturbedHalos.MassIntegrals</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">Cosmology</span><span class="p">,</span> <span class="n">MassFunction</span><span class="p">,</span> <span class="n">HaloPhysics</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy.integrate</span> <span class="kn">import</span> <span class="n">simps</span>
+
+<div class="viewcode-block" id="MassIntegrals"><a class="viewcode-back" href="../../api.html#PerturbedHalos.MassIntegrals.MassIntegrals">[docs]</a><span class="k">class</span> <span class="nc">MassIntegrals</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Class to compute and store the various mass integrals of the form</span>
+<span class="sd">    .. math::</span>
+
+<span class="sd">        I_p^{q1,q2}(k_1,...k_p) = \\int n(m)b^{(q1)}(m)b^{(q2)}\\frac{m^p}{\\rho_M^p}u(k_1|m)..u(k_p|m)dm</span>
+
+<span class="sd">    which are needed to compute the power spectrum model. Here :math:`b^{(q)}` is the q-th order bias (with :math:`b^{0}=1`),</span>
+<span class="sd">    :math:`u(k|m)` is the normalized halo profile and :math:`n(m)` is the mass function.</span>
+
+<span class="sd">    All integrals are performed via Simpson&#39;s rule over a specified mass range, and are simply returned if they are already computed.</span>
+
+<span class="sd">    For the :math:`I_1^{1,0} = I_1^1` integral, the integral must be corrected to ensure that we recover the bias consistency relation :math:`I_1^1 \rightarrow 1` as :math:`k \rightarrow 0`.</span>
+
+<span class="sd">    This requires an infinite mass range, so we instead approximate;</span>
+<span class="sd">    .. math::</span>
+
+<span class="sd">        \left|I_1^1(k)\right|_{\mathrm{corrected}} = I_1^1(k) + ( 1 - I_1^1(0) ) u(k|m_min) / u(k|0)</span>
+
+<span class="sd">    for normalized halo profile :math:`u`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        cosmology (Cosmology): Instance of the Cosmology class containing relevant cosmology and functions.</span>
+<span class="sd">        mass_function (MassFunction): Instance of the MassFunction class, containing the mass function and bias.</span>
+<span class="sd">        halo_physics (HaloPhysics): Instance of the HaloPhysics class, containing the halo profiles and concentrations.</span>
+<span class="sd">        kh_vector (float): Array (or float) of wavenumbers in :math:`h\mathrm{Mpc}^{-1}` units from which to compute mass integrals.</span>
+
+<span class="sd">    Keyword Args:</span>
+<span class="sd">        min_logM (float): Minimum mass in :math:`\log_{10}(M/M_\mathrm{sun})` units, default: 6.001.</span>
+<span class="sd">        max_logM (float): Maximum mass in :math:`\log_{10}(M/M_\mathrm{sun})` units, default: 16.999.</span>
+<span class="sd">        N_mass (int): Number of logarithmically spaced mass grid points, default: 10000.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">cosmology</span><span class="p">,</span><span class="n">mass_function</span><span class="p">,</span><span class="n">halo_physics</span><span class="p">,</span><span class="n">kh_vector</span><span class="p">,</span><span class="n">min_logM</span><span class="o">=</span><span class="mf">6.001</span><span class="p">,</span> <span class="n">max_logM</span><span class="o">=</span><span class="mf">16.999</span><span class="p">,</span> <span class="n">N_mass</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="mf">1e4</span><span class="p">)):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize the class with relevant model hyperparameters.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;need to specify class attributes + methods in the docstring...&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;sensibly set default n_mass&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Write attributes, if they&#39;re of the correct type</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cosmology</span><span class="p">,</span> <span class="n">Cosmology</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cosmology</span> <span class="o">=</span> <span class="n">cosmology</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;cosmology input must be an instance of the Cosmology class!&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mass_function</span><span class="p">,</span> <span class="n">MassFunction</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mass_function</span> <span class="o">=</span> <span class="n">mass_function</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;mass_function input must be an instance of the MassFunction class!&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">halo_physics</span><span class="p">,</span> <span class="n">HaloPhysics</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">halo_physics</span> <span class="o">=</span> <span class="n">halo_physics</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;halo_physics input must be an instance of the HaloPhysics class!&#39;</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;we should shunt a lot of these definitions into the NonLinearPower class? or Cov class?&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Run some important checks</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;find better place to store these parameters&#39;</span><span class="p">)</span>
+        <span class="n">interp_min</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">halo_physics</span><span class="o">.</span><span class="n">hyper_dict</span><span class="p">[</span><span class="s1">&#39;logM_min&#39;</span><span class="p">]</span>
+        <span class="n">interp_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">halo_physics</span><span class="o">.</span><span class="n">hyper_dict</span><span class="p">[</span><span class="s1">&#39;logM_max&#39;</span><span class="p">]</span>
+        <span class="k">assert</span> <span class="n">min_logM</span> <span class="o">&gt;=</span> <span class="n">interp_min</span><span class="p">,</span> <span class="s1">&#39;Minimum mass must be greater than the interpolation limit (10^</span><span class="si">%.2f</span><span class="s1">)&#39;</span><span class="o">%</span><span class="n">interp_min</span>
+        <span class="k">assert</span> <span class="n">max_logM</span> <span class="o">&lt;=</span> <span class="n">interp_max</span><span class="p">,</span> <span class="s1">&#39;Minimum mass must be less than the interpolation limit (10^</span><span class="si">%.2f</span><span class="s1">)&#39;</span><span class="o">%</span><span class="n">interp_max</span>
+
+        <span class="c1"># Load reduced H0 for clarity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cosmology</span><span class="o">.</span><span class="n">cosmo</span><span class="o">.</span><span class="n">h</span><span class="p">()</span>
+
+        <span class="c1"># Save other attributes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_logM</span> <span class="o">=</span> <span class="n">min_logM</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_logM</span> <span class="o">=</span> <span class="n">max_logM</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">N_mass</span> <span class="o">=</span> <span class="n">N_mass</span>
+
+        <span class="c1"># Define a mass vector for computations</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logM_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">min_logM</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">max_logM</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">N_mass</span><span class="p">)</span>
+
+        <span class="c1"># Load and convert masses and wavenumbers</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="mf">10.</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">logM_grid</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m_h_grid</span> <span class="o">=</span> <span class="n">m</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">h</span> <span class="c1"># in Msun/h</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">k_vectors</span> <span class="o">=</span> <span class="n">kh_vector</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">h</span> <span class="c1"># remove h dependence so that k is in physical units</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">N_k</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">k_vectors</span><span class="p">)</span> <span class="c1"># define number of k points</span>
+
+<div class="viewcode-block" id="MassIntegrals.compute_I_00"><a class="viewcode-back" href="../../api.html#PerturbedHalos.MassIntegrals.MassIntegrals.compute_I_00">[docs]</a>    <span class="k">def</span> <span class="nf">compute_I_00</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Compute the I_0^0 integral, if not already computed.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: Value of :math:`I_0^0`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="s1">&#39;I_00&#39;</span><span class="p">):</span>
+            <span class="c1"># NB: we pass kh_vectors as a placeholder here; it&#39;s not used.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">I_00</span> <span class="o">=</span> <span class="n">simps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_I_p_q1q2_integrand</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span><span class="bp">self</span><span class="o">.</span><span class="n">logM_grid</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">I_00</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="MassIntegrals.compute_I_01"><a class="viewcode-back" href="../../api.html#PerturbedHalos.MassIntegrals.MassIntegrals.compute_I_01">[docs]</a>    <span class="k">def</span> <span class="nf">compute_I_01</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Compute the I_0^1 integral, if not already computed.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: Value of :math:`I_0^1`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="s1">&#39;I_01&#39;</span><span class="p">):</span>
+            <span class="c1"># NB: we pass kh_vectors as a placeholder here; it&#39;s not used.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">I_01</span> <span class="o">=</span> <span class="n">simps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_I_p_q1q2_integrand</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span><span class="bp">self</span><span class="o">.</span><span class="n">logM_grid</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">I_01</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="MassIntegrals.compute_I_11"><a class="viewcode-back" href="../../api.html#PerturbedHalos.MassIntegrals.MassIntegrals.compute_I_11">[docs]</a>    <span class="k">def</span> <span class="nf">compute_I_11</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">apply_correction</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Compute the :math:`I_1^1(k)` integral, if not already computed. Also apply the correction noted in the class header if required.</span>
+
+<span class="sd">        When computing :math:`{}_i J_1^1` type integrals (over a finite mass bin), the correction should *not* be applied.</span>
+
+<span class="sd">        Keyword Args:</span>
+<span class="sd">            apply_correction (bool): Whether to apply the correction in the class header to ensure the bias consistency relation is upheld.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: Array of :math:`I_1^1` values for each k.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="s1">&#39;I_11&#39;</span><span class="p">):</span>
+            <span class="c1"># Compute the integral over the utilized mass range</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">I_11</span> <span class="o">=</span> <span class="n">simps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_I_p_q1q2_integrand</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span><span class="bp">self</span><span class="o">.</span><span class="n">logM_grid</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">apply_correction</span><span class="p">:</span>
+                <span class="n">A</span> <span class="o">=</span> <span class="mf">1.</span> <span class="o">-</span> <span class="n">simps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_I_p_q1q2_integrand</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">zero_k</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span><span class="bp">self</span><span class="o">.</span><span class="n">logM_grid</span><span class="p">)</span>
+                <span class="c1"># compute window functions</span>
+                <span class="n">min_m_h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="mf">10.</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">min_logM</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">h</span>
+                <span class="n">min_window</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">halo_physics</span><span class="o">.</span><span class="n">halo_profile</span><span class="p">(</span><span class="n">min_m_h</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">k_vectors</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+                <span class="n">zero_window</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">halo_physics</span><span class="o">.</span><span class="n">halo_profile</span><span class="p">(</span><span class="n">min_m_h</span><span class="p">,</span><span class="mf">0.</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">I_11</span> <span class="o">+=</span> <span class="n">A</span><span class="o">*</span><span class="n">min_window</span><span class="o">/</span><span class="n">zero_window</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">I_11</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="MassIntegrals.compute_I_111"><a class="viewcode-back" href="../../api.html#PerturbedHalos.MassIntegrals.MassIntegrals.compute_I_111">[docs]</a>    <span class="k">def</span> <span class="nf">compute_I_111</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Compute the :math:`I_1^{1,1}` integral, if not already computed.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: Array of :math:`I_1^{1,1}` values for each k.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="s1">&#39;I_111&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">I_111</span> <span class="o">=</span> <span class="n">simps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_I_p_q1q2_integrand</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span><span class="bp">self</span><span class="o">.</span><span class="n">logM_grid</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">I_111</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="MassIntegrals.compute_I_12"><a class="viewcode-back" href="../../api.html#PerturbedHalos.MassIntegrals.MassIntegrals.compute_I_12">[docs]</a>    <span class="k">def</span> <span class="nf">compute_I_12</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">apply_correction</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Compute the :math:`I_1^2(k)` integral, if not already computed. Also apply the correction noted in the class header if required.</span>
+
+<span class="sd">        When computing :math:`{}_i J_1^2` type integrals (over a finite mass bin), the correction should *not* be applied.</span>
+
+<span class="sd">        Keyword Args:</span>
+<span class="sd">            apply_correction (bool): Whether to apply the correction in the class header to ensure the bias consistency relation is upheld.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: Array of :math:`I_1^2` values for each k.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="s1">&#39;I_12&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">I_12</span> <span class="o">=</span> <span class="n">simps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_I_p_q1q2_integrand</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span><span class="bp">self</span><span class="o">.</span><span class="n">logM_grid</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">apply_correction</span><span class="p">:</span>
+                <span class="n">A</span> <span class="o">=</span> <span class="o">-</span> <span class="n">simps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_I_p_q1q2_integrand</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">zero_k</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span><span class="bp">self</span><span class="o">.</span><span class="n">logM_grid</span><span class="p">)</span>
+                <span class="c1"># compute window functions</span>
+                <span class="n">min_m_h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="mf">10.</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">min_logM</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">h</span>
+                <span class="n">min_window</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">halo_physics</span><span class="o">.</span><span class="n">halo_profile</span><span class="p">(</span><span class="n">min_m_h</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">k_vectors</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+                <span class="n">zero_window</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">halo_physics</span><span class="o">.</span><span class="n">halo_profile</span><span class="p">(</span><span class="n">min_m_h</span><span class="p">,</span><span class="mf">0.</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">I_12</span> <span class="o">+=</span> <span class="n">A</span><span class="o">*</span><span class="n">min_window</span><span class="o">/</span><span class="n">zero_window</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">I_12</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="MassIntegrals.compute_I_20"><a class="viewcode-back" href="../../api.html#PerturbedHalos.MassIntegrals.MassIntegrals.compute_I_20">[docs]</a>    <span class="k">def</span> <span class="nf">compute_I_20</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Compute the :math:`I_2^0` integral, if not already computed. Note that we assume both k-vectors are the same here.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: Array of :math:`I_2^0` values for each k.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="s1">&#39;I_20&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">I_20</span> <span class="o">=</span> <span class="n">simps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_I_p_q1q2_integrand</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span><span class="bp">self</span><span class="o">.</span><span class="n">logM_grid</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">I_20</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="MassIntegrals.compute_I_21"><a class="viewcode-back" href="../../api.html#PerturbedHalos.MassIntegrals.MassIntegrals.compute_I_21">[docs]</a>    <span class="k">def</span> <span class="nf">compute_I_21</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Compute the :math:`I_2^1` integral, if not already computed. Note that we assume both k-vectors are the same here.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: Array of :math:`I_2^1` values for each k.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="s1">&#39;I_21&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">I_21</span> <span class="o">=</span> <span class="n">simps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_I_p_q1q2_integrand</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span><span class="bp">self</span><span class="o">.</span><span class="n">logM_grid</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">I_21</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">_I_p_q1q2_integrand</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">p</span><span class="p">,</span><span class="n">q1</span><span class="p">,</span><span class="n">q2</span><span class="p">,</span><span class="n">zero_k</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Compute the integrand of the :math:`I_p^{q1,q2}` function defined in the class description.</span>
+<span class="sd">        This is done over the :math:`\log_{10}(M/M_\mathrm{sun}) grid defined in the __init__ function.</span>
+
+<span class="sd">        Note that this is the same as the integrand for the :math:`{}_i J_p^{q1,q2}` function (for integrals over a finite mass range).</span>
+
+<span class="sd">        It also assumes an integration variable :math:`\log_{10}(M/M_\mathrm{sun}) and integrates for each k in the k-vector specified in the class definition.</span>
+<span class="sd">        If zero_k is set, it returns the value of the integrand at :math:`k = 0` instead.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            p (int): Number of halo profiles to include.</span>
+<span class="sd">            q1 (int): Order of the first bias term.</span>
+<span class="sd">            q2 (int): Order of the second bias term.</span>
+<span class="sd">        -</span>
+<span class="sd">        Keyword Args:</span>
+<span class="sd">            zero_k (bool): If True, return the integral ewvaluated at k = 0. Default: False.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;be consistent with argument inputs and h factors.&#39;</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">==</span><span class="nb">type</span><span class="p">(</span><span class="n">q1</span><span class="p">)</span><span class="o">==</span><span class="nb">type</span><span class="p">(</span><span class="n">q2</span><span class="p">)</span><span class="o">==</span><span class="nb">int</span>
+
+        <span class="n">fourier_profiles</span> <span class="o">=</span> <span class="mf">1.</span>
+        <span class="k">if</span> <span class="n">p</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+            <span class="n">fourier_profiles</span> <span class="o">=</span> <span class="mf">1.</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">zero_k</span><span class="p">:</span>
+                <span class="n">fourier_profiles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">halo_physics</span><span class="o">.</span><span class="n">halo_profile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">m_h_grid</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">norm_only</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span><span class="n">p</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">fourier_profiles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_compute_fourier_profile</span><span class="p">(),</span><span class="n">p</span><span class="p">)</span>
+
+        <span class="c1"># Compute d(n(M))/d(log10(M))</span>
+        <span class="n">dn_dlogm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_mass_function</span><span class="p">()</span>
+
+        <span class="c1"># Define normalization to get correct unity (with Mpc/h and Msun/h units)</span>
+        <span class="n">norm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">h</span><span class="p">,</span><span class="mf">3.</span><span class="o">*</span><span class="nb">float</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">-</span><span class="mf">3.</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">dn_dlogm</span> <span class="o">*</span> <span class="n">fourier_profiles</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_return_bias</span><span class="p">(</span><span class="n">q1</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_return_bias</span><span class="p">(</span><span class="n">q2</span><span class="p">)</span> <span class="o">*</span> <span class="n">norm</span>
+
+    <span class="k">def</span> <span class="nf">_compute_fourier_profile</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute the normalized halo profile :math:`u(k|m)` for specified masses and k if not already computed.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: array of :math:`u(k|m)` values.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="s1">&#39;fourier_profile&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fourier_profile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">halo_physics</span><span class="o">.</span><span class="n">halo_profile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">m_h_grid</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">k_vectors</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fourier_profile</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_compute_mass_function</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Compute the mass function for specified masses if not already computed.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: :math:`dn/d\log_{10}(M)` array</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="s1">&#39;mass_function_grid&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mass_function_grid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mass_function</span><span class="o">.</span><span class="n">mass_function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">m_h_grid</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">mass_function_grid</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_compute_linear_bias</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Compute the linear bias function for specified masses if not already computed.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: Array of Eulerian linear biases :math:`b_1^L(m)`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="s1">&#39;linear_bias_grid&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">linear_bias_grid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mass_function</span><span class="o">.</span><span class="n">linear_halo_bias</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">m_h_grid</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">linear_bias_grid</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_compute_second_order_bias</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Compute the second order bias function for specified masses if not already computed.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: Array of second order Eulerian biases :math:`b_2^L(m)`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="s1">&#39;second_order_bias_grid&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">second_order_bias_grid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mass_function</span><span class="o">.</span><span class="n">second_order_bias</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">m_h_grid</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">second_order_bias_grid</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_return_bias</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">q</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the q-th order halo bias function for all masses in the self.logM_grid attribute.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            q (int): Order of bias. Setting q = 0 returns unity. Currently only :math:`q\leq 2` is implemented.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: Array of q-th order Eulerian biases.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">q</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mf">1.</span>
+        <span class="k">elif</span> <span class="n">q</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_linear_bias</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">q</span><span class="o">==</span><span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_second_order_bias</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;%-th order bias not yet implemented!&#39;</span><span class="o">%</span><span class="n">q</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Oliver H. E. Philcox
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
