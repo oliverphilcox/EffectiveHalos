@@ -7,7 +7,7 @@ class MassFunction:
     """Class to hold a mass function for halos and associated bias.
 
     Implemented Mass Functions:
-
+    
     - **Sheth-Tormen**: Sheth & Tormen 1999 analytic mass function. This assumes virialized halos, and uses the critical density from Nakamura & Suto 1997.
     - **Tinker**: Tinker et al. 2010, eq. 8. This assume a spherical overdensity, the value of which can be specified.
     - **Crocce**: Crocce et al. 2009, eq. 22. Calibrated from Friends-of-Friends halos with linking length 0.2
