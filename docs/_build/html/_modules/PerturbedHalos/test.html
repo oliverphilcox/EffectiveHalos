@@ -152,7 +152,26 @@
 <div class="viewcode-block" id="DatabaseManager"><a class="viewcode-back" href="../../test.html#PerturbedHalos.test.DatabaseManager">[docs]</a><span class="k">class</span> <span class="nc">DatabaseManager</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create and manage a new sqlite database.</span>
-<span class="sd">    &quot;&quot;&quot;</span></div>
+
+<span class="sd">    Methods:</span>
+<span class="sd">        __init__: Initialize the class at a given redshift with a specified cosmology.</span>
+<span class="sd">        linear_power: Compute the linear power spectrum for a given k vector.</span>
+<span class="sd">        sigmaM: Compute sigma(M) from CLASS for input mass M.</span>
+<span class="sd">        sigma_logM_int: Return an interpolated value of sigma(M) corresponding to an input log10(M) grid.</span>
+<span class="sd">        dlns_dlogM_int: Return an interpolated value of d(ln(sigma(M)))/d(log10(M)) corresponding to an input log10(M) grid.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="DatabaseManager.method"><a class="viewcode-back" href="../../test.html#PerturbedHalos.test.DatabaseManager.method">[docs]</a>    <span class="k">def</span> <span class="nf">method</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">index</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A simple method.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            input (int): an input</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            1</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="mi">1</span><span class="p">;</span></div></div>
 </pre></div>
 
            </div>

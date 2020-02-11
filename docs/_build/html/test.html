@@ -159,6 +159,52 @@
 <dt id="PerturbedHalos.test.DatabaseManager">
 <em class="property">class </em><code class="descclassname">PerturbedHalos.test.</code><code class="descname">DatabaseManager</code><a class="reference internal" href="_modules/PerturbedHalos/test.html#DatabaseManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.test.DatabaseManager" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create and manage a new sqlite database.</p>
+<dl class="method">
+<dt id="PerturbedHalos.test.DatabaseManager.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#PerturbedHalos.test.DatabaseManager.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize the class at a given redshift with a specified cosmology.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="PerturbedHalos.test.DatabaseManager.linear_power">
+<code class="descname">linear_power</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#PerturbedHalos.test.DatabaseManager.linear_power" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the linear power spectrum for a given k vector.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="PerturbedHalos.test.DatabaseManager.sigmaM">
+<code class="descname">sigmaM</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#PerturbedHalos.test.DatabaseManager.sigmaM" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute sigma(M) from CLASS for input mass M.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="PerturbedHalos.test.DatabaseManager.sigma_logM_int">
+<code class="descname">sigma_logM_int</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#PerturbedHalos.test.DatabaseManager.sigma_logM_int" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an interpolated value of sigma(M) corresponding to an input log10(M) grid.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="PerturbedHalos.test.DatabaseManager.dlns_dlogM_int">
+<code class="descname">dlns_dlogM_int</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#PerturbedHalos.test.DatabaseManager.dlns_dlogM_int" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an interpolated value of d(ln(sigma(M)))/d(log10(M)) corresponding to an input log10(M) grid.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="PerturbedHalos.test.DatabaseManager.method">
+<code class="descname">method</code><span class="sig-paren">(</span><em>index</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/test.html#DatabaseManager.method"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.test.DatabaseManager.method" title="Permalink to this definition">¶</a></dt>
+<dd><p>A simple method.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>input</strong> (<em>int</em>) – an input</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">1</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </dd></dl>
 
 </div>
