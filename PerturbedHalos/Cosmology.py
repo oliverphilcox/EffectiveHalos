@@ -1,4 +1,5 @@
 import numpy as np
+from classy import Class
 
 class Cosmology(object):
     """
@@ -93,7 +94,7 @@ class Cosmology(object):
             kh_min (float): Value of k (in h/Mpc units) below which to set :math:`P(k) = 0`, default: 0.
 
         Returns:
-            float: Linear power spectrum in :math:`(\mathrm{Mpc}/h)^3` units
+            float: Linear power spectrum in :math:`(h^{-1}\mathrm{Mpc})^3` units
         """
         print("don't recompute this?")
 
