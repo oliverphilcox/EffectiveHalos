@@ -12,8 +12,13 @@ Authors:
 - David Spergel (Princeton / CCA)
 - Francesco Villaescusa-Navarro (Princeton / CCA)
 
+Todo:
+- Add requirements
+- Write documentation
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
    module
+   modules
