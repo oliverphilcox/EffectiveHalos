@@ -23,7 +23,7 @@ class HaloPhysics:
         hyperparams (kwargs): Any additional parameters to pass to the class (see below).
 
     Keyword Args:
-        logM_min (float): Minimum mass in :math`\log_{10}(M/M_\mathrm{sun})`, default: 6
+        logM_min (float): Minimum mass in :math:`\log_{10}(M/M_\mathrm{sun})`, default: 6
         logM_max (float): Maximum mass in :math:`\log_{10}(M/M_\mathrm{sun})`, default: 17
         npoints (int): Number of sampling points for :math:`\sigma(M)` interpolation, default: 1e5
         tinker_overdensity (int): (Only for the Tinker mass function): spherical overdensity defining halos, default: 200

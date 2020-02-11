@@ -3,7 +3,9 @@ import numpy as np
 from scipy.integrate import simps
 
 class MassIntegrals:
-    """Class to compute and store the various mass integrals of the form
+    """
+    Class to compute and store the various mass integrals of the form
+
     .. math::
 
         I_p^{q1,q2}(k_1,...k_p) = \\int n(m)b^{(q1)}(m)b^{(q2)}\\frac{m^p}{\\rho_M^p}u(k_1|m)..u(k_p|m)dm
@@ -13,9 +15,10 @@ class MassIntegrals:
 
     All integrals are performed via Simpson's rule over a specified mass range, and are simply returned if they are already computed.
 
-    For the :math:`I_1^{1,0} = I_1^1` integral, the integral must be corrected to ensure that we recover the bias consistency relation :math:`I_1^1 \rightarrow 1` as :math:`k \rightarrow 0`.
+    For the :math:`I_1^{1,0} = I_1^1` integral, the integral must be corrected to ensure that we recover the bias consistency relation :math:`I_1^1 \\rightarrow 1` as :math:`k \\rightarrow 0`.
 
     This requires an infinite mass range, so we instead approximate;
+    
     .. math::
 
         I_1^1(k)_{\mathrm{corrected}} = I_1^1(k) + ( 1 - I_1^1(0) ) u(k|m_min) / u(k|0)

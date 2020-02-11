@@ -388,7 +388,7 @@
 </tr>
 <tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
 <tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first last simple">
-<li><strong>logM_min</strong> (<em>float</em>) – Minimum mass in :math`log_{10}(M/<a href="#id3"><span class="problematic" id="id4">M_</span></a>mathrm{sun})`, default: 6</li>
+<li><strong>logM_min</strong> (<em>float</em>) – Minimum mass in <span class="math notranslate nohighlight">\(\log_{10}(M/M_\mathrm{sun})\)</span>, default: 6</li>
 <li><strong>logM_max</strong> (<em>float</em>) – Maximum mass in <span class="math notranslate nohighlight">\(\log_{10}(M/M_\mathrm{sun})\)</span>, default: 17</li>
 <li><strong>npoints</strong> (<em>int</em>) – Number of sampling points for <span class="math notranslate nohighlight">\(\sigma(M)\)</span> interpolation, default: 1e5</li>
 <li><strong>tinker_overdensity</strong> (<em>int</em>) – (Only for the Tinker mass function): spherical overdensity defining halos, default: 200</li>
@@ -448,40 +448,39 @@ where <span class="math notranslate nohighlight">\(\bar{\rho}_M\)</span> is the 
 <dl class="class">
 <dt id="PerturbedHalos.MassIntegrals.MassIntegrals">
 <em class="property">class </em><code class="descclassname">PerturbedHalos.MassIntegrals.</code><code class="descname">MassIntegrals</code><span class="sig-paren">(</span><em>cosmology</em>, <em>mass_function</em>, <em>halo_physics</em>, <em>kh_vector</em>, <em>min_logM=6.001</em>, <em>max_logM=16.999</em>, <em>N_mass=10000</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/MassIntegrals.html#MassIntegrals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.MassIntegrals.MassIntegrals" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="docutils">
-<dt>Class to compute and store the various mass integrals of the form</dt>
-<dd><div class="first math notranslate nohighlight">
+<dd><p>Class to compute and store the various mass integrals of the form</p>
+<div class="math notranslate nohighlight">
 \[I_p^{q1,q2}(k_1,...k_p) = \int n(m)b^{(q1)}(m)b^{(q2)}\frac{m^p}{\rho_M^p}u(k_1|m)..u(k_p|m)dm\]</div>
 <p>which are needed to compute the power spectrum model. Here <span class="math notranslate nohighlight">\(b^{(q)}\)</span> is the q-th order bias (with <span class="math notranslate nohighlight">\(b^{0}=1\)</span>),
 <span class="math notranslate nohighlight">\(u(k|m)\)</span> is the normalized halo profile and <span class="math notranslate nohighlight">\(n(m)\)</span> is the mass function.</p>
 <p>All integrals are performed via Simpson’s rule over a specified mass range, and are simply returned if they are already computed.</p>
-<p class="last">For the <span class="math notranslate nohighlight">\(I_1^{1,0} = I_1^1\)</span> integral, the integral must be corrected to ensure that we recover the bias consistency relation :math:<a href="#id1"><span class="problematic" id="id2">`</span></a>I_1^1</p>
-</dd>
-</dl>
-<p>ightarrow 1` as <span class="math notranslate nohighlight">\(k
-ightarrow 0\)</span>.</p>
-<blockquote>
-<div><p>This requires an infinite mass range, so we instead approximate;
-.. math:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>\<span class="n">left</span><span class="o">|</span><span class="n">I_1</span><span class="o">^</span><span class="mi">1</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
-</pre></div>
-</div>
-</div></blockquote>
-<p>ight|_{mathrm{corrected}} = I_1^1(k) + ( 1 - I_1^1(0) ) u(k|m_min) / u(k|0)</p>
-<blockquote>
-<div><p>for normalized halo profile <span class="math notranslate nohighlight">\(u\)</span>.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>cosmology (Cosmology): Instance of the Cosmology class containing relevant cosmology and functions.
-mass_function (MassFunction): Instance of the MassFunction class, containing the mass function and bias.
-halo_physics (HaloPhysics): Instance of the HaloPhysics class, containing the halo profiles and concentrations.
-kh_vector (float): Array (or float) of wavenumbers in <span class="math notranslate nohighlight">\(h\mathrm{Mpc}^{-1}\)</span> units from which to compute mass integrals.</dd>
-<dt>Keyword Args:</dt>
-<dd>min_logM (float): Minimum mass in <span class="math notranslate nohighlight">\(\log_{10}(M/M_\mathrm{sun})\)</span> units, default: 6.001.
-max_logM (float): Maximum mass in <span class="math notranslate nohighlight">\(\log_{10}(M/M_\mathrm{sun})\)</span> units, default: 16.999.
-N_mass (int): Number of logarithmically spaced mass grid points, default: 10000.</dd>
-</dl>
-</div></blockquote>
+<p>For the <span class="math notranslate nohighlight">\(I_1^{1,0} = I_1^1\)</span> integral, the integral must be corrected to ensure that we recover the bias consistency relation <span class="math notranslate nohighlight">\(I_1^1 \rightarrow 1\)</span> as <span class="math notranslate nohighlight">\(k \rightarrow 0\)</span>.</p>
+<p>This requires an infinite mass range, so we instead approximate;</p>
+<div class="math notranslate nohighlight">
+\[I_1^1(k)_{\mathrm{corrected}} = I_1^1(k) + ( 1 - I_1^1(0) ) u(k|m_min) / u(k|0)\]</div>
+<p>for normalized halo profile <span class="math notranslate nohighlight">\(u\)</span>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>cosmology</strong> (<a class="reference internal" href="#PerturbedHalos.Cosmology.Cosmology" title="PerturbedHalos.Cosmology.Cosmology"><em>Cosmology</em></a>) – Instance of the Cosmology class containing relevant cosmology and functions.</li>
+<li><strong>mass_function</strong> (<a class="reference internal" href="#PerturbedHalos.MassFunction.MassFunction" title="PerturbedHalos.MassFunction.MassFunction"><em>MassFunction</em></a>) – Instance of the MassFunction class, containing the mass function and bias.</li>
+<li><strong>halo_physics</strong> (<a class="reference internal" href="#PerturbedHalos.HaloPhysics.HaloPhysics" title="PerturbedHalos.HaloPhysics.HaloPhysics"><em>HaloPhysics</em></a>) – Instance of the HaloPhysics class, containing the halo profiles and concentrations.</li>
+<li><strong>kh_vector</strong> (<em>float</em>) – Array (or float) of wavenumbers in <span class="math notranslate nohighlight">\(h\mathrm{Mpc}^{-1}\)</span> units from which to compute mass integrals.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first last simple">
+<li><strong>min_logM</strong> (<em>float</em>) – Minimum mass in <span class="math notranslate nohighlight">\(\log_{10}(M/M_\mathrm{sun})\)</span> units, default: 6.001.</li>
+<li><strong>max_logM</strong> (<em>float</em>) – Maximum mass in <span class="math notranslate nohighlight">\(\log_{10}(M/M_\mathrm{sun})\)</span> units, default: 16.999.</li>
+<li><strong>N_mass</strong> (<em>int</em>) – Number of logarithmically spaced mass grid points, default: 10000.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 <dl class="method">
 <dt id="PerturbedHalos.MassIntegrals.MassIntegrals.compute_I_00">
 <code class="descname">compute_I_00</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/MassIntegrals.html#MassIntegrals.compute_I_00"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.MassIntegrals.MassIntegrals.compute_I_00" title="Permalink to this definition">¶</a></dt>
