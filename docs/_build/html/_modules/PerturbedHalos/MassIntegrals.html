@@ -192,7 +192,6 @@
 <span class="sd">        Initialize the class with relevant model hyperparameters.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;need to specify class attributes + methods in the docstring...&#39;</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;sensibly set default n_mass&#39;</span><span class="p">)</span>
 
         <span class="c1"># Write attributes, if they&#39;re of the correct type</span>
@@ -213,8 +212,8 @@
 
         <span class="c1"># Run some important checks</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;find better place to store these parameters&#39;</span><span class="p">)</span>
-        <span class="n">interp_min</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">halo_physics</span><span class="o">.</span><span class="n">hyper_dict</span><span class="p">[</span><span class="s1">&#39;logM_min&#39;</span><span class="p">]</span>
-        <span class="n">interp_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">halo_physics</span><span class="o">.</span><span class="n">hyper_dict</span><span class="p">[</span><span class="s1">&#39;logM_max&#39;</span><span class="p">]</span>
+        <span class="n">interp_min</span> <span class="o">=</span> <span class="n">min_logM</span>
+        <span class="n">interp_max</span> <span class="o">=</span> <span class="n">max_logM</span>
         <span class="k">assert</span> <span class="n">min_logM</span> <span class="o">&gt;=</span> <span class="n">interp_min</span><span class="p">,</span> <span class="s1">&#39;Minimum mass must be greater than the interpolation limit (10^</span><span class="si">%.2f</span><span class="s1">)&#39;</span><span class="o">%</span><span class="n">interp_min</span>
         <span class="k">assert</span> <span class="n">max_logM</span> <span class="o">&lt;=</span> <span class="n">interp_max</span><span class="p">,</span> <span class="s1">&#39;Minimum mass must be less than the interpolation limit (10^</span><span class="si">%.2f</span><span class="s1">)&#39;</span><span class="o">%</span><span class="n">interp_max</span>
 

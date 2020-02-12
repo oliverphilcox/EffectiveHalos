@@ -43,7 +43,6 @@ class MassIntegrals:
         Initialize the class with relevant model hyperparameters.
         """
 
-        print('need to specify class attributes + methods in the docstring...')
         print('sensibly set default n_mass')
 
         # Write attributes, if they're of the correct type

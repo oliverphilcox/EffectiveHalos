@@ -83,7 +83,6 @@ class HaloPhysics:
 
         if self.profile_name=='NFW':
             # Compute virial overdensity
-            print('should this be a virial overdensity?')
             odelta = self._virial_overdensity()
 
             # The halo virial radius in physical units

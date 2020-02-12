@@ -162,17 +162,30 @@
 </div>
 <div class="section" id="dependencies">
 <h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
+<p><strong>Basic Dependencies</strong>:</p>
+<ul class="simple">
+<li>numpy</li>
+<li>scipy</li>
+<li>cython (for CLASS)</li>
+</ul>
 <p><strong>CLASS</strong></p>
 <p>To run PerturbedHalos, we require the Boltzmann code CLASS along with its Python wrapper classy. This can be installed from the CLASS <a class="reference external" href="https://github.com/lesgourg/class_public">Github</a> and is used to compute the linear power spectrum for a specified cosmology.</p>
+<p>The basic installation follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Clone the class repository</span>
+<span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">lesgourg</span><span class="o">/</span><span class="n">class_public</span><span class="o">.</span><span class="n">git</span>
+
+<span class="c1"># Now install</span>
+<span class="n">cd</span> <span class="n">class_public</span>
+<span class="n">make</span> <span class="n">clean</span>
+<span class="n">make</span>
+</pre></div>
+</div>
+<p>For further details, including the modifications required for Mac compilation, see the CLASS <a class="reference external" href="https://github.com/lesgourg/class_public/wiki/Installation">wiki</a>.</p>
 <p><strong>FAST-PT</strong></p>
 <p>PerturbedHalos uses Joe McEwen’s <a class="reference external" href="https://github.com/JoeMcEwen/FAST-PT">FAST-PT</a> package to compute one-loop power spectra from the CLASS linear power spectrum. It is easiest to install this from pip:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">fast</span><span class="o">-</span><span class="n">pt</span> <span class="o">--</span><span class="n">user</span>
 </pre></div>
 </div>
-<p><strong>Other Dependencies</strong>
-- numpy
-- scipy
-- cython (for CLASS)</p>
 <p>These are likely already installed, else they can be installed from pip.</p>
 <div class="admonition-todo admonition" id="index-1">
 <p class="first admonition-title">Todo</p>
