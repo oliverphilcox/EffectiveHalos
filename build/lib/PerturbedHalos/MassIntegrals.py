@@ -35,12 +35,10 @@ class MassIntegrals:
         min_logM (float): Minimum mass in :math:`\log_{10}(M/M_\mathrm{sun})` units, default: 6.001.
         max_logM (float): Maximum mass in :math:`\log_{10}(M/M_\mathrm{sun})` units, default: 16.999.
         N_mass (int): Number of logarithmically spaced mass grid points, default: 10000.
-        verb (bool): If true output useful messages througout run-time, default: False.
 
     """
-    def __init__(self,cosmology,mass_function,halo_physics,kh_vector,min_logM=6.001, max_logM=16.999, N_mass=int(1e4),verb=False):
-        """
-        Initialize the class with relevant model hyperparameters.
+    def __init__(self,cosmology,mass_function,halo_physics,kh_vector,min_logM=6.001, max_logM=16.999, N_mass=int(1e4)):
+        """Initialize the class with relevant model hyperparameters.
         """
 
         print('need to specify class attributes + methods in the docstring...')
@@ -76,7 +74,6 @@ class MassIntegrals:
         self.min_logM = min_logM
         self.max_logM = max_logM
         self.N_mass = N_mass
-        self.verb = verb
 
         # Define a mass vector for computations
         self.logM_grid = np.linspace(self.min_logM,self.max_logM, self.N_mass)

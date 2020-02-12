@@ -15,10 +15,7 @@ class Cosmology(object):
     Args:
         redshift (float): Desired redshift :math:`z`
         name (str): Load cosmology from a list of predetermined cosmologies (see above).
-        params (kwargs): Any other CLASS parameters.
-
-    Keyword Args:
-        verb (bool): If true output useful messages througout run-time, default: False.
+        params (kwargs): Other parameters from CLASS.
 
     """
 
@@ -31,7 +28,7 @@ class Cosmology(object):
                      'Planck18':{"h":0.6732,"omega_cdm":0.12011,"omega_b":0.022383,
                                 "n_s":0.96605,"sigma8":0.8120}}
 
-    def __init__(self,redshift,name="",verb=False,**params):
+    def __init__(self,redshift,name="",**params):
 
         """
         Initialize the cosmology class with cosmological parameters or a defined model.
@@ -51,7 +48,7 @@ class Cosmology(object):
                 raise Exception("This cosmology isn't yet implemented")
         else:
             if len(params.items())==0:
-                if verb: print('Using default CLASS cosmology')
+                print('Using default CLASS cosmology')
             for name, param in params.items():
                 class_params[name] = param
 
@@ -62,6 +59,7 @@ class Cosmology(object):
         ## Define other parameters
         self.z = redshift
         self.a = 1./(1.+redshift)
+        print('Add other CLASS parameters here?')
         if 'output' not in class_params.keys():
             class_params['output']='mPk'
         if 'P_k_max_h/Mpc' not in class_params.keys() and 'P_k_max_1/Mpc' not in class_params.keys():
@@ -72,13 +70,11 @@ class Cosmology(object):
             class_params['z_pk']=redshift
 
         ## Load CLASS and set parameters
-        if verb: print('Loading CLASS')
+        print('Loading CLASS')
         self.cosmo = Class()
         self.cosmo.set(class_params)
         self.cosmo.compute()
         self.h = self.cosmo.h()
-        self.name = name
-        self.verb = verb
 
         ## Create a vectorized sigma(R) function from CLASS
         self.vector_sigma_R = np.vectorize(lambda r: self.cosmo.sigma(r,self.z))
@@ -167,7 +163,7 @@ class Cosmology(object):
         """
 
         if not hasattr(self,'_sigma_logM_int_func'):
-            if self.verb: print("Creating an interpolator for sigma(M) and its derivative.")
+            print("Creating an interpolator for sigma(M) and its derivative.")
             ## Compute log derivative by interpolation and numerical differentiation
             # First compute the grid of M and sigma
             M_grid = np.logspace(6,17,10000)

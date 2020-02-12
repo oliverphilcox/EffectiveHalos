@@ -26,14 +26,10 @@ class MassFunction:
         mass_param (kwargs): Any additional parameters to pass to the class. These include:
             - tinker_overdensity: (Only for the Tinker mass function): spherical overdensity defining halos, default: 200
 
-    Keyword Args:
-        verb (bool): If true output useful messages througout run-time, default: False.
-
     """
 
-    def __init__(self,cosmology,mass_function_name='Crocce',verb=False,**mass_params):
-        """
-        Initialize the class by loading the relevant model parameters.
+    def __init__(self,cosmology,mass_function_name='Crocce',**mass_params):
+        """Initialize the class by loading the relevant model parameters.
         """
 
         # Write attributes, if they're of the correct type
@@ -48,8 +44,6 @@ class MassFunction:
 
         # reduced H0
         self.h = self.cosmology.cosmo.h()
-
-        self.verb = verb
 
         # Set hyperparameters to default if not specified
         mass_dict = dict(**mass_params)
@@ -82,12 +76,13 @@ class MassFunction:
             np.ndarray: Mass function, :math:`dn/d\log_{10}(M)` in :math:`\mathrm{Mpc}^{-3}` units
 
         """
-
+        
         m = m_h/self.h # mass in Msun units
 
         logM = np.log10(m) # log10(M/Msun)
         dlns_dlogM = self.cosmology.dlns_dlogM_int(logM)
 
+        print('combine with halo bias?')
         # Compute peak height
         sigma = self.cosmology.sigma_logM_int(logM)
         nu = self.delta_c/sigma
@@ -226,34 +221,29 @@ class MassFunction:
         elif self.mass_function_name=='Crocce':
             self.delta_c = 1.686  # critical density for collapse
 
-            if self.cosmology.name=='Quijote':
-                if self.verb: print('Using fitted parameters for the Crocce mass function from Quijote simulations ')
-                # Optimal values for the Quijote simulations
-                self.pA = 0.729
-                self.pa = 2.355
-                self.pb = 0.423
-                self.pc = 1.318
-            else:
-                # Optimal values from original simulations
-                self.pA = 0.58*self.a**0.13
-                self.pa = 1.37*self.a**0.15
-                self.pb = 0.3*self.a**0.084
-                self.pc = 1.036*self.a**0.024
+            print('Using fitted Crocce parameters')
+            self.pA = 0.729
+            self.pa = 2.355
+            self.pb = 0.423
+            self.pc = 1.318
+            #
+            # self.pA = 0.58*self.a**0.13
+            # self.pa = 1.37*self.a**0.15
+            # self.pb = 0.3*self.a**0.084
+            # self.pc = 1.036*self.a**0.024
 
         elif self.mass_function_name=='Bhattacharya':
             self.delta_c = 1.686 # critical density for collapse
 
-            if self.cosmology.name=='Quijote':
-                if self.verb: print('Using fitted parameters for the Bhattacharya mass function from Quijote simulations ')
-                # Optimal values for the Quijote simulations
-                self.a0 = 0.77403116
-                self.p0 = 0.63685683
-                self.q0 = 1.66263337
-            else:
-                # Optimal values from original paper
-                self.a0 = 0.788
-                self.p0 = 0.807
-                self.q0 = 1.795
+            # Optimal values from original paper
+            # self.a0 = 0.788
+            # self.p0 = 0.807
+            # self.q0 = 1.795
+
+            # Optimal values for the Quijote simulations
+            self.a0 = 0.77403116
+            self.p0 = 0.63685683
+            self.q0 = 1.66263337
 
             # Compute normalization factor
             inv_A0 = (2.**(0.5*(-1. - 2.*self.p0 + self.q0))*(gamma_fn(-self.p0 + self.q0/2.) + 2**self.p0*gamma_fn(self.q0/2.)))/np.sqrt(np.pi)

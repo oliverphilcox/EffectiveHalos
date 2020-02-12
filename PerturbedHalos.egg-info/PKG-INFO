@@ -1,0 +1,27 @@
+Metadata-Version: 2.1
+Name: PerturbedHalos
+Version: 1.0
+Summary: Combining the Halo Model and Perturbation Theory: A 1% Accurate Model to k = 1 h/Mpc
+Home-page: https://perturbedhalos.rtfd.io
+Author: Oliver Philcox
+Author-email: ohep2@alumni.cam.ac.uk
+License: UNKNOWN
+Description: # PerturbedHalos
+        PerturbedHalos is a fast Python code providing models of the real-space matter power spectrum, based a combination of the Halo Model and Effective Field Theory, which are 1\% accurate up to k = 1 h/Mpc. It can additionally compute accurate the covariance between halo counts and the matter power spectrum.
+        
+        This is based on the work of Philcox, Spergel \& Villaescusa-Navarro (in prep.)
+        
+        ## Authors
+        **Main Authors**
+        - Oliver Philcox (Princeton)
+        
+        **Collaborators**
+        - David Spergel (Princeton / CCA)
+        - Francisco Villaescusa-Navarro (Princeton / CCA)
+        
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 2
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Description-Content-Type: text/markdown

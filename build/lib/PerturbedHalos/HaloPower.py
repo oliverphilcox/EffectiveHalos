@@ -27,11 +27,10 @@ class HaloPower:
 
     Keyword Args:
         kh_min: Minimum k vector in the simulation (or survey) region in :math:`h/\mathrm{Mpc}` units. Modes below kh_min are set to zero, default: 0.
-        verb (bool): If true output useful messages througout run-time, default: False.
 
     """
 
-    def __init__(self,cosmology,mass_function,halo_physics,kh_vector,kh_min=0,verb=False):
+    def __init__(self,cosmology,mass_function,halo_physics,kh_vector,kh_min=0):
         """
         Initialize the class loading properties from the other classes.
         """
@@ -58,7 +57,6 @@ class HaloPower:
         # Write useful attributes
         self.kh_vector = kh_vector
         self.kh_min = kh_min
-        self.verb = verb
 
         # Compute linear power for the k-vector
         self.linear_power = self.cosmology.compute_linear_power(self.kh_vector).copy()

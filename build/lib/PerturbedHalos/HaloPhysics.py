@@ -27,11 +27,10 @@ class HaloPhysics:
         logM_max (float): Maximum mass in :math:`\log_{10}(M/M_\mathrm{sun})`, default: 17
         npoints (int): Number of sampling points for :math:`\sigma(M)` interpolation, default: 1e5
         tinker_overdensity (int): (Only for the Tinker mass function): spherical overdensity defining halos, default: 200
-        verb (bool): If true output useful messages througout run-time, default: False.
 
     """
 
-    def __init__(self,cosmology,mass_function,concentration_name='Duffy',profile_name='NFW',verb=False,**hyperparams):
+    def __init__(self,cosmology,mass_function,concentration_name='Duffy',profile_name='NFW',**hyperparams):
         """
         Initialize the class with relevant model hyperparameters.
         """
@@ -66,7 +65,6 @@ class HaloPhysics:
         # Save reduced Hubble value for later use
         self.h = self.cosmology.cosmo.h()
         self.a = self.cosmology.a
-        self.verb = verb
 
     def halo_profile(self,m_h,k_phys,norm_only=False):
         """Compute the halo profile function in Fourier space; :math:`\\rho(k|m) = \\frac{m}{\\bar{\\rho}_M}u(k|m)`
