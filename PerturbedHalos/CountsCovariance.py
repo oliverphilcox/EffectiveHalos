@@ -28,7 +28,6 @@ class CountsCovariance:
         cosmology (Cosmology): Class containing relevant cosmology and functions.
         mass_function (MassFunction): Class containing the mass function and bias.
         halo_physics (HaloPhysics): Class containing the halo profiles and concentrations.
-        mass_integrals (MassIntegrals): Class containing the mass integrals.
         kh_vector (np.ndarray): Vector of wavenumbers (in :math:`h/\mathrm{Mpc}` units), for which power spectrum will be computed.
         mass_bins (np.ndarray): Array of mass bin edges, in :math:`h^{-1}M_\mathrm{sun}` units. Must have length N_bins + 1.
         volume: Volume of the survey in :math:`(h^{-1}\mathrm{Mpc})^3`. The variance of the linear field will be computed for radius giving this volume
@@ -39,12 +38,10 @@ class CountsCovariance:
 
     """
 
-    def __init__(self,cosmology,mass_function,halo_physics,mass_integrals,kh_vector,mass_bins,volume,kh_min=0,verb=False):
+    def __init__(self,cosmology,mass_function,halo_physics,kh_vector,mass_bins,volume,kh_min=0,verb=False):
         """
         Initialize the class loading properties from the other classes.
         """
-        print('do we really need to specify all these input classes? generate inside class?')
-        print('put mass integrals inside class?')
         print('also compute N(m) autocovariance?')
         print('think about how to do sigma^2 + change in class definition.')
 
@@ -61,10 +58,6 @@ class CountsCovariance:
             self.halo_physics = halo_physics
         else:
             raise TypeError('halo_physics input must be an instance of the HaloPhysics class!')
-        if isinstance(mass_integrals, MassIntegrals):
-            self.mass_integrals = mass_integrals
-        else:
-            raise TypeError('mass_integrals input must be an instance of the MassIntegrals class!')
 
         # Write useful attributes
         self.kh_vector = kh_vector
@@ -74,15 +67,19 @@ class CountsCovariance:
         self.volume = volume
         self.verb = verb
 
+
+        # Generate a power spectrum class with this k-vector
+        self.halo_power = HaloPower(cosmology, mass_function, halo_physics, kh_vector, kh_min)
+
+        #Copy in the MassIntegrals class
+        self.mass_integrals = self.halo_power.mass_integrals
+
         # Run some checks
         assert self.mass_bins[0]>=np.power(10.,self.mass_integrals.min_logM)*self.cosmology.h, 'Minimum bin must be above MassIntegral limit!'
         assert self.mass_bins[-1]<=np.power(10.,self.mass_integrals.max_logM)*self.cosmology.h, 'Maximum bin must be below MassIntegral limit!'
 
         # Compute linear power for the k-vector
         self.linear_power = self.cosmology.compute_linear_power(self.kh_vector,self.kh_min).copy()
-
-        # Generate a power spectrum class with this k-vector
-        self.halo_power = HaloPower(cosmology, mass_function, halo_physics, mass_integrals, kh_vector, kh_min)
 
     def counts_covariance(self, cs2, R, use_SSC=True, pt_type = 'EFT', pade_resum = True, smooth_density = True, IR_resum = True):
         """
