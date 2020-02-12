@@ -184,10 +184,11 @@
 
 <span class="sd">    Keyword Args:</span>
 <span class="sd">        kh_min: Minimum k vector in the simulation (or survey) region in :math:`h/\mathrm{Mpc}` units. Modes below kh_min are set to zero, default 0.</span>
+<span class="sd">        verb (bool): If true output useful messages througout run-time, default: False.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">cosmology</span><span class="p">,</span><span class="n">mass_function</span><span class="p">,</span><span class="n">halo_physics</span><span class="p">,</span><span class="n">mass_integrals</span><span class="p">,</span><span class="n">kh_vector</span><span class="p">,</span><span class="n">mass_bins</span><span class="p">,</span><span class="n">volume</span><span class="p">,</span><span class="n">kh_min</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">cosmology</span><span class="p">,</span><span class="n">mass_function</span><span class="p">,</span><span class="n">halo_physics</span><span class="p">,</span><span class="n">mass_integrals</span><span class="p">,</span><span class="n">kh_vector</span><span class="p">,</span><span class="n">mass_bins</span><span class="p">,</span><span class="n">volume</span><span class="p">,</span><span class="n">kh_min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">verb</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize the class loading properties from the other classes.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -220,6 +221,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">mass_bins</span> <span class="o">=</span> <span class="n">mass_bins</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">N_bins</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">mass_bins</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">volume</span> <span class="o">=</span> <span class="n">volume</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verb</span> <span class="o">=</span> <span class="n">verb</span>
 
         <span class="c1"># Run some checks</span>
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">mass_bins</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">&gt;=</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="mf">10.</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">mass_integrals</span><span class="o">.</span><span class="n">min_logM</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">cosmology</span><span class="o">.</span><span class="n">h</span><span class="p">,</span> <span class="s1">&#39;Minimum bin must be above MassIntegral limit!&#39;</span>

@@ -43,7 +43,7 @@ class Cosmology(object):
             if len(params.items())>0:
                 raise Exception('Must either choose a preset cosmology or specify parameters!')
             if name in self.loaded_models.keys():
-                print('Loading the %s cosmology at z = %.2f'%(name,redshift))
+                if verb: print('Loading the %s cosmology at z = %.2f'%(name,redshift))
                 loaded_model = self.loaded_models[name]
                 for key in loaded_model.keys():
                     class_params[key] = loaded_model[key]

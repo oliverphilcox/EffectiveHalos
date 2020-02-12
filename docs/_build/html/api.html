@@ -163,7 +163,7 @@
 <span id="cosmology-module"></span><h2>Cosmology Module<a class="headerlink" href="#module-PerturbedHalos.Cosmology" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="PerturbedHalos.Cosmology.Cosmology">
-<em class="property">class </em><code class="descclassname">PerturbedHalos.Cosmology.</code><code class="descname">Cosmology</code><span class="sig-paren">(</span><em>redshift</em>, <em>name=''</em>, <em>**params</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/Cosmology.html#Cosmology"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.Cosmology.Cosmology" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">PerturbedHalos.Cosmology.</code><code class="descname">Cosmology</code><span class="sig-paren">(</span><em>redshift</em>, <em>name=''</em>, <em>verb=False</em>, <em>**params</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/Cosmology.html#Cosmology"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.Cosmology.Cosmology" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class to hold the basic cosmology and CLASS attributes. This can be initialized by a set of cosmological parameters or a pre-defined cosmology.</p>
 <p>Loaded cosmological models:</p>
 <ul class="simple">
@@ -175,11 +175,15 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>redshift</strong> (<em>float</em>) – Desired redshift <span class="math notranslate nohighlight">\(z\)</span></li>
 <li><strong>name</strong> (<em>str</em>) – Load cosmology from a list of predetermined cosmologies (see above).</li>
-<li><strong>params</strong> (<em>kwargs</em>) – Other parameters from CLASS.</li>
+<li><strong>params</strong> (<em>kwargs</em>) – Any other CLASS parameters.</li>
 </ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body"><p class="first last"><strong>verb</strong> (<em>bool</em>) – If true output useful messages througout run-time, default: False.</p>
 </td>
 </tr>
 </tbody>
@@ -228,30 +232,6 @@
 </dd></dl>
 
 <dl class="method">
-<dt id="PerturbedHalos.Cosmology.Cosmology.sigmaM">
-<code class="descname">sigmaM</code><span class="sig-paren">(</span><em>M_phys</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/Cosmology.html#Cosmology.sigmaM"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.Cosmology.Cosmology.sigmaM" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute <span class="math notranslate nohighlight">\(\sigma(M,z)\)</span> from CLASS as a vector function.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>M_phys</strong> (<em>np.ndarray</em>) – Physical mass in <span class="math notranslate nohighlight">\(M_\mathrm{sun}\)</span> units.</li>
-<li><strong>z</strong> (<em>float</em>) – Redshift.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><span class="math notranslate nohighlight">\(\sigma(M,z)\)</span></p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">np.ndarray</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
 <dt id="PerturbedHalos.Cosmology.Cosmology.sigma_logM_int">
 <code class="descname">sigma_logM_int</code><span class="sig-paren">(</span><em>logM</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/Cosmology.html#Cosmology.sigma_logM_int"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.Cosmology.Cosmology.sigma_logM_int" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the value of <span class="math notranslate nohighlight">\(\sigma(M,z)\)</span> using the prebuilt interpolators, which are constructed if not present.</p>
@@ -276,7 +256,7 @@
 <span id="mass-function-module"></span><h2>Mass Function Module<a class="headerlink" href="#module-PerturbedHalos.MassFunction" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="PerturbedHalos.MassFunction.MassFunction">
-<em class="property">class </em><code class="descclassname">PerturbedHalos.MassFunction.</code><code class="descname">MassFunction</code><span class="sig-paren">(</span><em>cosmology</em>, <em>mass_function_name='Crocce'</em>, <em>**mass_params</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/MassFunction.html#MassFunction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.MassFunction.MassFunction" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">PerturbedHalos.MassFunction.</code><code class="descname">MassFunction</code><span class="sig-paren">(</span><em>cosmology</em>, <em>mass_function_name='Crocce'</em>, <em>verb=False</em>, <em>**mass_params</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/MassFunction.html#MassFunction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.MassFunction.MassFunction" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class to hold a mass function for halos and associated bias.</p>
 <p>Implemented Mass Functions:</p>
 <ul class="simple">
@@ -296,12 +276,16 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>cosmology</strong> (<a class="reference internal" href="#PerturbedHalos.Cosmology.Cosmology" title="PerturbedHalos.Cosmology.Cosmology"><em>Cosmology</em></a>) – Class instance containing relevant cosmological information</li>
 <li><strong>mass_function_name</strong> (<em>str</em>) – Mass function to use (see above), default: ‘Crocce’</li>
 <li><strong>mass_param</strong> (<em>kwargs</em>) – Any additional parameters to pass to the class. These include:
 - tinker_overdensity: (Only for the Tinker mass function): spherical overdensity defining halos, default: 200</li>
 </ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body"><p class="first last"><strong>verb</strong> (<em>bool</em>) – If true output useful messages througout run-time, default: False.</p>
 </td>
 </tr>
 </tbody>
@@ -367,7 +351,7 @@
 <span id="halo-physics-module"></span><h2>Halo Physics Module<a class="headerlink" href="#module-PerturbedHalos.HaloPhysics" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="PerturbedHalos.HaloPhysics.HaloPhysics">
-<em class="property">class </em><code class="descclassname">PerturbedHalos.HaloPhysics.</code><code class="descname">HaloPhysics</code><span class="sig-paren">(</span><em>cosmology</em>, <em>mass_function</em>, <em>concentration_name='Duffy'</em>, <em>profile_name='NFW'</em>, <em>**hyperparams</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/HaloPhysics.html#HaloPhysics"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.HaloPhysics.HaloPhysics" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">PerturbedHalos.HaloPhysics.</code><code class="descname">HaloPhysics</code><span class="sig-paren">(</span><em>cosmology</em>, <em>mass_function</em>, <em>concentration_name='Duffy'</em>, <em>profile_name='NFW'</em>, <em>logM_min=6</em>, <em>logM_max=17</em>, <em>npoints=100000</em>, <em>verb=False</em>, <em>tinker_overdensity=200</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/HaloPhysics.html#HaloPhysics"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.HaloPhysics.HaloPhysics" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class to hold halo model quantities and relevant integrals.</p>
 <p>Implemented Concentration Functions:</p>
 <ul class="simple">
@@ -396,6 +380,7 @@
 <li><strong>logM_max</strong> (<em>float</em>) – Maximum mass in <span class="math notranslate nohighlight">\(\log_{10}(M/M_\mathrm{sun})\)</span>, default: 17</li>
 <li><strong>npoints</strong> (<em>int</em>) – Number of sampling points for <span class="math notranslate nohighlight">\(\sigma(M)\)</span> interpolation, default: 1e5</li>
 <li><strong>tinker_overdensity</strong> (<em>int</em>) – (Only for the Tinker mass function): spherical overdensity defining halos, default: 200</li>
+<li><strong>verb</strong> (<em>bool</em>) – If true output useful messages througout run-time, default: False.</li>
 </ul>
 </td>
 </tr>
@@ -455,7 +440,7 @@ where <span class="math notranslate nohighlight">\(\bar{\rho}_M\)</span> is the 
 <span id="mass-integrals-module"></span><h2>Mass Integrals Module<a class="headerlink" href="#module-PerturbedHalos.MassIntegrals" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="PerturbedHalos.MassIntegrals.MassIntegrals">
-<em class="property">class </em><code class="descclassname">PerturbedHalos.MassIntegrals.</code><code class="descname">MassIntegrals</code><span class="sig-paren">(</span><em>cosmology</em>, <em>mass_function</em>, <em>halo_physics</em>, <em>kh_vector</em>, <em>min_logM=6.001</em>, <em>max_logM=16.999</em>, <em>N_mass=10000</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/MassIntegrals.html#MassIntegrals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.MassIntegrals.MassIntegrals" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">PerturbedHalos.MassIntegrals.</code><code class="descname">MassIntegrals</code><span class="sig-paren">(</span><em>cosmology</em>, <em>mass_function</em>, <em>halo_physics</em>, <em>kh_vector</em>, <em>min_logM=6.001</em>, <em>max_logM=16.999</em>, <em>N_mass=10000</em>, <em>verb=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/MassIntegrals.html#MassIntegrals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.MassIntegrals.MassIntegrals" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class to compute and store the various mass integrals of the form</p>
 <div class="math notranslate nohighlight">
 \[I_p^{q1,q2}(k_1,...k_p) = \int n(m)b^{(q1)}(m)b^{(q2)}\frac{m^p}{\rho_M^p}u(k_1|m)..u(k_p|m)dm\]</div>
@@ -484,6 +469,7 @@ where <span class="math notranslate nohighlight">\(\bar{\rho}_M\)</span> is the 
 <li><strong>min_logM</strong> (<em>float</em>) – Minimum mass in <span class="math notranslate nohighlight">\(\log_{10}(M/M_\mathrm{sun})\)</span> units, default: 6.001.</li>
 <li><strong>max_logM</strong> (<em>float</em>) – Maximum mass in <span class="math notranslate nohighlight">\(\log_{10}(M/M_\mathrm{sun})\)</span> units, default: 16.999.</li>
 <li><strong>N_mass</strong> (<em>int</em>) – Number of logarithmically spaced mass grid points, default: 10000.</li>
+<li><strong>verb</strong> (<em>bool</em>) – If true output useful messages througout run-time, default: False.</li>
 </ul>
 </td>
 </tr>
@@ -616,7 +602,7 @@ where <span class="math notranslate nohighlight">\(\bar{\rho}_M\)</span> is the 
 <span id="halo-power-module"></span><h2>Halo Power Module<a class="headerlink" href="#module-PerturbedHalos.HaloPower" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="PerturbedHalos.HaloPower.HaloPower">
-<em class="property">class </em><code class="descclassname">PerturbedHalos.HaloPower.</code><code class="descname">HaloPower</code><span class="sig-paren">(</span><em>cosmology</em>, <em>mass_function</em>, <em>halo_physics</em>, <em>kh_vector</em>, <em>kh_min=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/HaloPower.html#HaloPower"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.HaloPower.HaloPower" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">PerturbedHalos.HaloPower.</code><code class="descname">HaloPower</code><span class="sig-paren">(</span><em>cosmology</em>, <em>mass_function</em>, <em>halo_physics</em>, <em>kh_vector</em>, <em>kh_min=0</em>, <em>verb=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/HaloPower.html#HaloPower"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.HaloPower.HaloPower" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class to compute the non-linear power spectrum from the halo model of Philcox et al. 2020.</p>
 <p>The model power is defined as</p>
 <div class="math notranslate nohighlight">
@@ -635,7 +621,10 @@ where <span class="math notranslate nohighlight">\(\bar{\rho}_M\)</span> is the 
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
-<tr class="field-even field"><td>&#160;</td><td class="field-body"><p class="first last"><strong>kh_min</strong> – Minimum k vector in the simulation (or survey) region in <span class="math notranslate nohighlight">\(h/\mathrm{Mpc}\)</span> units. Modes below kh_min are set to zero, default: 0.</p>
+<tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first last simple">
+<li><strong>kh_min</strong> – Minimum k vector in the simulation (or survey) region in <span class="math notranslate nohighlight">\(h/\mathrm{Mpc}\)</span> units. Modes below kh_min are set to zero, default: 0.</li>
+<li><strong>verb</strong> (<em>bool</em>) – If true output useful messages througout run-time, default: False.</li>
+</ul>
 </td>
 </tr>
 </tbody>
@@ -780,7 +769,7 @@ where <span class="math notranslate nohighlight">\(\bar{\rho}_M\)</span> is the 
 <span id="counts-covariance-module"></span><h2>Counts Covariance Module<a class="headerlink" href="#module-PerturbedHalos.CountsCovariance" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="PerturbedHalos.CountsCovariance.CountsCovariance">
-<em class="property">class </em><code class="descclassname">PerturbedHalos.CountsCovariance.</code><code class="descname">CountsCovariance</code><span class="sig-paren">(</span><em>cosmology</em>, <em>mass_function</em>, <em>halo_physics</em>, <em>mass_integrals</em>, <em>kh_vector</em>, <em>mass_bins</em>, <em>volume</em>, <em>kh_min=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/CountsCovariance.html#CountsCovariance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.CountsCovariance.CountsCovariance" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">PerturbedHalos.CountsCovariance.</code><code class="descname">CountsCovariance</code><span class="sig-paren">(</span><em>cosmology</em>, <em>mass_function</em>, <em>halo_physics</em>, <em>mass_integrals</em>, <em>kh_vector</em>, <em>mass_bins</em>, <em>volume</em>, <em>kh_min=0</em>, <em>verb=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PerturbedHalos/CountsCovariance.html#CountsCovariance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PerturbedHalos.CountsCovariance.CountsCovariance" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class to compute the covariance of cluster counts and the non-linear power spectrum using the halo model of Philcox et al. 2020</p>
 <p>The model covariance is defined as</p>
 <div class="math notranslate nohighlight">
@@ -807,7 +796,10 @@ where <span class="math notranslate nohighlight">\(\bar{\rho}_M\)</span> is the 
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
-<tr class="field-even field"><td>&#160;</td><td class="field-body"><p class="first last"><strong>kh_min</strong> – Minimum k vector in the simulation (or survey) region in <span class="math notranslate nohighlight">\(h/\mathrm{Mpc}\)</span> units. Modes below kh_min are set to zero, default 0.</p>
+<tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first last simple">
+<li><strong>kh_min</strong> – Minimum k vector in the simulation (or survey) region in <span class="math notranslate nohighlight">\(h/\mathrm{Mpc}\)</span> units. Modes below kh_min are set to zero, default 0.</li>
+<li><strong>verb</strong> (<em>bool</em>) – If true output useful messages througout run-time, default: False.</li>
+</ul>
 </td>
 </tr>
 </tbody>

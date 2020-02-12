@@ -164,7 +164,10 @@
 <span class="sd">    Args:</span>
 <span class="sd">        redshift (float): Desired redshift :math:`z`</span>
 <span class="sd">        name (str): Load cosmology from a list of predetermined cosmologies (see above).</span>
-<span class="sd">        params (kwargs): Other parameters from CLASS.</span>
+<span class="sd">        params (kwargs): Any other CLASS parameters.</span>
+
+<span class="sd">    Keyword Args:</span>
+<span class="sd">        verb (bool): If true output useful messages througout run-time, default: False.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -177,7 +180,7 @@
                      <span class="s1">&#39;Planck18&#39;</span><span class="p">:{</span><span class="s2">&quot;h&quot;</span><span class="p">:</span><span class="mf">0.6732</span><span class="p">,</span><span class="s2">&quot;omega_cdm&quot;</span><span class="p">:</span><span class="mf">0.12011</span><span class="p">,</span><span class="s2">&quot;omega_b&quot;</span><span class="p">:</span><span class="mf">0.022383</span><span class="p">,</span>
                                 <span class="s2">&quot;n_s&quot;</span><span class="p">:</span><span class="mf">0.96605</span><span class="p">,</span><span class="s2">&quot;sigma8&quot;</span><span class="p">:</span><span class="mf">0.8120</span><span class="p">}}</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">redshift</span><span class="p">,</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="o">**</span><span class="n">params</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">redshift</span><span class="p">,</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="n">verb</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="o">**</span><span class="n">params</span><span class="p">):</span>
 
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize the cosmology class with cosmological parameters or a defined model.</span>
@@ -189,7 +192,7 @@
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">params</span><span class="o">.</span><span class="n">items</span><span class="p">())</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Must either choose a preset cosmology or specify parameters!&#39;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">loaded_models</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Loading the </span><span class="si">%s</span><span class="s1"> cosmology at z = </span><span class="si">%.2f</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="n">redshift</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">verb</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Loading the </span><span class="si">%s</span><span class="s1"> cosmology at z = </span><span class="si">%.2f</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="n">redshift</span><span class="p">))</span>
                 <span class="n">loaded_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">loaded_models</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
                 <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">loaded_model</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
                     <span class="n">class_params</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">loaded_model</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
@@ -197,7 +200,7 @@
                 <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;This cosmology isn&#39;t yet implemented&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">params</span><span class="o">.</span><span class="n">items</span><span class="p">())</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Using default CLASS cosmology&#39;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">verb</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Using default CLASS cosmology&#39;</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">params</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="n">class_params</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">param</span>
 
@@ -208,7 +211,6 @@
         <span class="c1">## Define other parameters</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="n">redshift</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">a</span> <span class="o">=</span> <span class="mf">1.</span><span class="o">/</span><span class="p">(</span><span class="mf">1.</span><span class="o">+</span><span class="n">redshift</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Add other CLASS parameters here?&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="s1">&#39;output&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">class_params</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="n">class_params</span><span class="p">[</span><span class="s1">&#39;output&#39;</span><span class="p">]</span><span class="o">=</span><span class="s1">&#39;mPk&#39;</span>
         <span class="k">if</span> <span class="s1">&#39;P_k_max_h/Mpc&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">class_params</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="s1">&#39;P_k_max_1/Mpc&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">class_params</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
@@ -219,11 +221,13 @@
             <span class="n">class_params</span><span class="p">[</span><span class="s1">&#39;z_pk&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">redshift</span>
 
         <span class="c1">## Load CLASS and set parameters</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Loading CLASS&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">verb</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Loading CLASS&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cosmo</span> <span class="o">=</span> <span class="n">Class</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cosmo</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">class_params</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cosmo</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cosmo</span><span class="o">.</span><span class="n">h</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verb</span> <span class="o">=</span> <span class="n">verb</span>
 
         <span class="c1">## Create a vectorized sigma(R) function from CLASS</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">vector_sigma_R</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vectorize</span><span class="p">(</span><span class="k">lambda</span> <span class="n">r</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">cosmo</span><span class="o">.</span><span class="n">sigma</span><span class="p">(</span><span class="n">r</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">z</span><span class="p">))</span>
@@ -244,7 +248,6 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            np.ndarray: Linear power spectrum in :math:`(h^{-1}\mathrm{Mpc})^3` units</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;don&#39;t recompute this?&quot;</span><span class="p">)</span>
 
         <span class="c1"># Define output vector and filter modes with too-small k</span>
         <span class="n">output</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">kh_vector</span><span class="p">)</span>
@@ -257,21 +260,6 @@
 
         <span class="n">output</span><span class="p">[</span><span class="n">filt</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vector_linear_power</span><span class="p">(</span><span class="n">kh_vector</span><span class="p">[</span><span class="n">filt</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">h</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">h</span><span class="o">**</span><span class="mf">3.</span>
         <span class="k">return</span> <span class="n">output</span></div>
-
-<div class="viewcode-block" id="Cosmology.sigmaM"><a class="viewcode-back" href="../../api.html#PerturbedHalos.Cosmology.Cosmology.sigmaM">[docs]</a>    <span class="k">def</span> <span class="nf">sigmaM</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">M_phys</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Compute :math:`\sigma(M,z)` from CLASS as a vector function.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            M_phys (np.ndarray): Physical mass in :math:`M_\mathrm{sun}` units.</span>
-<span class="sd">            z (float): Redshift.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            np.ndarray: :math:`\sigma(M,z)`</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># convert to Lagrangian radius</span>
-        <span class="n">r_phys</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">((</span><span class="mf">3.</span><span class="o">*</span><span class="n">M_phys</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mf">4.</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">rhoM</span><span class="p">),</span><span class="mf">1.</span><span class="o">/</span><span class="mf">3.</span><span class="p">)</span>
-        <span class="n">sigma_func</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vector_sigma_R</span><span class="p">(</span><span class="n">r_phys</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">sigma_func</span></div>
 
 <div class="viewcode-block" id="Cosmology.sigma_logM_int"><a class="viewcode-back" href="../../api.html#PerturbedHalos.Cosmology.Cosmology.sigma_logM_int">[docs]</a>    <span class="k">def</span> <span class="nf">sigma_logM_int</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">logM</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return the value of :math:`\sigma(M,z)` using the prebuilt interpolators, which are constructed if not present.</span>
@@ -299,6 +287,21 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_interpolate_sigma_and_deriv</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dlns_dlogM_int_func</span><span class="p">(</span><span class="n">logM</span><span class="p">)</span></div>
 
+    <span class="k">def</span> <span class="nf">_sigmaM</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">M_phys</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Compute :math:`\sigma(M,z)` from CLASS as a vector function.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            M_phys (np.ndarray): Physical mass in :math:`M_\mathrm{sun}` units.</span>
+<span class="sd">            z (float): Redshift.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            np.ndarray: :math:`\sigma(M,z)`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># convert to Lagrangian radius</span>
+        <span class="n">r_phys</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">((</span><span class="mf">3.</span><span class="o">*</span><span class="n">M_phys</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mf">4.</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">rhoM</span><span class="p">),</span><span class="mf">1.</span><span class="o">/</span><span class="mf">3.</span><span class="p">)</span>
+        <span class="n">sigma_func</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vector_sigma_R</span><span class="p">(</span><span class="n">r_phys</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">sigma_func</span>
+
     <span class="k">def</span> <span class="nf">_interpolate_sigma_and_deriv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">logM_min</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span><span class="n">logM_max</span><span class="o">=</span><span class="mi">17</span><span class="p">,</span><span class="n">npoints</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="mf">1e5</span><span class="p">)):</span>
         <span class="sd">&quot;&quot;&quot;Create an interpolator function for :math:`d\ln\sigma/d\log M` and :math:`sigma(M)`.</span>
 <span class="sd">        Note that mass is in physical units (without 1/h factor).</span>
@@ -312,12 +315,12 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="s1">&#39;sigma_logM_int_func&#39;</span><span class="p">):</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Creating an interpolator for sigma(M) and its derivative.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="s1">&#39;_sigma_logM_int_func&#39;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verb</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Creating an interpolator for sigma(M) and its derivative.&quot;</span><span class="p">)</span>
             <span class="c1">## Compute log derivative by interpolation and numerical differentiation</span>
             <span class="c1"># First compute the grid of M and sigma</span>
             <span class="n">M_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">17</span><span class="p">,</span><span class="mi">10000</span><span class="p">)</span>
-            <span class="n">all_sigM</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigmaM</span><span class="p">(</span><span class="n">M_grid</span><span class="p">)</span>
+            <span class="n">all_sigM</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sigmaM</span><span class="p">(</span><span class="n">M_grid</span><span class="p">)</span>
             <span class="n">logM_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">M_grid</span><span class="p">)</span>
 
             <span class="c1"># Define ln(sigma) and numerical derivatives</span>

@@ -176,18 +176,15 @@
 <span class="sd">        logM_max (float): Maximum mass in :math:`\log_{10}(M/M_\mathrm{sun})`, default: 17</span>
 <span class="sd">        npoints (int): Number of sampling points for :math:`\sigma(M)` interpolation, default: 1e5</span>
 <span class="sd">        tinker_overdensity (int): (Only for the Tinker mass function): spherical overdensity defining halos, default: 200</span>
+<span class="sd">        verb (bool): If true output useful messages througout run-time, default: False.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">cosmology</span><span class="p">,</span><span class="n">mass_function</span><span class="p">,</span><span class="n">concentration_name</span><span class="o">=</span><span class="s1">&#39;Duffy&#39;</span><span class="p">,</span><span class="n">profile_name</span><span class="o">=</span><span class="s1">&#39;NFW&#39;</span><span class="p">,</span><span class="o">**</span><span class="n">hyperparams</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">cosmology</span><span class="p">,</span><span class="n">mass_function</span><span class="p">,</span><span class="n">concentration_name</span><span class="o">=</span><span class="s1">&#39;Duffy&#39;</span><span class="p">,</span><span class="n">profile_name</span><span class="o">=</span><span class="s1">&#39;NFW&#39;</span><span class="p">,</span><span class="n">logM_min</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span><span class="n">logM_max</span><span class="o">=</span><span class="mi">17</span><span class="p">,</span><span class="n">npoints</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="mf">1e5</span><span class="p">),</span><span class="n">verb</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">tinker_overdensity</span><span class="o">=</span><span class="mi">200</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize the class with relevant model hyperparameters.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Are these hyperparams overkill?&#39;</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Should be more consistent with phys / h units&#39;</span><span class="p">)</span>
-
-
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;need to specify class attributes + methods in the docstring...&#39;</span><span class="p">)</span>
 
         <span class="c1"># Write attributes, if they&#39;re of the correct type</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cosmology</span><span class="p">,</span> <span class="n">Cosmology</span><span class="p">):</span>
@@ -200,22 +197,17 @@
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;mass_function input must be an instance of the MassFunction class!&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">concentration_name</span> <span class="o">=</span> <span class="n">concentration_name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">profile_name</span> <span class="o">=</span> <span class="n">profile_name</span>
-
-        <span class="c1"># Set hyperparameters to default if not specified</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">hyper_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="o">**</span><span class="n">hyperparams</span><span class="p">)</span>
-        <span class="k">if</span> <span class="s1">&#39;logM_min&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">hyper_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">hyper_dict</span><span class="p">[</span><span class="s1">&#39;logM_min&#39;</span><span class="p">]</span><span class="o">=</span><span class="mf">6.</span>
-        <span class="k">if</span> <span class="s1">&#39;logM_max&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">hyper_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">hyper_dict</span><span class="p">[</span><span class="s1">&#39;logM_max&#39;</span><span class="p">]</span><span class="o">=</span><span class="mf">17.</span>
-        <span class="k">if</span> <span class="s1">&#39;npoints&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">hyper_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">hyper_dict</span><span class="p">[</span><span class="s1">&#39;npoints&#39;</span><span class="p">]</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="mf">1e5</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logM_min</span> <span class="o">=</span> <span class="n">logM_min</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logM_max</span> <span class="o">=</span> <span class="n">logM_max</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">npoints</span> <span class="o">=</span> <span class="n">npoints</span>
 
         <span class="c1"># Create interpolators for sigma and d(ln(sigma))/dlog10(M):</span>
-        <span class="n">cosmology</span><span class="o">.</span><span class="n">_interpolate_sigma_and_deriv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hyper_dict</span><span class="p">[</span><span class="s1">&#39;logM_min&#39;</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">hyper_dict</span><span class="p">[</span><span class="s1">&#39;logM_max&#39;</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">hyper_dict</span><span class="p">[</span><span class="s1">&#39;npoints&#39;</span><span class="p">])</span>
+        <span class="n">cosmology</span><span class="o">.</span><span class="n">_interpolate_sigma_and_deriv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logM_min</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">logM_max</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">npoints</span><span class="p">)</span>
 
         <span class="c1"># Save reduced Hubble value for later use</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cosmology</span><span class="o">.</span><span class="n">cosmo</span><span class="o">.</span><span class="n">h</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cosmology</span><span class="o">.</span><span class="n">a</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verb</span> <span class="o">=</span> <span class="n">verb</span>
 
 <div class="viewcode-block" id="HaloPhysics.halo_profile"><a class="viewcode-back" href="../../api.html#PerturbedHalos.HaloPhysics.HaloPhysics.halo_profile">[docs]</a>    <span class="k">def</span> <span class="nf">halo_profile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">m_h</span><span class="p">,</span><span class="n">k_phys</span><span class="p">,</span><span class="n">norm_only</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Compute the halo profile function in Fourier space; :math:`\\rho(k|m) = \\frac{m}{\\bar{\\rho}_M}u(k|m)`</span>

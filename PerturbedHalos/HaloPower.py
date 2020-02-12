@@ -5,8 +5,7 @@ from scipy.optimize import minimize
 from scipy.integrate import simps
 from scipy.special import spherical_jn
 import sys
-sys.path.append('/home/ophilcox/FAST-PT/')
-import FASTPT as FASTPT
+import fastpt as FASTPT
 
 class HaloPower:
     """Class to compute the non-linear power spectrum from the halo model of Philcox et al. 2020.
@@ -35,8 +34,7 @@ class HaloPower:
         """
         Initialize the class loading properties from the other classes.
         """
-        print('need to add FAST-PT to path in better way than above')
-
+        
         # Write attributes, if they're of the correct type
         if isinstance(cosmology, Cosmology):
             self.cosmology = cosmology

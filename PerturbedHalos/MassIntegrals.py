@@ -64,8 +64,8 @@ class MassIntegrals:
 
         # Run some important checks
         print('find better place to store these parameters')
-        interp_min = self.halo_physics.hyper_dict['logM_min']
-        interp_max = self.halo_physics.hyper_dict['logM_max']
+        interp_min = min_logM
+        interp_max = max_logM
         assert min_logM >= interp_min, 'Minimum mass must be greater than the interpolation limit (10^%.2f)'%interp_min
         assert max_logM <= interp_max, 'Minimum mass must be less than the interpolation limit (10^%.2f)'%interp_max
 

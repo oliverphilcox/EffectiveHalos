@@ -175,13 +175,15 @@
 <span class="sd">        mass_param (kwargs): Any additional parameters to pass to the class. These include:</span>
 <span class="sd">            - tinker_overdensity: (Only for the Tinker mass function): spherical overdensity defining halos, default: 200</span>
 
+<span class="sd">    Keyword Args:</span>
+<span class="sd">        verb (bool): If true output useful messages througout run-time, default: False.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">cosmology</span><span class="p">,</span><span class="n">mass_function_name</span><span class="o">=</span><span class="s1">&#39;Crocce&#39;</span><span class="p">,</span><span class="o">**</span><span class="n">mass_params</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Initialize the class by loading the relevant model parameters.</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">cosmology</span><span class="p">,</span><span class="n">mass_function_name</span><span class="o">=</span><span class="s1">&#39;Crocce&#39;</span><span class="p">,</span><span class="n">verb</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="o">**</span><span class="n">mass_params</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the class by loading the relevant model parameters.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;need to specify class attributes + methods in the docstring...&#39;</span><span class="p">)</span>
 
         <span class="c1"># Write attributes, if they&#39;re of the correct type</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mass_function_name</span> <span class="o">=</span> <span class="n">mass_function_name</span>
@@ -195,6 +197,8 @@
 
         <span class="c1"># reduced H0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cosmology</span><span class="o">.</span><span class="n">cosmo</span><span class="o">.</span><span class="n">h</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">verb</span> <span class="o">=</span> <span class="n">verb</span>
 
         <span class="c1"># Set hyperparameters to default if not specified</span>
         <span class="n">mass_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="o">**</span><span class="n">mass_params</span><span class="p">)</span>
@@ -227,14 +231,12 @@
 <span class="sd">            np.ndarray: Mass function, :math:`dn/d\log_{10}(M)` in :math:`\mathrm{Mpc}^{-3}` units</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;FIX rho-bar definitions above!!&#39;</span><span class="p">)</span>
 
         <span class="n">m</span> <span class="o">=</span> <span class="n">m_h</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">h</span> <span class="c1"># mass in Msun units</span>
 
         <span class="n">logM</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="c1"># log10(M/Msun)</span>
         <span class="n">dlns_dlogM</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cosmology</span><span class="o">.</span><span class="n">dlns_dlogM_int</span><span class="p">(</span><span class="n">logM</span><span class="p">)</span>
 
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;combine with halo bias?&#39;</span><span class="p">)</span>
         <span class="c1"># Compute peak height</span>
         <span class="n">sigma</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cosmology</span><span class="o">.</span><span class="n">sigma_logM_int</span><span class="p">(</span><span class="n">logM</span><span class="p">)</span>
         <span class="n">nu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">delta_c</span><span class="o">/</span><span class="n">sigma</span>
@@ -373,29 +375,34 @@
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">mass_function_name</span><span class="o">==</span><span class="s1">&#39;Crocce&#39;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">delta_c</span> <span class="o">=</span> <span class="mf">1.686</span>  <span class="c1"># critical density for collapse</span>
 
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Using fitted Crocce parameters&#39;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">pA</span> <span class="o">=</span> <span class="mf">0.729</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">pa</span> <span class="o">=</span> <span class="mf">2.355</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">pb</span> <span class="o">=</span> <span class="mf">0.423</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">pc</span> <span class="o">=</span> <span class="mf">1.318</span>
-            <span class="c1">#</span>
-            <span class="c1"># self.pA = 0.58*self.a**0.13</span>
-            <span class="c1"># self.pa = 1.37*self.a**0.15</span>
-            <span class="c1"># self.pb = 0.3*self.a**0.084</span>
-            <span class="c1"># self.pc = 1.036*self.a**0.024</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cosmology</span><span class="o">.</span><span class="n">name</span><span class="o">==</span><span class="s1">&#39;Quijote&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verb</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Using fitted parameters for the Crocce mass function from Quijote simulations &#39;</span><span class="p">)</span>
+                <span class="c1"># Optimal values for the Quijote simulations</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pA</span> <span class="o">=</span> <span class="mf">0.729</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pa</span> <span class="o">=</span> <span class="mf">2.355</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pb</span> <span class="o">=</span> <span class="mf">0.423</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pc</span> <span class="o">=</span> <span class="mf">1.318</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Optimal values from original simulations</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pA</span> <span class="o">=</span> <span class="mf">0.58</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="o">**</span><span class="mf">0.13</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pa</span> <span class="o">=</span> <span class="mf">1.37</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="o">**</span><span class="mf">0.15</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pb</span> <span class="o">=</span> <span class="mf">0.3</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="o">**</span><span class="mf">0.084</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pc</span> <span class="o">=</span> <span class="mf">1.036</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="o">**</span><span class="mf">0.024</span>
 
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">mass_function_name</span><span class="o">==</span><span class="s1">&#39;Bhattacharya&#39;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">delta_c</span> <span class="o">=</span> <span class="mf">1.686</span> <span class="c1"># critical density for collapse</span>
 
-            <span class="c1"># Optimal values from original paper</span>
-            <span class="c1"># self.a0 = 0.788</span>
-            <span class="c1"># self.p0 = 0.807</span>
-            <span class="c1"># self.q0 = 1.795</span>
-
-            <span class="c1"># Optimal values for the Quijote simulations</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">a0</span> <span class="o">=</span> <span class="mf">0.77403116</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">p0</span> <span class="o">=</span> <span class="mf">0.63685683</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">q0</span> <span class="o">=</span> <span class="mf">1.66263337</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cosmology</span><span class="o">.</span><span class="n">name</span><span class="o">==</span><span class="s1">&#39;Quijote&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verb</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Using fitted parameters for the Bhattacharya mass function from Quijote simulations &#39;</span><span class="p">)</span>
+                <span class="c1"># Optimal values for the Quijote simulations</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">a0</span> <span class="o">=</span> <span class="mf">0.77403116</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">p0</span> <span class="o">=</span> <span class="mf">0.63685683</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">q0</span> <span class="o">=</span> <span class="mf">1.66263337</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Optimal values from original paper</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">a0</span> <span class="o">=</span> <span class="mf">0.788</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">p0</span> <span class="o">=</span> <span class="mf">0.807</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">q0</span> <span class="o">=</span> <span class="mf">1.795</span>
 
             <span class="c1"># Compute normalization factor</span>
             <span class="n">inv_A0</span> <span class="o">=</span> <span class="p">(</span><span class="mf">2.</span><span class="o">**</span><span class="p">(</span><span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="o">-</span><span class="mf">1.</span> <span class="o">-</span> <span class="mf">2.</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">p0</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">q0</span><span class="p">))</span><span class="o">*</span><span class="p">(</span><span class="n">gamma_fn</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">p0</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">q0</span><span class="o">/</span><span class="mf">2.</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">p0</span><span class="o">*</span><span class="n">gamma_fn</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">q0</span><span class="o">/</span><span class="mf">2.</span><span class="p">)))</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>

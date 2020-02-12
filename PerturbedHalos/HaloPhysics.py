@@ -31,13 +31,11 @@ class HaloPhysics:
 
     """
 
-    def __init__(self,cosmology,mass_function,concentration_name='Duffy',profile_name='NFW',verb=False,**hyperparams):
+    def __init__(self,cosmology,mass_function,concentration_name='Duffy',profile_name='NFW',logM_min=6,logM_max=17,npoints=int(1e5),verb=False,tinker_overdensity=200):
         """
         Initialize the class with relevant model hyperparameters.
         """
-        print('Are these hyperparams overkill?')
         print('Should be more consistent with phys / h units')
-
 
         # Write attributes, if they're of the correct type
         if isinstance(cosmology, Cosmology):
@@ -50,18 +48,12 @@ class HaloPhysics:
             raise TypeError('mass_function input must be an instance of the MassFunction class!')
         self.concentration_name = concentration_name
         self.profile_name = profile_name
-
-        # Set hyperparameters to default if not specified
-        self.hyper_dict = dict(**hyperparams)
-        if 'logM_min' not in self.hyper_dict.keys():
-            self.hyper_dict['logM_min']=6.
-        if 'logM_max' not in self.hyper_dict.keys():
-            self.hyper_dict['logM_max']=17.
-        if 'npoints' not in self.hyper_dict.keys():
-            self.hyper_dict['npoints']=int(1e5)
+        self.logM_min = logM_min
+        self.logM_max = logM_max
+        self.npoints = npoints
 
         # Create interpolators for sigma and d(ln(sigma))/dlog10(M):
-        cosmology._interpolate_sigma_and_deriv(self.hyper_dict['logM_min'],self.hyper_dict['logM_max'],self.hyper_dict['npoints'])
+        cosmology._interpolate_sigma_and_deriv(self.logM_min,self.logM_max,self.npoints)
 
         # Save reduced Hubble value for later use
         self.h = self.cosmology.cosmo.h()

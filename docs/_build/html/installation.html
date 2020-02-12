@@ -83,7 +83,11 @@
             
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#dependencies">Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#installing-perturbedhalos">Installing PerturbedHalos</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Basic Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">Python API</a></li>
 </ul>
@@ -154,7 +158,39 @@
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
 <div class="admonition-todo admonition" id="index-0">
 <p class="first admonition-title">Todo</p>
-<p class="last">write this</p>
+<p class="last">finish this</p>
+</div>
+<div class="section" id="dependencies">
+<h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
+<p><strong>CLASS</strong></p>
+<p>To run PerturbedHalos, we require the Boltzmann code CLASS along with its Python wrapper classy. This can be installed from the CLASS <a class="reference external" href="https://github.com/lesgourg/class_public">Github</a> and is used to compute the linear power spectrum for a specified cosmology.</p>
+<p><strong>FAST-PT</strong></p>
+<p>PerturbedHalos uses Joe McEwen’s <a class="reference external" href="https://github.com/JoeMcEwen/FAST-PT">FAST-PT</a> package to compute one-loop power spectra from the CLASS linear power spectrum. It is easiest to install this from pip:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">fast</span><span class="o">-</span><span class="n">pt</span> <span class="o">--</span><span class="n">user</span>
+</pre></div>
+</div>
+<p><strong>Other Dependencies</strong>
+- numpy
+- scipy
+- cython (for CLASS)</p>
+<p>These are likely already installed, else they can be installed from pip.</p>
+<div class="admonition-todo admonition" id="index-1">
+<p class="first admonition-title">Todo</p>
+<p class="last">can we get this autoinstalled?</p>
+</div>
+</div>
+<div class="section" id="installing-perturbedhalos">
+<h2>Installing PerturbedHalos<a class="headerlink" href="#installing-perturbedhalos" title="Permalink to this headline">¶</a></h2>
+<p>Once the above packages are installed, PerturbedHalos can be simply installed via pip:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">PerturbedHalos</span> <span class="o">--</span><span class="n">user</span>
+</pre></div>
+</div>
+<p>To check this is installed run:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">..</span> <span class="n">todo</span><span class="p">::</span>
+</pre></div>
+</div>
+<blockquote>
+<div>write a test script</div></blockquote>
 </div>
 </div>
 
