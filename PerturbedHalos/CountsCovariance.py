@@ -1,4 +1,4 @@
-from . import MassIntegrals,MassFunction,HaloPhysics,Cosmology,HaloPower
+from . import MassIntegrals,MassFunction,HaloPhysics,Cosmology,HaloModel
 import numpy as np
 from scipy.interpolate import interp1d
 
@@ -42,6 +42,7 @@ class CountsCovariance:
         """
         Initialize the class loading properties from the other classes.
         """
+        print("Add in 1/h units everywhere here")
         print('also compute N(m) autocovariance?')
         print('think about how to do sigma^2 + change in class definition.')
 
@@ -75,8 +76,8 @@ class CountsCovariance:
         self.mass_integrals = self.halo_power.mass_integrals
 
         # Run some checks
-        assert self.mass_bins[0]>=np.power(10.,self.mass_integrals.min_logM)*self.cosmology.h, 'Minimum bin must be above MassIntegral limit!'
-        assert self.mass_bins[-1]<=np.power(10.,self.mass_integrals.max_logM)*self.cosmology.h, 'Maximum bin must be below MassIntegral limit!'
+        assert self.mass_bins[0]>=np.power(10.,self.mass_integrals.min_logM_h), 'Minimum bin must be above MassIntegral limit!'
+        assert self.mass_bins[-1]<=np.power(10.,self.mass_integrals.max_logM_h), 'Maximum bin must be below MassIntegral limit!'
 
         # Compute linear power for the k-vector
         self.linear_power = self.cosmology.compute_linear_power(self.kh_vector,self.kh_min).copy()
@@ -198,6 +199,7 @@ class CountsCovariance:
         print('Tidy this up + add non-linear terms')
 
         # Create an interpolator for k^3 P(k)
+        print("Need to be careful of h units here")
         if not hasattr(self,'log_derivative'):
             all_k = np.logspace(-3,1,10000)
             all_cal_P = all_k**3.*self.cosmology.compute_linear_power(all_k,0.0)/(2.*np.pi**2.)
@@ -224,6 +226,7 @@ class CountsCovariance:
         Returns:
             float: Value of :math:`\sigma^2(V)` for the survey with volume specified in the class description.
         """
+        print("probably just user define this")
         if not hasattr(self,'sigma2_volume'):
             R_survey = np.power(3.*self.volume/(4.*np.pi),1./3.) # equivalent survey volume
             self.sigma2_volume = np.power(self.cosmology.vector_sigma_R(R_survey/self.cosmology.h),2.)
@@ -245,11 +248,11 @@ class CountsCovariance:
             for n_bin in range(self.N_bins):
 
                 # Compute mass ranges and convert to Msun units
-                min_logM = np.log10(self.mass_bins[n_bin]/self.cosmology.h)
-                max_logM = np.log10(self.mass_bins[n_bin+1]/self.cosmology.h)
+                min_logM_h = np.log10(self.mass_bins[n_bin])
+                max_logM_h = np.log10(self.mass_bins[n_bin+1])
 
                 print('should keep N_mass free parameter here?')
                 # Load an instance of the MassIntegral class
                 this_mass_integral = MassIntegrals(self.cosmology,self.mass_function,self.halo_physics,self.kh_vector,
-                                                min_logM=min_logM, max_logM=max_logM, N_mass=int(1e3))
+                                                min_logM_h=min_logM_h, max_logM_h=max_logM_h, N_mass=int(1e3))
                 self.all_mass_integrals.append(this_mass_integral)

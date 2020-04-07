@@ -7,7 +7,7 @@ from scipy.special import spherical_jn
 import sys
 import fastpt as FASTPT
 
-class HaloPower:
+class HaloModel:
     """Class to compute the non-linear power spectrum from the halo model of Philcox et al. 2020.
 
     The model power is defined as
@@ -34,7 +34,7 @@ class HaloPower:
         """
         Initialize the class loading properties from the other classes.
         """
-        
+
         # Write attributes, if they're of the correct type
         if isinstance(cosmology, Cosmology):
             self.cosmology = cosmology
@@ -49,9 +49,9 @@ class HaloPower:
         else:
             raise TypeError('halo_physics input must be an instance of the HaloPhysics class!')
 
-        print("How do we pass in MassIntegrals parameters?")
         # Create instance of the MassIntegrals class
-        self.mass_integrals = MassIntegrals(self.cosmology, self.mass_function, self.halo_physics, kh_vector)
+        self.mass_integrals = MassIntegrals(self.cosmology, self.mass_function, self.halo_physics, kh_vector,
+                                            min_logM_h = self.halo_physics.min_logM_h+0.01, max_logM_h = self.halo_physics.max_logM_h-0.01,npoints=self.halo_physics.npoints)
 
         # Write useful attributes
         self.kh_vector = kh_vector
@@ -60,6 +60,13 @@ class HaloPower:
 
         # Compute linear power for the k-vector
         self.linear_power = self.cosmology.compute_linear_power(self.kh_vector).copy()
+
+        # Set other hyperparameters consistently. (These are non-critical but control minutae of IR resummation and interpolation precision)
+        self.IR_N_k = 5000
+        self.IR_kh_max = 1.
+        self.OneLoop_N_interpolate = 50
+        self.OneLoop_k_cut = 3
+        self.OneLoop_N_k = 100
 
     def non_linear_power(self,cs2,R,pt_type = 'EFT',pade_resum = True, smooth_density = True, IR_resum = True):
         """
@@ -108,7 +115,7 @@ class HaloPower:
             else:
                 raise NameError("pt_type must be 'Linear', 'SPT' or 'EFT'!")
         else:
-            self._prepare_IR_resummation()
+            self._prepare_IR_resummation(N_k=self.IR_N_k,kh_max=self.IR_kh_max)
             if pt_type=='Linear':
                 output = self.compute_resummed_linear_power()
             elif pt_type=='SPT':
@@ -128,7 +135,7 @@ class HaloPower:
 
         return output
 
-    def halo_power(self,cs2,R,pt_type = 'EFT',pade_resum = True, smooth_density = True, IR_resum = True):
+    def halo_model(self,cs2,R,pt_type = 'EFT',pade_resum = True, smooth_density = True, IR_resum = True, return_terms=False):
         """
         Compute the non-linear halo-model power spectrum to one-loop order, with IR corrections and counterterms. Whilst we recommend including all non-linear effects, these can be optionally removed with the Boolean parameters.
 
@@ -145,10 +152,15 @@ class HaloPower:
             pade_resum (bool): If True, use a Pade resummation of the counterterm :math:`k^2/(1+k^2) P_\mathrm{lin}` rather than :math:`k^2 P_\mathrm{lin}(k)`, default: True
             smooth_density (bool): If True, smooth the density field on scale R, i.e. multiply power by W(kR)^2, default: True
             IR_resum (bool): If True, perform IR resummation on the density field to resum non-perturbative long-wavelength modes, default: True
+            return_terms (bool): If True, return the one- and two-halo terms in addition to the combined power spectrum model, default: False
 
         Returns:
             np.ndarray: Non-linear halo model power spectrum :math:`P_\mathrm{halo}` evaluated at the input k-vector.
+            np.ndarray: One-halo power spectrum term (if return_terms is true)
+            np.ndarray: Two-halo power spectrum term (if return_terms is true)
         """
+
+        print("Use one def of M and k units everywhere")
 
         # Compute the non-linear power spectrum
         p_non_linear = self.non_linear_power(cs2, R, pt_type, pade_resum, smooth_density, IR_resum)
@@ -157,11 +169,13 @@ class HaloPower:
         if not hasattr(self,'I_11'):
             self.I_11 = self.mass_integrals.compute_I_11(apply_correction = True)
         if not hasattr(self,'I_20'):
-            print('separately return 2h + 1h terms?')
             self.I_20 = self.mass_integrals.compute_I_20()
 
         # Compute the final mass function
-        return p_non_linear*self.I_11.copy()*self.I_11.copy() + self.I_20.copy()
+        if return_terms:
+            return p_non_linear*self.I_11.copy()*self.I_11.copy() + self.I_20.copy(), self.I_20.copy(), p_non_linear*self.I_11.copy()*self.I_11.copy(),
+        else:
+            return p_non_linear*self.I_11.copy()*self.I_11.copy() + self.I_20.copy()
 
     def compute_one_loop_only_power(self):
         """
@@ -172,8 +186,7 @@ class HaloPower:
         """
 
         if not hasattr(self,'one_loop_only_power'):
-            print('should carry over parameters here - or initialize them in the class')
-            self.one_loop_only_power = self._one_loop_only_power_interpolater(self.cosmology.compute_linear_power)(self.kh_vector)
+            self.one_loop_only_power = self._one_loop_only_power_interpolater(self.cosmology.compute_linear_power, self.OneLoop_N_interpolate, self.OneLoop_k_cut, self.OneLoop_N_k)(self.kh_vector)
 
         return self.one_loop_only_power.copy()
 
@@ -198,8 +211,7 @@ class HaloPower:
         if not hasattr(self,'resummed_linear_power'):
 
             # First create IR interpolaters if not present
-            self._prepare_IR_resummation()
-            print('add ir parameters?')
+            self._prepare_IR_resummation(N_k=self.IR_N_k,kh_max=self.IR_kh_max)
 
             # Load no-wiggle and wiggly parts
             no_wiggle = self.linear_no_wiggle_power
@@ -229,8 +241,7 @@ class HaloPower:
         if not hasattr(self,'resummed_one_loop_power'):
 
             # First create IR interpolators if not present
-            self._prepare_IR_resummation()
-            print('add ir parameters?')
+            self._prepare_IR_resummation(N_k=self.IR_N_k,kh_max=self.IR_kh_max)
 
             # Compute 1-loop only power spectrum
             one_loop_all = self.compute_one_loop_only_power()
@@ -259,7 +270,7 @@ class HaloPower:
             kR = self.kh_vector*R
             return  3.*(np.sin(kR)-kR*np.cos(kR))/kR**3.
 
-    def _one_loop_only_power_interpolater(self,linear_spectrum, N_interpolate=50,k_cut=3,N_k = 1000):
+    def _one_loop_only_power_interpolater(self,linear_spectrum, N_interpolate=50, k_cut=3, N_k = 1000):
         """
         Compute the one-loop SPT power interpolator, using the FAST-PT module. This is computed from an input linear power spectrum.
 
@@ -269,19 +280,14 @@ class HaloPower:
             linear_spectrum (function): Function taking input wavenumber in h/Mpc units and returning a linear power spectrum.
 
         Keyword Args:
-            N_interpolate (int): Width of smoothing kernel to apply, default: 20.
+            N_interpolate (int): Width of smoothing kernel to apply, default: 50.
             k_cut (float): Minimum k (in :math:`h/\mathrm{Mpc}` units) from which to apply smoothing interpolation, default: 3.
-            N_k (int): Number of k values used for interpolation.
+            N_k (int): Number of k values used for interpolation, default: 1000.
 
         Returns:
             scipy.interp1d: An interpolator for the SPT power given an input k (in :math:`h/\mathrm{Mpc}` units).
 
         """
-        print('need nice way of importing FASTPT from user installation')
-        print('need nice way of setting interpolation parameters?')
-        print('remove interpolation parameters??')
-
-        print('need to test these hyperparameters')
 
         # Define some k grid for interpolation (with edges well separated from k limits)
         min_k = np.max([np.min(self.kh_vector),1e-4]) # setting minimum to avoid zero errors
@@ -333,8 +339,6 @@ class HaloPower:
 
         if not hasattr(self,'linear_no_wiggle_power') and not hasattr(self,'one_loop_only_no_wiggle_power') and not hasattr(self,'BAO_damping'):
 
-            print('need to test these hyperparameters')
-
             # First define a k-grid in h/Mpc units
             min_k = np.max([np.min(self.kh_vector),1e-4]) # setting minimum to avoid zero errors
             max_k = np.max(self.kh_vector)
@@ -381,8 +385,7 @@ class HaloPower:
 
             # Compute one-loop interpolator for no-wiggle power
             # This is just the one-loop operator acting on the no-wiggle power spectrum
-            print('should add hyperparameters here?')
-            self.one_loop_only_no_wiggle_power = self._one_loop_only_power_interpolater(linear_no_wiggle_interp)(self.kh_vector)
+            self.one_loop_only_no_wiggle_power = self._one_loop_only_power_interpolater(linear_no_wiggle_interp,self.OneLoop_N_interpolate, self.OneLoop_k_cut, self.OneLoop_N_k)(self.kh_vector)
 
             # Compute the BAO smoothing scale Sigma^2
             def _BAO_integrand(q):
@@ -393,4 +396,4 @@ class HaloPower:
 
             # Now store the BAO damping scale as Sigma^2
             self.BAO_damping = simps(_BAO_integrand(kk_grid),kk_grid)
-            print('Non-linear BAO damping scale = %.2f Mpc/h'%np.sqrt(self.BAO_damping))
+            if self.verb: print('Non-linear BAO damping scale = %.2f Mpc/h'%np.sqrt(self.BAO_damping))

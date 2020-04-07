@@ -32,18 +32,16 @@ class MassIntegrals:
         kh_vector (np.ndarray): Array (or float) of wavenumbers in :math:`h\mathrm{Mpc}^{-1}` units from which to compute mass integrals.
 
     Keyword Args:
-        min_logM (float): Minimum mass in :math:`\log_{10}(M/M_\mathrm{sun})` units, default: 6.001.
-        max_logM (float): Maximum mass in :math:`\log_{10}(M/M_\mathrm{sun})` units, default: 16.999.
-        N_mass (int): Number of logarithmically spaced mass grid points, default: 10000.
+        min_logM_h (float): Minimum mass in :math:`\log_{10}(M/h^{-1}M_\mathrm{sun})` units, default: 6.001.
+        max_logM_h (float): Maximum mass in :math:`\log_{10}(M/h^{-1}M_\mathrm{sun})` units, default: 16.999.
+        npoints (int): Number of logarithmically spaced mass grid points, default: 10000.
         verb (bool): If true output useful messages througout run-time, default: False.
 
     """
-    def __init__(self,cosmology,mass_function,halo_physics,kh_vector,min_logM=6.001, max_logM=16.999, N_mass=int(1e4),verb=False):
+    def __init__(self,cosmology,mass_function,halo_physics,kh_vector,min_logM_h=6.001, max_logM_h=16.999, npoints=int(1e4),verb=False):
         """
         Initialize the class with relevant model hyperparameters.
         """
-
-        print('sensibly set default n_mass')
 
         # Write attributes, if they're of the correct type
         if isinstance(cosmology, Cosmology):
@@ -59,33 +57,29 @@ class MassIntegrals:
         else:
             raise TypeError('halo_physics input must be an instance of the HaloPhysics class!')
 
-        print('we should shunt a lot of these definitions into the NonLinearPower class? or Cov class?')
-
         # Run some important checks
-        print('find better place to store these parameters')
-        interp_min = min_logM
-        interp_max = max_logM
-        assert min_logM >= interp_min, 'Minimum mass must be greater than the interpolation limit (10^%.2f)'%interp_min
-        assert max_logM <= interp_max, 'Minimum mass must be less than the interpolation limit (10^%.2f)'%interp_max
+        interp_min = self.halo_physics.min_logM_h
+        interp_max = self.halo_physics.max_logM_h
+        assert min_logM_h >= interp_min, 'Minimum mass must be greater than the interpolation limit (10^%.2f)'%interp_min
+        assert max_logM_h <= interp_max, 'Minimum mass must be less than the interpolation limit (10^%.2f)'%interp_max
 
         # Load reduced H0 for clarity
         self.h = self.cosmology.cosmo.h()
 
         # Save other attributes
-        self.min_logM = min_logM
-        self.max_logM = max_logM
-        self.N_mass = N_mass
+        self.min_logM_h = min_logM_h
+        self.max_logM_h = max_logM_h
+        self.npoints = npoints
         self.verb = verb
 
         # Define a mass vector for computations
-        self.logM_grid = np.linspace(self.min_logM,self.max_logM, self.N_mass)
+        self.logM_h_grid = np.linspace(self.min_logM_h,self.max_logM_h, self.npoints)
 
         # Load and convert masses and wavenumbers
-        m = np.power(10.,self.logM_grid)
-        self.m_h_grid = m*self.h # in Msun/h
+        self.m_h_grid = 10.**self.logM_h_grid # in Msun/h
 
-        self.k_vectors = kh_vector*self.h # remove h dependence so that k is in physical units
-        self.N_k = len(self.k_vectors) # define number of k points
+        self.kh_vectors = kh_vector # in h/Mpc
+        self.N_k = len(self.kh_vectors) # define number of k points
 
     def compute_I_00(self):
         """Compute the I_0^0 integral, if not already computed.
@@ -94,8 +88,7 @@ class MassIntegrals:
             float: Value of :math:`I_0^0`
         """
         if not hasattr(self,'I_00'):
-            # NB: we pass kh_vectors as a placeholder here; it's not used.
-            self.I_00 = simps(self._I_p_q1q2_integrand(0,0,0),self.logM_grid)
+            self.I_00 = simps(self._I_p_q1q2_integrand(0,0,0),self.logM_h_grid)
         return self.I_00.copy()
 
     def compute_I_01(self):
@@ -105,9 +98,28 @@ class MassIntegrals:
             float: Value of :math:`I_0^1`
         """
         if not hasattr(self,'I_01'):
-            # NB: we pass kh_vectors as a placeholder here; it's not used.
-            self.I_01 = simps(self._I_p_q1q2_integrand(0,1,0),self.logM_grid)
+            self.I_01 = simps(self._I_p_q1q2_integrand(0,1,0),self.logM_h_grid)
         return self.I_01.copy()
+
+    def compute_I_02(self):
+        """Compute the I_0^2 integral, if not already computed.
+
+        Returns:
+            float: Value of :math:`I_0^2`
+        """
+        if not hasattr(self,'I_02'):
+            self.I_02 = simps(self._I_p_q1q2_integrand(0,2,0),self.logM_h_grid)
+        return self.I_02.copy()
+
+    def compute_I_10(self):
+        """Compute the I_1^0 integral, if not already computed.
+
+        Returns:
+            float: Array of :math:`I_1^0` values for each k.
+        """
+        if not hasattr(self,'I_10'):
+            self.I_10 = simps(self._I_p_q1q2_integrand(1,0,0),self.logM_h_grid)
+        return self.I_10.copy()
 
     def compute_I_11(self,apply_correction = True):
         """Compute the :math:`I_1^1(k)` integral, if not already computed. Also apply the correction noted in the class header if required.
@@ -123,13 +135,13 @@ class MassIntegrals:
 
         if not hasattr(self,'I_11'):
             # Compute the integral over the utilized mass range
-            self.I_11 = simps(self._I_p_q1q2_integrand(1,1,0),self.logM_grid,axis=1)
+            self.I_11 = simps(self._I_p_q1q2_integrand(1,1,0),self.logM_h_grid,axis=1)
 
             if apply_correction:
-                A = 1. - simps(self._I_p_q1q2_integrand(1,1,0,zero_k=True),self.logM_grid)
+                A = 1. - simps(self._I_p_q1q2_integrand(1,1,0,zero_k=True),self.logM_h_grid)
                 # compute window functions
-                min_m_h = np.power(10.,self.min_logM)*self.h
-                min_window = self.halo_physics.halo_profile(min_m_h,self.k_vectors).ravel()
+                min_m_h = np.power(10.,self.min_logM_h)*self.h
+                min_window = self.halo_physics.halo_profile(min_m_h,self.kh_vectors).ravel()
                 zero_window = self.halo_physics.halo_profile(min_m_h,0.).ravel()
                 self.I_11 += A*min_window/zero_window
         return self.I_11.copy()
@@ -141,7 +153,7 @@ class MassIntegrals:
             np.ndarray: Array of :math:`I_1^{1,1}` values for each k.
         """
         if not hasattr(self,'I_111'):
-            self.I_111 = simps(self._I_p_q1q2_integrand(1,1,1),self.logM_grid,axis=1)
+            self.I_111 = simps(self._I_p_q1q2_integrand(1,1,1),self.logM_h_grid,axis=1)
         return self.I_111.copy()
 
     def compute_I_12(self,apply_correction = True):
@@ -156,13 +168,13 @@ class MassIntegrals:
             np.ndarray: Array of :math:`I_1^2` values for each k.
         """
         if not hasattr(self,'I_12'):
-            self.I_12 = simps(self._I_p_q1q2_integrand(1,2,0),self.logM_grid)
+            self.I_12 = simps(self._I_p_q1q2_integrand(1,2,0),self.logM_h_grid)
 
             if apply_correction:
-                A = - simps(self._I_p_q1q2_integrand(1,2,0,zero_k=True),self.logM_grid)
+                A = - simps(self._I_p_q1q2_integrand(1,2,0,zero_k=True),self.logM_h_grid)
                 # compute window functions
-                min_m_h = np.power(10.,self.min_logM)*self.h
-                min_window = self.halo_physics.halo_profile(min_m_h,self.k_vectors).ravel()
+                min_m_h = np.power(10.,self.min_logM_h)*self.h
+                min_window = self.halo_physics.halo_profile(min_m_h,self.kh_vectors).ravel()
                 zero_window = self.halo_physics.halo_profile(min_m_h,0.).ravel()
                 self.I_12 += A*min_window/zero_window
         return self.I_12.copy()
@@ -174,7 +186,7 @@ class MassIntegrals:
             np.ndarray: Array of :math:`I_2^0` values for each k.
         """
         if not hasattr(self,'I_20'):
-            self.I_20 = simps(self._I_p_q1q2_integrand(2,0,0),self.logM_grid,axis=1)
+            self.I_20 = simps(self._I_p_q1q2_integrand(2,0,0),self.logM_h_grid,axis=1)
         return self.I_20.copy()
 
     def compute_I_21(self):
@@ -184,16 +196,16 @@ class MassIntegrals:
             np.ndarray: Array of :math:`I_2^1` values for each k.
         """
         if not hasattr(self,'I_21'):
-            self.I_21 = simps(self._I_p_q1q2_integrand(2,1,0),self.logM_grid,axis=1)
+            self.I_21 = simps(self._I_p_q1q2_integrand(2,1,0),self.logM_h_grid,axis=1)
         return self.I_21.copy()
 
     def _I_p_q1q2_integrand(self,p,q1,q2,zero_k=False):
         """Compute the integrand of the :math:`I_p^{q1,q2}` function defined in the class description.
-        This is done over the :math:`\log_{10}(M/M_\mathrm{sun}) grid defined in the __init__ function.
+        This is done over the :math:`\log_{10}(M/h^{-1}M_\mathrm{sun}) grid defined in the __init__ function.
 
         Note that this is the same as the integrand for the :math:`{}_i J_p^{q1,q2}` function (for integrals over a finite mass range).
 
-        It also assumes an integration variable :math:`\log_{10}(M/M_\mathrm{sun}) and integrates for each k in the k-vector specified in the class definition.
+        It also assumes an integration variable :math:`\log_{10}(M/h^{-1}M_\mathrm{sun}) and integrates for each k in the k-vector specified in the class definition.
         If zero_k is set, it returns the value of the integrand at :math:`k = 0` instead.
 
         Args:
@@ -208,7 +220,6 @@ class MassIntegrals:
 
         assert type(p)==type(q1)==type(q2)==int
 
-        fourier_profiles = 1.
         if p==0:
             fourier_profiles = 1.
         else:
@@ -217,20 +228,17 @@ class MassIntegrals:
             else:
                 fourier_profiles = np.power(self._compute_fourier_profile(),p)
 
-        # Compute d(n(M))/d(log10(M))
+        # Compute d(n(M))/d(log10(M/h^{-1}Msun))
         dn_dlogm = self._compute_mass_function()
 
-        # Define normalization to get correct unity (with Mpc/h and Msun/h units)
-        norm = np.power(self.h,3.*float(p)-3.)
-
-        return dn_dlogm * fourier_profiles * self._return_bias(q1) * self._return_bias(q2) * norm
+        return dn_dlogm * fourier_profiles * self._return_bias(q1) * self._return_bias(q2)
 
     def _compute_fourier_profile(self):
         """
-        Compute the normalized halo profile :math:`u(k|m)` for specified masses and k if not already computed.
+        Compute the halo profile :math:`m / \rho u(k|m)` for specified masses and k if not already computed.
 
         Returns:
-            np.ndarray: array of :math:`u(k|m)` values.
+            np.ndarray: array of :math:`m / \rho u(k|m)` values.
         """
         if not hasattr(self,'fourier_profile'):
             self.fourier_profile = self.halo_physics.halo_profile(self.m_h_grid,self.k_vectors)
@@ -240,7 +248,7 @@ class MassIntegrals:
         """Compute the mass function for specified masses if not already computed.
 
         Returns:
-            np.ndarray: :math:`dn/d\log_{10}(M)` array
+            np.ndarray: :math:`dn/d\log_{10}(M/h^{-1}M_\mathrm{sun})` array
         """
         if not hasattr(self,'mass_function_grid'):
             self.mass_function_grid = self.mass_function.mass_function(self.m_h_grid)
@@ -250,7 +258,7 @@ class MassIntegrals:
         """Compute the linear bias function for specified masses if not already computed.
 
         Returns:
-            np.ndarray: Array of Eulerian linear biases :math:`b_1^L(m)`
+            np.ndarray: Array of Eulerian linear biases :math:`b_1^E(m)`
         """
         if not hasattr(self,'linear_bias_grid'):
             self.linear_bias_grid = self.mass_function.linear_halo_bias(self.m_h_grid)
@@ -260,14 +268,14 @@ class MassIntegrals:
         """Compute the second order bias function for specified masses if not already computed.
 
         Returns:
-            np.ndarray: Array of second order Eulerian biases :math:`b_2^L(m)`
+            np.ndarray: Array of second order Eulerian biases :math:`b_2^E(m)`
         """
         if not hasattr(self,'second_order_bias_grid'):
             self.second_order_bias_grid = self.mass_function.second_order_bias(self.m_h_grid)
         return self.second_order_bias_grid.copy()
 
     def _return_bias(self,q):
-        """Return the q-th order halo bias function for all masses in the self.logM_grid attribute.
+        """Return the q-th order halo bias function for all masses in the self.logM_h_grid attribute.
 
         Args:
             q (int): Order of bias. Setting q = 0 returns unity. Currently only :math:`q\leq 2` is implemented.

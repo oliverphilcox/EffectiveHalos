@@ -81,87 +81,97 @@ class Cosmology(object):
         self.verb = verb
 
         ## Create a vectorized sigma(R) function from CLASS
-        self.vector_sigma_R = np.vectorize(lambda r: self.cosmo.sigma(r,self.z))
+        self.vector_sigma_R = np.vectorize(lambda r: self.cosmo.sigma(r/self.h,self.z))
 
         # get density in physical units at z = 0
+        # rho_critical is in Msun/h / (Mpc/h)^3 units
+        # rhoM is in **physical** units of Msun/Mpc^3
         self.rho_critical = ((3.*100.*100.)/(8.*np.pi*6.67408e-11)) * (1000.*1000.*3.085677581491367399198952281E+22/1.9884754153381438E+30)
         self.rhoM = self.rho_critical*self.cosmo.Omega0_m()*self.cosmo.h()**2.
 
-    def compute_linear_power(self,kh_vector,kh_min=0.):
+    def compute_linear_power(self,kh,kh_min=0.):
         """Compute the linear power spectrum from CLASS for a vector of input k.
 
         If set, we remove any modes below some minimum k.
 
         Args:
-            kh_vector (np.ndarray): Vector of wavenumbers (in h/Mpc units) to compute linear power with.
+            kh (float, np.ndarray): Wavenumber or vector of wavenumbers (in h/Mpc units) to compute linear power with.
             kh_min (float): Value of k (in h/Mpc units) below which to set :math:`P(k) = 0`, default: 0.
 
         Returns:
             np.ndarray: Linear power spectrum in :math:`(h^{-1}\mathrm{Mpc})^3` units
         """
 
-        # Define output vector and filter modes with too-small k
-        output = np.zeros_like(kh_vector)
-        filt = np.where(kh_vector>kh_min)
-        N_k = len(filt[0])
+        if type(kh)==np.ndarray:
 
-        # Compute Pk using CLASS (vectorized)
-        if not hasattr(self,'vector_linear_power'):
-            self.vector_linear_power = np.vectorize(lambda kh: self.cosmo.pk_lin(kh,self.z))
+            # Define output vector and filter modes with too-small k
+            output = np.zeros_like(kh)
+            filt = np.where(kh>kh_min)
+            N_k = len(filt[0])
 
-        output[filt] = self.vector_linear_power(kh_vector[filt]*self.h)*self.h**3.
-        return output
+            # Compute Pk using CLASS (vectorized)
+            if not hasattr(self,'vector_linear_power'):
+                ## NB: This works in physical 1/Mpc units 
+                self.vector_linear_power = np.vectorize(lambda k: self.cosmo.pk_lin(k,self.z))
 
-    def sigma_logM_int(self,logM):
+            output[filt] = self.vector_linear_power(kh[filt]*self.h)*self.h**3.
+            return output
+
+        else:
+            if kh<kh_min:
+                return 0.
+            else:
+                return self.vector_linear_power(kh*self.h)*self.h**3.
+
+    def sigma_logM_int(self,logM_h):
         """Return the value of :math:`\sigma(M,z)` using the prebuilt interpolators, which are constructed if not present.
 
         Args:
-            logM (np.ndarray): Input :math:`\log_{10}(M/M_\mathrm{sun})`
+            logM (np.ndarray): Input :math:`\log_{10}(M/h^{-1}M_\mathrm{sun})`
 
         Returns:
             np.ndarray: :math:`\sigma(M,z)`
         """
         if not hasattr(self,'sigma_logM_int_func'):
             self._interpolate_sigma_and_deriv()
-        return self._sigma_logM_int_func(logM)
+        return self._sigma_logM_int_func(logM_h)
 
-    def dlns_dlogM_int(self,logM):
+    def dlns_dlogM_int(self,logM_h):
         """Return the value of :math:`d\ln\sigma/d\log M` using the prebuilt interpolators, which are constructed if not present.
 
         Args:
-            logM (np.ndarray): Input :math:`\log_{10}(M/M_\mathrm{sun})`
+            logM (np.ndarray): Input :math:`\log_{10}(M/h^{-1}M_\mathrm{sun})`
 
         Returns:
             np.ndarray: :math:`d\ln\sigma/d\log M`
         """
         if not hasattr(self,'dlns_dlogM_int_func'):
             self._interpolate_sigma_and_deriv()
-        return self._dlns_dlogM_int_func(logM)
+        return self._dlns_dlogM_int_func(logM_h)
 
-    def _sigmaM(self,M_phys):
+    def _sigmaM(self,M_h):
         """Compute :math:`\sigma(M,z)` from CLASS as a vector function.
 
         Args:
-            M_phys (np.ndarray): Physical mass in :math:`M_\mathrm{sun}` units.
+            M_h (np.ndarray): Mass in :math:`h^{-1}M_\mathrm{sun}` units.
             z (float): Redshift.
 
         Returns:
             np.ndarray: :math:`\sigma(M,z)`
         """
         # convert to Lagrangian radius
-        r_phys = np.power((3.*M_phys)/(4.*np.pi*self.rhoM),1./3.)
-        sigma_func = self.vector_sigma_R(r_phys)
+        r_h = np.power((3.*M_h/self.h)/(4.*np.pi*self.rhoM),1./3.)*self.h
+        sigma_func = self.vector_sigma_R(r_h)
         return sigma_func
 
-    def _interpolate_sigma_and_deriv(self,logM_min=6,logM_max=17,npoints=int(1e5)):
+    def _interpolate_sigma_and_deriv(self,logM_h_min=6,logM_h_max=17,npoints=int(1e5)):
         """Create an interpolator function for :math:`d\ln\sigma/d\log M` and :math:`sigma(M)`.
-        Note that mass is in physical units (without 1/h factor).
 
         NB: This has no effect if the interpolator has already been computed.
 
         Keyword Args:
-            logM_min (float): Minimum mass in :math:`\log_{10}(M/M_\mathrm{sun})`, default: 6
-            logM_max (float): Maximum mass in :math:`\log_{10}(M/M_\mathrm{sun})`, default 17
+            logM_min (float): Minimum mass in :math:`\log_{10}(M/h^{-1}M_\mathrm{sun})`, default: 6
+            logM_max (float): Maximum mass in :math:`\log_{10}(M/h^{-1}M_\mathrm{sun})`, default 17
             npoints (int): Number of sampling points, default 100000
 
         """
@@ -170,17 +180,17 @@ class Cosmology(object):
             if self.verb: print("Creating an interpolator for sigma(M) and its derivative.")
             ## Compute log derivative by interpolation and numerical differentiation
             # First compute the grid of M and sigma
-            M_grid = np.logspace(6,17,10000)
-            all_sigM = self._sigmaM(M_grid)
-            logM_grid = np.log10(M_grid)
+            M_h_grid = np.logspace(logM_h_min,logM_h_max,10000)
+            all_sigM = self._sigmaM(M_h_grid)
+            logM_h_grid = np.log10(M_h_grid)
 
             # Define ln(sigma) and numerical derivatives
             all_lns = np.log(all_sigM)
-            all_diff = -np.diff(all_lns)/np.diff(logM_grid)
-            mid_logM = 0.5*(logM_grid[:-1]+logM_grid[1:])
+            all_diff = -np.diff(all_lns)/np.diff(logM_h_grid)
+            mid_logM_h = 0.5*(logM_h_grid[:-1]+logM_h_grid[1:])
 
-            self._sigma_logM_int_func = interp1d(logM_grid,all_sigM)
-            self._dlns_dlogM_int_func = interp1d(mid_logM,all_diff)
+            self._sigma_logM_int_func = interp1d(logM_h_grid,all_sigM)
+            self._dlns_dlogM_int_func = interp1d(mid_logM_h,all_diff)
 
     def _h_over_h0(self):
         """Return the value of :math:`H(z)/H(0)` at the class redshift
@@ -188,7 +198,8 @@ class Cosmology(object):
         Returns:
             float: :math:`H(z)/H(0)`
         """
-        Ea = np.sqrt((self.cosmo.Omega0_cdm()+self.cosmo.Omega_b()+self.cosmo.Omega_Lambda()*pow(self.a,-3)+self.cosmo.Omega0_k()*self.a)/pow(self.a,3))
+        Omega0_k = 1.-self.cosmo.Omega0_m()-self.cosmo.Omega_Lambda()
+        Ea = np.sqrt((self.cosmo.Omega0_m()+self.cosmo.Omega_Lambda()*pow(self.a,-3)+Omega0_k*self.a)/pow(self.a,3))
         return Ea
 
     def _Omega_m(self):
@@ -198,5 +209,5 @@ class Cosmology(object):
             float: :math:`\Omega_m(z)`
         """
         hnorm = self._h_over_h0()
-        output = (self.cosmo.Omega0_cdm()+self.cosmo.Omega_b())/self.a**3/hnorm**2
+        output = (self.cosmo.Omega0_m())/self.a**3/hnorm**2
         return output

@@ -31,7 +31,7 @@ class MassFunction:
 
     """
 
-    def __init__(self,cosmology,mass_function_name='Crocce',verb=False,**mass_params):
+    def __init__(self,cosmology,mass_function_name='Bhattacharya',verb=False,**mass_params):
         """
         Initialize the class by loading the relevant model parameters.
         """
@@ -79,17 +79,15 @@ class MassFunction:
             m_h (np.ndarray): Array of masses in :math:`h^{-1}M_\mathrm{sun}` units.
 
         Returns:
-            np.ndarray: Mass function, :math:`dn/d\log_{10}(M)` in :math:`\mathrm{Mpc}^{-3}` units
+            np.ndarray: Mass function, :math:`dn/d\log_{10}(M/h^{-1}M_\mathrm{sun})` in :math:`h^3\mathrm{Mpc}^{-3}` units
 
         """
 
-        m = m_h/self.h # mass in Msun units
-
-        logM = np.log10(m) # log10(M/Msun)
-        dlns_dlogM = self.cosmology.dlns_dlogM_int(logM)
+        logM_h = np.log10(m_h) # log10(M/h^{-1}Msun)
+        dlns_dlogM = self.cosmology.dlns_dlogM_int(logM_h)
 
         # Compute peak height
-        sigma = self.cosmology.sigma_logM_int(logM)
+        sigma = self.cosmology.sigma_logM_int(logM_h)
         nu = self.delta_c/sigma
 
         # Compute universal mass function f(nu)
@@ -103,7 +101,7 @@ class MassFunction:
             f = self.A0 * np.sqrt(2./np.pi)*np.exp(-self.a0*nu**2./2.)*(1.+(self.a0*nu**2.)**-self.p0)*np.power(self.a0*nu**2.,self.q0/2.)
 
         # Return mass function
-        mf = f * self.cosmology.rhoM * dlns_dlogM / m
+        mf = f * self.cosmology.rhoM * dlns_dlogM / m_h * self.h**2.
         return mf
 
     def linear_halo_bias(self,m_h):
@@ -119,10 +117,8 @@ class MassFunction:
             np.ndarray: Linear Eulerian halo bias (dimensionless)
         """
 
-        m = m_h/self.h
-
-        logM = np.log10(m)
-        sigma= self.cosmology.sigma_logM_int(logM);
+        logM_h = np.log10(m_h)
+        sigma= self.cosmology.sigma_logM_int(logM_h);
         nu = self.delta_c/sigma;
 
         if self.mass_function_name=='Sheth-Tormen':
@@ -142,28 +138,29 @@ class MassFunction:
 
         Associated bias functions are available for each mass function, and more can be user-defined. See the class description for details of the loaded parametrizations.
 
-        Parameters:
+        Args:
         - m_h: Mass in :math:`h^{-1}M_\mathrm{sun}` units.
+
+        Returns:
+            np.ndarray: Quadratic Eulerian halo bias (dimensionless)
         """
 
-        m = m_h/self.h
-
-        logM = np.log10(m)
-        sigma= self.cosmology.sigma_logM_int(logM);
+        logM_h = np.log10(m_h)
+        sigma= self.cosmology.sigma_logM_int(logM_h);
         nu = self.delta_c/sigma;
 
         if self.mass_function_name=='Crocce':
             b1L = -self.pa/(self.delta_c + self.pb*self.delta_c*(self.delta_c/nu)**self.pa) + (2.*self.pc*np.power(nu,2.))/np.power(self.delta_c,3.)
             b2L = (4.*self.pb*self.pc*self.delta_c**2.*(-2.*self.delta_c**2.+self.pc*nu**2.)+nu**self.pa*(self.pa**2.*self.delta_c**4.-4.*(1.+self.pa)*self.pc*self.delta_c**2.*nu**2.+4.*self.pc**2*nu**4.))/(self.delta_c**6.*(self.pb*self.delta_c**self.pa+nu**self.pa))
 
-            b2E = 4./21.*b1L + 1./2.*b2L
+            b2E = 8./21.*b1L + b2L
             return b2E
 
         elif self.mass_function_name=='Bhattacharya':
             b1L = (self.a0*nu**2.+2.*self.p0/(1.+np.power(self.a0*nu**2.,self.p0))-self.q0) / self.delta_c
             b2L = (-2*self.a0*nu**2. + self.a0**2.*nu**4. + (4.*self.p0*(self.a0*nu**2. + self.p0 - self.q0))/(1 + (self.a0*nu**2.)**self.p0) - 2.*self.a0*nu**2.*self.q0 + self.q0**2.)/self.delta_c**2.
 
-            b2E = 4./21.*b1L + 1./2.*b2L
+            b2E = 8./21.*b1L + b2L
             return b2E
 
         else:
@@ -243,21 +240,31 @@ class MassFunction:
         elif self.mass_function_name=='Bhattacharya':
             self.delta_c = 1.686 # critical density for collapse
 
+            def compute_A0(p0,q0):
+                inv_A0 = (2.**(0.5*(-1. - 2.*self.p0 + self.q0))*(gamma_fn(-self.p0 + self.q0/2.) + 2**self.p0*gamma_fn(self.q0/2.)))/np.sqrt(np.pi)
+                return  1./inv_A0
+
             if self.cosmology.name=='Quijote':
                 if self.verb: print('Using fitted parameters for the Bhattacharya mass function from Quijote simulations ')
                 # Optimal values for the Quijote simulations
                 self.a0 = 0.77403116
                 self.p0 = 0.63685683
                 self.q0 = 1.66263337
+                self.A0 = compute_A0(self.p0,self.q0)
+
+            elif self.cosmology.name=='Abacus':
+                if self.verb: print('Using fitted parameters for the Bhattacharya mass function from Abacus simulations ')
+                # Optimal values for the Quijote simulations
+                self.a0 = 0.86648878
+                self.p0 = 1.30206972
+                self.q0 = 1.97133804
+                self.A0 = 0.35087244
             else:
                 # Optimal values from original paper
                 self.a0 = 0.788
                 self.p0 = 0.807
                 self.q0 = 1.795
-
-            # Compute normalization factor
-            inv_A0 = (2.**(0.5*(-1. - 2.*self.p0 + self.q0))*(gamma_fn(-self.p0 + self.q0/2.) + 2**self.p0*gamma_fn(self.q0/2.)))/np.sqrt(np.pi)
-            self.A0 = 1./inv_A0
+                self.A0 = compute_A0(self.p0,self.q0)
 
         else:
             raise NameError('Mass function %s not currently implemented!'%self.mass_function_name)

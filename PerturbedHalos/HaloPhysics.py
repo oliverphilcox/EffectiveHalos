@@ -13,7 +13,7 @@ class HaloPhysics:
 
     Implemented Halo Profiles:
 
-    - **NFW**: Navarro, Frenk & White (1997) universal halo profile. We use the virial collapse overdensity from Bryan & Norman 1998 to construct this.
+    - **NFW**: Navarro, Frenk & White (1997) universal halo profile.
 
     Args:
         cosmology (Cosmology): Instance of the Cosmology class containing relevant cosmology and functions.
@@ -23,20 +23,18 @@ class HaloPhysics:
         hyperparams (kwargs): Any additional parameters to pass to the class (see below).
 
     Keyword Args:
-        logM_min (float): Minimum mass in :math:`\log_{10}(M/M_\mathrm{sun})`, default: 6
-        logM_max (float): Maximum mass in :math:`\log_{10}(M/M_\mathrm{sun})`, default: 17
-        npoints (int): Number of sampling points for :math:`\sigma(M)` interpolation, default: 1e5
-        tinker_overdensity (int): (Only for the Tinker mass function): spherical overdensity defining halos, default: 200
+        min_logM_h (float): Minimum halo mass in :math:`\log_{10}(M/h^{-1}M_\mathrm{sun})`, default: 6
+        max_logM_h (float): Maximum halo mass in :math:`\log_{10}(M/h^{-1}M_\mathrm{sun})`, default: 17
+        npoints (int): Number of sampling points in mass for :math:`\sigma(M)` interpolation and mass integrals, default: 1e5
+        halo_overdensity (float): Characteristic halo overdensity in units of background matter density. Can be a fixed value or 'virial', whereupon the virial collapse overdensity relation of Bryan & Norman 1998 to construct this. Default: 200.
         verb (bool): If true output useful messages througout run-time, default: False.
 
     """
 
-    def __init__(self,cosmology,mass_function,concentration_name='Duffy',profile_name='NFW',logM_min=6,logM_max=17,npoints=int(1e5),verb=False,tinker_overdensity=200):
+    def __init__(self,cosmology,mass_function,concentration_name='Duffy',profile_name='NFW',min_logM_h=6,max_logM_h=17,npoints=int(1e5),halo_overdensity=200,verb=False):
         """
         Initialize the class with relevant model hyperparameters.
         """
-        print('Should be more consistent with phys / h units')
-
         # Write attributes, if they're of the correct type
         if isinstance(cosmology, Cosmology):
             self.cosmology = cosmology
@@ -48,19 +46,25 @@ class HaloPhysics:
             raise TypeError('mass_function input must be an instance of the MassFunction class!')
         self.concentration_name = concentration_name
         self.profile_name = profile_name
-        self.logM_min = logM_min
-        self.logM_max = logM_max
+        self.min_logM_h = min_logM_h
+        self.max_logM_h = max_logM_h
         self.npoints = npoints
 
+        # Load halo overdensity
+        if halo_overdensity=='virial':
+            self.halo_overdensity = self._virial_overdensity()
+        else:
+            self.halo_overdensity = halo_overdensity
+
         # Create interpolators for sigma and d(ln(sigma))/dlog10(M):
-        cosmology._interpolate_sigma_and_deriv(self.logM_min,self.logM_max,self.npoints)
+        cosmology._interpolate_sigma_and_deriv(self.min_logM_h,self.max_logM_h,self.npoints)
 
         # Save reduced Hubble value for later use
         self.h = self.cosmology.cosmo.h()
         self.a = self.cosmology.a
         self.verb = verb
 
-    def halo_profile(self,m_h,k_phys,norm_only=False):
+    def halo_profile(self,m_h,kh,norm_only=False):
         """Compute the halo profile function in Fourier space; :math:`\\rho(k|m) = \\frac{m}{\\bar{\\rho}_M}u(k|m)`
         where :math:`\\bar{\\rho}_M`` is the background matter density and :math:`u(k|m)` is the halo profile.
 
@@ -70,28 +74,26 @@ class HaloPhysics:
 
         Args:
             m_h (np.ndarray): Mass in :math:`h^{-1}M_\mathrm{sun}` units.
-            k_phys (np.ndarray): Physical wavenumber in 1/Mpc units.
+            kh (np.ndarray): Wavenumber in h/Mpc units.
             norm_only (bool): Boolean, if set, just return the normalization factor :math:`m/\\bar{\\rho}_M`, default: False
 
         Returns:
             np.ndarray: Halo profile :math:`\\rho(k|m)` or :math:`m/\\bar{\\rho}_M`, if the norm_only parameter is set.
         """
-        m = m_h/self.h # in Msun units
-
         if norm_only:
             return m/self.cosmology.rhoM
 
         if self.profile_name=='NFW':
-            # Compute virial overdensity
-            odelta = self._virial_overdensity()
+            # Compute overdensity
+            odelta = self.halo_overdensity
 
-            # The halo virial radius in physical units
-            rv = np.power(m*3.0/(4.0*np.pi*self.cosmology.rhoM*odelta),1.0/3.0)
+            # The halo virial radius in Mpc/h units
+            rv = np.power(m_h/self.h*3.0/(4.0*np.pi*self.cosmology.rhoM*odelta),1.0/3.0)*self.h
 
             # Compute halo concentration
             c = self.halo_concentration(m_h);
-            # The function u is normalised to 1 for k<<1 so multiplying by M/rho turns units to a density
-            return self._normalized_halo_profile(k_phys,rv, c)*m/self.cosmology.rhoM;
+            # The function u is normalised to 1 for k<<1 so multiplying by M/rho turns units to a density in units normalized by h
+            return self._normalized_halo_profile(k_h,rv, c)*m_h/self.cosmology.rhoM*self.h**2;
 
         else:
             raise Exception("Halo profile '%s' not currently implemented!"%self.profile_name)
@@ -108,11 +110,9 @@ class HaloPhysics:
             np.ndarray: Array of concentration parameters.
         """
 
-        m = m_h/self.h
-
         if self.concentration_name=='Duffy':
-            m_pivot = 2e12/self.h;
-            return 7.85*np.power(m/m_pivot,-0.081)*pow(self.a,0.71);
+            m_h_pivot = 2e12;
+            return 7.85*np.power(m_h/m_h_pivot,-0.081)*pow(self.a,0.71);
         else:
             raise NameError('Concentration profile %s is not implemented yet'%(self.concentration_name))
 
@@ -129,7 +129,7 @@ class HaloPhysics:
 
         return Dv;
 
-    def _normalized_halo_profile(self,k_phys,r_virial,c):
+    def _normalized_halo_profile(self,k_h,r_virial,c):
         """Compute the normalized halo profile function in Fourier space; :math:`u(k|m)`
 
         For details of the available profile parametrizations, see the class description.
@@ -137,8 +137,8 @@ class HaloPhysics:
         Note that the function returns unity for :math:`k \\leq 0`.
 
         Args:
-            k_phys (np.ndarray): Wavenumber in 1/Mpc units.
-            r_virial (np.ndarray): Virial radius in Mpc units.
+            k_h (np.ndarray): Wavenumber in h/Mpc units.
+            r_virial (np.ndarray): Virial radius in Mpc/h units.
             c (np.ndarray): Halo concentration parameter; :math:`c = r_\mathrm{virial}/r_\mathrm{scale}`.
 
         Returns:
@@ -147,27 +147,29 @@ class HaloPhysics:
 
         if self.profile_name=='NFW':
 
-            r_scale = r_virial/c
+            r_scale = r_virial/c # in Mpc/h units
 
             # Check if we have an array or a float input and compute accordingly
-            if type(k_phys)==np.ndarray:
-                # filter out sections with k_phys<=0
-                filt = np.where(k_phys>0)
+            if type(k_h)==np.ndarray:
+                # filter out sections with k_h<=0
+                filt = np.where(k_h>0)
 
-                # compute the matrix of r_scale * k_phys
-                ks0 = np.matmul(k_phys.reshape(-1,1),r_scale.reshape(1,-1))
+                # compute the matrix of r_scale * k_h
+                ks0 = np.matmul(k_h.reshape(-1,1),r_scale.reshape(1,-1))
                 ks = ks0[filt,:]
             else:
-                if k_phys<=0.:
+                if k_h<=0.:
                     return 1.
-                ks = k_phys*r_scale
+                ks = k_h*r_scale
 
-            f1 = np.sin(ks)*(sici(ks*(1.+c))[0]-sici(ks)[0]);
-            f2 = np.cos(ks)*(sici(ks*(1.+c))[1]-sici(ks)[1]);
+            sici1 = sici(ks);
+            sici2 = sici(ks*(1.+c))
+            f1 = np.sin(ks)*(sici2[0]-sici1[0]);
+            f2 = np.cos(ks)*(sici2[1]-sici1[1]);
             f3 = np.sin(c*ks)/(ks*(1.+c));
             fc = np.log(1.+c)-c/(1.+c);
 
-            if type(k_phys)==np.ndarray:
+            if type(k_h)==np.ndarray:
                 output = np.ones_like(ks0)
                 output[filt,:]=((f1+f2-f3)/fc)
                 return output
