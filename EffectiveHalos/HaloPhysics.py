@@ -60,7 +60,6 @@ class HaloPhysics:
         cosmology._interpolate_sigma_and_deriv(self.min_logM_h,self.max_logM_h,self.npoints)
 
         # Save reduced Hubble value for later use
-        self.h = self.cosmology.cosmo.h()
         self.a = self.cosmology.a
         self.verb = verb
 
@@ -81,19 +80,19 @@ class HaloPhysics:
             np.ndarray: Halo profile :math:`\\rho(k|m)` or :math:`m/\\bar{\\rho}_M`, if the norm_only parameter is set.
         """
         if norm_only:
-            return m/self.cosmology.rhoM
+            return m_h/self.cosmology.rhoM
 
         if self.profile_name=='NFW':
             # Compute overdensity
             odelta = self.halo_overdensity
 
             # The halo virial radius in Mpc/h units
-            rv = np.power(m_h/self.h*3.0/(4.0*np.pi*self.cosmology.rhoM*odelta),1.0/3.0)*self.h
+            rv = np.power(m_h*3.0/(4.0*np.pi*self.cosmology.rhoM*odelta),1.0/3.0)
 
             # Compute halo concentration
             c = self.halo_concentration(m_h);
             # The function u is normalised to 1 for k<<1 so multiplying by M/rho turns units to a density in units normalized by h
-            return self._normalized_halo_profile(k_h,rv, c)*m_h/self.cosmology.rhoM*self.h**2;
+            return self._normalized_halo_profile(kh,rv, c)*m_h/self.cosmology.rhoM;
 
         else:
             raise Exception("Halo profile '%s' not currently implemented!"%self.profile_name)

@@ -4,37 +4,37 @@ Python API
 Cosmology Module
 ----------------
 
-.. automodule:: PerturbedHalos.Cosmology
+.. automodule:: EffectiveHalos.Cosmology
   :members:
 
 
 Mass Function Module
 ---------------------
 
-.. automodule:: PerturbedHalos.MassFunction
+.. automodule:: EffectiveHalos.MassFunction
   :members:
 
 Halo Physics Module
 --------------------
 
-.. automodule:: PerturbedHalos.HaloPhysics
+.. automodule:: EffectiveHalos.HaloPhysics
   :members:
 
 
 Mass Integrals Module
 ----------------------
 
-.. automodule:: PerturbedHalos.MassIntegrals
+.. automodule:: EffectiveHalos.MassIntegrals
   :members:
 
-Halo Power Module
+Halo Model Module
 ------------------
 
-.. automodule:: PerturbedHalos.HaloPower
+.. automodule:: EffectiveHalos.HaloPower
   :members:
 
 Counts Covariance Module
 -------------------------
 
-.. automodule:: PerturbedHalos.CountsCovariance
+.. automodule:: EffectiveHalos.CountsCovariance
   :members:

@@ -46,9 +46,6 @@ class MassFunction:
         # Expansion parameter
         self.a = 1./(1.+self.cosmology.z)
 
-        # reduced H0
-        self.h = self.cosmology.cosmo.h()
-
         self.verb = verb
 
         # Set hyperparameters to default if not specified
@@ -101,7 +98,7 @@ class MassFunction:
             f = self.A0 * np.sqrt(2./np.pi)*np.exp(-self.a0*nu**2./2.)*(1.+(self.a0*nu**2.)**-self.p0)*np.power(self.a0*nu**2.,self.q0/2.)
 
         # Return mass function
-        mf = f * self.cosmology.rhoM * dlns_dlogM / m_h * self.h**2.
+        mf = f * self.cosmology.rhoM * dlns_dlogM / m_h
         return mf
 
     def linear_halo_bias(self,m_h):

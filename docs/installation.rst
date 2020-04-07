@@ -1,10 +1,31 @@
 Installation
 ============
 
-.. todo::
+EffectiveHalos can be installed either from pip or by cloning the GitHub repository. Make sure to install the :ref:`dependencies` first!
 
-  finish this
 
+Pip installation
+-------------------
+
+We recommend that EffectiveHalos is installed via pip::
+
+  pip install EffectiveHalos (--user)
+
+This installs the latest release of the code.
+
+
+Installation from source
+-------------------------
+
+EffectiveHalos can also be installed directly from the git repository::
+
+  git clone https://github.com/EffectiveHalos.git
+  cd EffectiveHalos
+  python -m pip install . (--user)
+
+This will install the current master branch of the git repository.
+
+.. _dependencies:
 
 Dependencies
 --------------
@@ -17,7 +38,7 @@ Dependencies
 
 **CLASS**
 
-To run PerturbedHalos, we require the Boltzmann code CLASS along with its Python wrapper classy. This can be installed from the CLASS `Github <https://github.com/lesgourg/class_public>`_ and is used to compute the linear power spectrum for a specified cosmology.
+To run EffectiveHalos, we require the Boltzmann code CLASS along with its Python wrapper classy. This can be installed from the CLASS `Github <https://github.com/lesgourg/class_public>`_ and is used to compute the linear power spectrum for a specified cosmology.
 
 The basic installation follows::
 
@@ -29,29 +50,14 @@ The basic installation follows::
   make clean
   make
 
-For further details, including the modifications required for Mac compilation, see the CLASS `wiki <https://github.com/lesgourg/class_public/wiki/Installation>`_.
+For further details, including the modifications required for Mac compilation, see the CLASS `wiki <https://github.com/lesgourg/class_public/wiki/Installation>`_. Note that, if a modified version of CLASS is installed (e.g. CLASS-PT) which modifies the classy wrapper, EffectiveHalos will use this instead.
 
 **FAST-PT**
 
-PerturbedHalos uses Joe McEwen's `FAST-PT <https://github.com/JoeMcEwen/FAST-PT>`_ package to compute one-loop power spectra from the CLASS linear power spectrum. It is easiest to install this from pip::
+EffectiveHalos uses Joe McEwen's `FAST-PT <https://github.com/JoeMcEwen/FAST-PT>`_ package to compute one-loop power spectra from the CLASS linear power spectrum. It is easiest to install this from pip::
 
   pip install fast-pt --user
-
-These are likely already installed, else they can be installed from pip.
 
 .. todo::
 
   can we get this autoinstalled?
-
-Installing PerturbedHalos
---------------------------
-
-Once the above packages are installed, PerturbedHalos can be simply installed via pip::
-
-  pip install PerturbedHalos --user
-
-To check this is installed run::
-
-.. todo::
-
-  write a test script

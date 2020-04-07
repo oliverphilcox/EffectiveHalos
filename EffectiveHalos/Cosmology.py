@@ -87,7 +87,7 @@ class Cosmology(object):
         # rho_critical is in Msun/h / (Mpc/h)^3 units
         # rhoM is in **physical** units of Msun/Mpc^3
         self.rho_critical = ((3.*100.*100.)/(8.*np.pi*6.67408e-11)) * (1000.*1000.*3.085677581491367399198952281E+22/1.9884754153381438E+30)
-        self.rhoM = self.rho_critical*self.cosmo.Omega0_m()*self.cosmo.h()**2.
+        self.rhoM = self.rho_critical*self.cosmo.Omega0_m()
 
     def compute_linear_power(self,kh,kh_min=0.):
         """Compute the linear power spectrum from CLASS for a vector of input k.
@@ -111,17 +111,17 @@ class Cosmology(object):
 
             # Compute Pk using CLASS (vectorized)
             if not hasattr(self,'vector_linear_power'):
-                ## NB: This works in physical 1/Mpc units 
-                self.vector_linear_power = np.vectorize(lambda k: self.cosmo.pk_lin(k,self.z))
+                ## NB: This works in physical 1/Mpc units
+                self.vector_linear_power = np.vectorize(lambda k: self.cosmo.pk_lin(k*self.h,self.z)*self.h**3.)
 
-            output[filt] = self.vector_linear_power(kh[filt]*self.h)*self.h**3.
+            output[filt] = self.vector_linear_power(kh[filt])
             return output
 
         else:
             if kh<kh_min:
                 return 0.
             else:
-                return self.vector_linear_power(kh*self.h)*self.h**3.
+                return self.vector_linear_power(kh)
 
     def sigma_logM_int(self,logM_h):
         """Return the value of :math:`\sigma(M,z)` using the prebuilt interpolators, which are constructed if not present.
@@ -160,7 +160,7 @@ class Cosmology(object):
             np.ndarray: :math:`\sigma(M,z)`
         """
         # convert to Lagrangian radius
-        r_h = np.power((3.*M_h/self.h)/(4.*np.pi*self.rhoM),1./3.)*self.h
+        r_h = np.power((3.*M_h)/(4.*np.pi*self.rhoM),1./3.)
         sigma_func = self.vector_sigma_R(r_h)
         return sigma_func
 

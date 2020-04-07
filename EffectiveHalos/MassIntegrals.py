@@ -63,9 +63,6 @@ class MassIntegrals:
         assert min_logM_h >= interp_min, 'Minimum mass must be greater than the interpolation limit (10^%.2f)'%interp_min
         assert max_logM_h <= interp_max, 'Minimum mass must be less than the interpolation limit (10^%.2f)'%interp_max
 
-        # Load reduced H0 for clarity
-        self.h = self.cosmology.cosmo.h()
-
         # Save other attributes
         self.min_logM_h = min_logM_h
         self.max_logM_h = max_logM_h
@@ -140,7 +137,7 @@ class MassIntegrals:
             if apply_correction:
                 A = 1. - simps(self._I_p_q1q2_integrand(1,1,0,zero_k=True),self.logM_h_grid)
                 # compute window functions
-                min_m_h = np.power(10.,self.min_logM_h)*self.h
+                min_m_h = np.power(10.,self.min_logM_h)
                 min_window = self.halo_physics.halo_profile(min_m_h,self.kh_vectors).ravel()
                 zero_window = self.halo_physics.halo_profile(min_m_h,0.).ravel()
                 self.I_11 += A*min_window/zero_window
@@ -173,7 +170,7 @@ class MassIntegrals:
             if apply_correction:
                 A = - simps(self._I_p_q1q2_integrand(1,2,0,zero_k=True),self.logM_h_grid)
                 # compute window functions
-                min_m_h = np.power(10.,self.min_logM_h)*self.h
+                min_m_h = np.power(10.,self.min_logM_h)
                 min_window = self.halo_physics.halo_profile(min_m_h,self.kh_vectors).ravel()
                 zero_window = self.halo_physics.halo_profile(min_m_h,0.).ravel()
                 self.I_12 += A*min_window/zero_window
@@ -241,7 +238,7 @@ class MassIntegrals:
             np.ndarray: array of :math:`m / \rho u(k|m)` values.
         """
         if not hasattr(self,'fourier_profile'):
-            self.fourier_profile = self.halo_physics.halo_profile(self.m_h_grid,self.k_vectors)
+            self.fourier_profile = self.halo_physics.halo_profile(self.m_h_grid,self.kh_vectors)
         return self.fourier_profile.copy()
 
     def _compute_mass_function(self):

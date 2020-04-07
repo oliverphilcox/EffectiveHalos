@@ -66,7 +66,7 @@ class HaloModel:
         self.IR_kh_max = 1.
         self.OneLoop_N_interpolate = 50
         self.OneLoop_k_cut = 3
-        self.OneLoop_N_k = 100
+        self.OneLoop_N_k = 1000
 
     def non_linear_power(self,cs2,R,pt_type = 'EFT',pade_resum = True, smooth_density = True, IR_resum = True):
         """
@@ -159,8 +159,6 @@ class HaloModel:
             np.ndarray: One-halo power spectrum term (if return_terms is true)
             np.ndarray: Two-halo power spectrum term (if return_terms is true)
         """
-
-        print("Use one def of M and k units everywhere")
 
         # Compute the non-linear power spectrum
         p_non_linear = self.non_linear_power(cs2, R, pt_type, pade_resum, smooth_density, IR_resum)
