@@ -64,7 +64,7 @@ class HaloModel:
         # Set other hyperparameters consistently. (These are non-critical but control minutae of IR resummation and interpolation precision)
         self.IR_N_k = 5000
         self.IR_kh_max = 1.
-        self.OneLoop_N_interpolate = 50
+        self.OneLoop_N_interpolate = 20
         self.OneLoop_k_cut = 3
         self.OneLoop_N_k = 1000
 
@@ -115,7 +115,7 @@ class HaloModel:
             else:
                 raise NameError("pt_type must be 'Linear', 'SPT' or 'EFT'!")
         else:
-            self._prepare_IR_resummation(N_k=self.IR_N_k,kh_max=self.IR_kh_max)
+            self._prepare_IR_resummation()
             if pt_type=='Linear':
                 output = self.compute_resummed_linear_power()
             elif pt_type=='SPT':
@@ -184,7 +184,7 @@ class HaloModel:
         """
 
         if not hasattr(self,'one_loop_only_power'):
-            self.one_loop_only_power = self._one_loop_only_power_interpolater(self.cosmology.compute_linear_power, self.OneLoop_N_interpolate, self.OneLoop_k_cut, self.OneLoop_N_k)(self.kh_vector)
+            self.one_loop_only_power = self._one_loop_only_power_interpolater(self.cosmology.compute_linear_power)(self.kh_vector)
 
         return self.one_loop_only_power.copy()
 
@@ -209,7 +209,7 @@ class HaloModel:
         if not hasattr(self,'resummed_linear_power'):
 
             # First create IR interpolaters if not present
-            self._prepare_IR_resummation(N_k=self.IR_N_k,kh_max=self.IR_kh_max)
+            self._prepare_IR_resummation()
 
             # Load no-wiggle and wiggly parts
             no_wiggle = self.linear_no_wiggle_power
@@ -239,7 +239,7 @@ class HaloModel:
         if not hasattr(self,'resummed_one_loop_power'):
 
             # First create IR interpolators if not present
-            self._prepare_IR_resummation(N_k=self.IR_N_k,kh_max=self.IR_kh_max)
+            self._prepare_IR_resummation()
 
             # Compute 1-loop only power spectrum
             one_loop_all = self.compute_one_loop_only_power()
@@ -268,7 +268,7 @@ class HaloModel:
             kR = self.kh_vector*R
             return  3.*(np.sin(kR)-kR*np.cos(kR))/kR**3.
 
-    def _one_loop_only_power_interpolater(self,linear_spectrum, N_interpolate=50, k_cut=3, N_k = 1000):
+    def _one_loop_only_power_interpolater(self,linear_spectrum):
         """
         Compute the one-loop SPT power interpolator, using the FAST-PT module. This is computed from an input linear power spectrum.
 
@@ -277,20 +277,15 @@ class HaloModel:
         Args:
             linear_spectrum (function): Function taking input wavenumber in h/Mpc units and returning a linear power spectrum.
 
-        Keyword Args:
-            N_interpolate (int): Width of smoothing kernel to apply, default: 50.
-            k_cut (float): Minimum k (in :math:`h/\mathrm{Mpc}` units) from which to apply smoothing interpolation, default: 3.
-            N_k (int): Number of k values used for interpolation, default: 1000.
-
         Returns:
             scipy.interp1d: An interpolator for the SPT power given an input k (in :math:`h/\mathrm{Mpc}` units).
 
         """
-
+        if self.verb: print("Computing one-loop power spectrum")
         # Define some k grid for interpolation (with edges well separated from k limits)
         min_k = np.max([np.min(self.kh_vector),1e-4]) # setting minimum to avoid zero errors
         max_k = np.max(self.kh_vector)
-        kh_interp = np.logspace(np.log10(min_k)-0.5,np.log10(max_k)+0.5,N_k)
+        kh_interp = np.logspace(np.log10(min_k)-0.5,np.log10(max_k)+0.5,self.OneLoop_N_k)
 
         # Compute the one-loop spectrum using FAST-PT
         fastpt = FASTPT.FASTPT(kh_interp,to_do=['one_loop_dd'],n_pad=len(kh_interp)*3,
@@ -298,17 +293,17 @@ class HaloModel:
         initial_power=fastpt.one_loop_dd(linear_spectrum(kh_interp).copy(),C_window=0.65,P_window=[0.25,0.25])[0]
 
          # Now convolve k if necessary
-        filt = kh_interp>k_cut
+        filt = kh_interp>self.OneLoop_k_cut
         if np.sum(filt)==0:
             combined_power = initial_power
             combined_k = kh_interp
         else:
-            convolved_k = np.convolve(kh_interp[filt],np.ones(N_interpolate,)/N_interpolate,mode='valid')
-            convolved_power = np.convolve(initial_power[filt],np.ones(N_interpolate,)/N_interpolate,mode='valid')
+            convolved_k = np.convolve(kh_interp[filt],np.ones(self.OneLoop_N_interpolate,)/self.OneLoop_N_interpolate,mode='valid')
+            convolved_power = np.convolve(initial_power[filt],np.ones(self.OneLoop_N_interpolate,)/self.OneLoop_N_interpolate,mode='valid')
 
             # Concatenate to get an output
-            combined_power = np.concatenate([initial_power[~filt],convolved_power])
-            combined_k = np.concatenate([kh_interp[~filt],convolved_k])
+            combined_power = np.concatenate([initial_power[kh_interp<min(convolved_k)],convolved_power])
+            combined_k = np.concatenate([kh_interp[kh_interp<min(convolved_k)],convolved_k])
 
         # Zero any power values with kh < kh_min
         combined_power[combined_k<self.kh_min] = 0.
@@ -316,7 +311,7 @@ class HaloModel:
         # Create and return an interpolator
         return interp1d(combined_k,combined_power)
 
-    def _prepare_IR_resummation(self,N_k=5000,kh_max=1.):
+    def _prepare_IR_resummation(self):
         """
         Compute relevant quantities to allow IR resummation of the non-linear power spectrum to be performed. This computes the no-wiggle power spectrum, from the 4th order polynomial scheme of Hamann et al. 2010.
 
@@ -330,9 +325,6 @@ class HaloModel:
 
         This function is empty if spectra and :math:`Sigma^2` have already been computed.
 
-        Keyword Args:
-            N_k (int): Number of points over which to compute no-wiggle power spectrum, default: 5000
-            kh_max (float): Maximum k (in :math:`h/\mathrm{Mpc}` units) to which to apply the no-wiggle decomposition, default: 1. Beyond k_max, we assume wiggles are negligible, so :math:`P_\mathrm{no-wiggle} = P_\mathrm{full}`]
         """
 
         if not hasattr(self,'linear_no_wiggle_power') and not hasattr(self,'one_loop_only_no_wiggle_power') and not hasattr(self,'BAO_damping'):
@@ -340,17 +332,17 @@ class HaloModel:
             # First define a k-grid in h/Mpc units
             min_k = np.max([np.min(self.kh_vector),1e-4]) # setting minimum to avoid zero errors
             max_k = np.max(self.kh_vector)
-            kh_interp = np.logspace(np.log10(min_k)-0.5,np.log10(max_k)+0.5,N_k)
+            kh_interp = np.logspace(np.log10(min_k)-0.5,np.log10(max_k)+0.5,self.IR_N_k)
 
             # Define turning point of power spectrum (we compute no-wiggle spectrum beyond this point)
             linear_power_interp = self.cosmology.compute_linear_power(kh_interp,kh_min=self.kh_min)
             max_pos = np.where(linear_power_interp==max(linear_power_interp))
             kh_turn = kh_interp[max_pos]
             Pk_turn = linear_power_interp[max_pos]
-            Pk_max = self.cosmology.compute_linear_power(np.atleast_1d(kh_max),kh_min=self.kh_min)
+            Pk_max = self.cosmology.compute_linear_power(np.atleast_1d(self.IR_kh_max),kh_min=self.kh_min)
 
             # Define k in required range
-            ffilt = np.where(np.logical_and(kh_interp>kh_turn,kh_interp<kh_max))
+            ffilt = np.where(np.logical_and(kh_interp>kh_turn,kh_interp<self.IR_kh_max))
             kh_filt = kh_interp[ffilt]
 
             # Compute ln(P(k)) in region
@@ -363,8 +355,8 @@ class HaloModel:
                 a2,a3,a4=coeff
                 poly24 = lambda lk: a2*lk**2.+a3*lk**3.+a4*lk**4.
                 f1 = logP1 - poly24(np.log(kh_turn))
-                f2 = logP2 - poly24(np.log(kh_max))
-                a1 = (f1-f2)/(np.log(kh_turn)-np.log(kh_max))
+                f2 = logP2 - poly24(np.log(self.IR_kh_max))
+                a1 = (f1-f2)/(np.log(kh_turn)-np.log(self.IR_kh_max))
                 a0 = f1 - a1*np.log(kh_turn)
                 return a0+a1*np.log(k)+poly24(np.log(k))
 
@@ -383,7 +375,7 @@ class HaloModel:
 
             # Compute one-loop interpolator for no-wiggle power
             # This is just the one-loop operator acting on the no-wiggle power spectrum
-            self.one_loop_only_no_wiggle_power = self._one_loop_only_power_interpolater(linear_no_wiggle_interp,self.OneLoop_N_interpolate, self.OneLoop_k_cut, self.OneLoop_N_k)(self.kh_vector)
+            self.one_loop_only_no_wiggle_power = self._one_loop_only_power_interpolater(linear_no_wiggle_interp)(self.kh_vector)
 
             # Compute the BAO smoothing scale Sigma^2
             def _BAO_integrand(q):

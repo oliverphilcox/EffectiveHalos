@@ -30,7 +30,7 @@ Mass Integrals Module
 Halo Model Module
 ------------------
 
-.. automodule:: EffectiveHalos.HaloPower
+.. automodule:: EffectiveHalos.HaloModel
   :members:
 
 Counts Covariance Module

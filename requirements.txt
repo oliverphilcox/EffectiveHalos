@@ -2,3 +2,4 @@ numpy
 scipy
 classy
 FASTPT
+mcfit

@@ -1,5 +1,6 @@
 from . import Cosmology, MassFunction, HaloPhysics
 import numpy as np
+from scipy.special import spherical_jn
 from scipy.integrate import simps
 
 class MassIntegrals:
@@ -8,7 +9,7 @@ class MassIntegrals:
 
     .. math::
 
-        I_p^{q1,q2}(k_1,...k_p) = \\int n(m)b^{(q1)}(m)b^{(q2)}\\frac{m^p}{\\rho_M^p}u(k_1|m)..u(k_p|m)dm
+        I_p^{q_1,q_2}(k_1,...k_p) = \\int n(m)b^{(q_1)}(m)b^{(q_2)}\\frac{m^p}{\\rho_M^p}u(k_1|m)..u(k_p|m)dm
 
     which are needed to compute the power spectrum model. Here :math:`b^{(q)}` is the q-th order bias (with :math:`b^{0}=1`),
     :math:`u(k|m)` is the normalized halo profile and :math:`n(m)` is the mass function.
@@ -25,6 +26,8 @@ class MassIntegrals:
 
     for normalized halo profile :math:`u(k|m)`.
 
+    Note that this can also be used to compute :math:`{}_iJ_p^{q_1,q_2}` and :math:`{}_iK_p^{q_1,q_2}[f]` type integrals required for the exclusion counts covariance.
+
     Args:
         cosmology (Cosmology): Instance of the Cosmology class containing relevant cosmology and functions.
         mass_function (MassFunction): Instance of the MassFunction class, containing the mass function and bias.
@@ -36,9 +39,8 @@ class MassIntegrals:
         max_logM_h (float): Maximum mass in :math:`\log_{10}(M/h^{-1}M_\mathrm{sun})` units, default: 16.999.
         npoints (int): Number of logarithmically spaced mass grid points, default: 10000.
         verb (bool): If true output useful messages througout run-time, default: False.
-
     """
-    def __init__(self,cosmology,mass_function,halo_physics,kh_vector,min_logM_h=6.001, max_logM_h=16.999, npoints=int(1e4),verb=False):
+    def __init__(self,cosmology,mass_function,halo_physics,kh_vector,min_logM_h=6.001, max_logM_h=16.999, npoints=int(1e4),verb=False,m_low=-1):
         """
         Initialize the class with relevant model hyperparameters.
         """
@@ -108,14 +110,27 @@ class MassIntegrals:
             self.I_02 = simps(self._I_p_q1q2_integrand(0,2,0),self.logM_h_grid)
         return self.I_02.copy()
 
-    def compute_I_10(self):
-        """Compute the I_1^0 integral, if not already computed.
+    def compute_I_10(self, apply_correction = False):
+        """Compute the I_1^0 integral, if not already computed. Also apply the correction noted in the class header if required.
+
+        When computing :math:`{}_i J_1^1` type integrals (over a finite mass bin), the correction should *not* be applied.
+
+        Keyword Args:
+            apply_correction (bool): Whether to apply the correction in the class header to ensure the bias consistency relation is upheld.
 
         Returns:
             float: Array of :math:`I_1^0` values for each k.
         """
         if not hasattr(self,'I_10'):
             self.I_10 = simps(self._I_p_q1q2_integrand(1,0,0),self.logM_h_grid)
+
+            if apply_correction:
+                A = 1. - simps(self._I_p_q1q2_integrand(1,0,0,zero_k=True),self.logM_h_grid)
+                # compute window functions
+                min_m_h = np.power(10.,self.min_logM_h)
+                min_window = self.halo_physics.halo_profile(min_m_h,self.kh_vectors).ravel()
+                zero_window = self.halo_physics.halo_profile(min_m_h,0.).ravel()
+                self.I_10 += A*min_window/zero_window
         return self.I_10.copy()
 
     def compute_I_11(self,apply_correction = True):
@@ -209,11 +224,10 @@ class MassIntegrals:
             p (int): Number of halo profiles to include.
             q1 (int): Order of the first bias term.
             q2 (int): Order of the second bias term.
-        -
+
         Keyword Args:
-            zero_k (bool): If True, return the integral ewvaluated at k = 0. Default: False.
+            zero_k (bool): If True, return the integral evaluated at k = 0. Default: False.
         """
-        print('be consistent with argument inputs and h factors.')
 
         assert type(p)==type(q1)==type(q2)==int
 
@@ -288,3 +302,146 @@ class MassIntegrals:
             return self._compute_second_order_bias()
         else:
             raise Exception('%-th order bias not yet implemented!'%q)
+
+    def _K_p_q1q2_f_integrand(self,p,q1,q2,f_exclusion,alpha):
+        """Compute the integrand of the :math:`{}_iK_p^{q1,q2}[f]` functions defined in Philcox et al. (2020).
+        This is done over the :math:`\log_{10}(M/h^{-1}M_\mathrm{sun}) grid defined in the __init__ function.
+
+        Note that the upper mass limit should be infinity (or some large value) for these types of integrals.
+
+        It also assumes an integration variable :math:`\log_{10}(M/h^{-1}M_\mathrm{sun}) and integrates for each k in the k-vector specified in the class definition.
+        If zero_k is set, it returns the value of the integrand at :math:`k = 0` instead.
+
+        Args:
+            p (int): Number of halo profiles to include.
+            q1 (int): Order of the first bias term.
+            q2 (int): Order of the second bias term.
+            f_exclusion (function): Arbitrary function of the exclusion radius :math:`R_\mathrm{ex}` to be included in the integrand.
+            alpha (float): Dimensionless ratio of exclusion to Lagrangian halo radius.
+        """
+
+        assert type(p)==type(q1)==type(q2)==int
+
+        if p==0:
+            fourier_profiles = 1.
+        else:
+            fourier_profiles = np.power(self._compute_fourier_profile(),p)
+
+        # Compute exclusion radius
+        if not hasattr(self,'R_ex'):
+            R_ex = np.power(3.*self.m_h_grid/(4.*np.pi*self.cosmology.rhoM),1./3.)
+            R_ex += np.power(3.*min(self.m_h_grid)/(4.*np.pi*self.cosmology.rhoM),1./3.)
+            self.R_ex = R_ex.reshape(1,-1) * alpha
+
+        # Compute d(n(M))/d(log10(M/h^{-1}Msun))
+        dn_dlogm = self._compute_mass_function()
+
+        return dn_dlogm * fourier_profiles * self._return_bias(q1) * self._return_bias(q2) * f_exclusion(self.R_ex)
+
+    def compute_K_Theta_01(self,alpha):
+        """Compute the :math:`K_0^1[\Theta](k)` integral, if not already computed. :math:`Theta` is the Fourier transform of the exclusion window function.
+
+        Arguments:
+            alpha (float): Dimensionless ratio of exclusion to Lagrangian halo radius
+
+        Returns:
+            np.ndarray: Array of :math:`K_0^1[\Theta](k)` values for each k.
+        """
+        # Define function
+        Theta = lambda R: 4.*np.pi*R**2./self.kh_vectors.reshape(-1,1)*spherical_jn(1,self.kh_vectors.reshape(-1,1)*R)
+
+        if not hasattr(self,'K_Theta_01'):
+            self.K_Theta_01 = simps(self._K_p_q1q2_f_integrand(0,1,0,Theta,alpha),self.logM_h_grid,axis=1)
+        return self.K_Theta_01.copy()
+
+    def compute_K_Theta_10(self,alpha):
+        """Compute the :math:`K_1^0[\Theta](k)` integral, if not already computed. :math:`Theta` is the Fourier transform of the exclusion window function.
+
+        Arguments:
+            alpha (float): Dimensionless ratio of exclusion to Lagrangian halo radius
+
+        Returns:
+            np.ndarray: Array of :math:`K_1^0[\Theta](k)` values for each k.
+        """
+        # Define function
+        Theta = lambda R: 4.*np.pi*R**2./self.kh_vectors.reshape(-1,1)*spherical_jn(1,self.kh_vectors.reshape(-1,1)*R)
+
+        if not hasattr(self,'K_Theta_10'):
+            self.K_Theta_10 = simps(self._K_p_q1q2_f_integrand(1,0,0,Theta,alpha),self.logM_h_grid,axis=1)
+        return self.K_Theta_10.copy()
+
+    def compute_K_S_01(self,alpha, S_L_interpolator):
+        """Compute the :math:`K_0^1[S](k)` integral, if not already computed. :math:`S` is the integral of the 2PCF windowed by the halo exclusion function of radius :math:`R_\mathrm{ex}``.
+
+        Arguments:
+            alpha (float): Dimensionless ratio of exclusion to Lagrangian halo radius
+            S_L_interpolator (interp1d): Interpolator for the linear :math:`S(R_\mathrm{ex})` function
+
+        Returns:
+            np.ndarray: Array of :math:`K_0^1[S](k)` values for each k.
+        """
+
+        if not hasattr(self,'K_S_01'):
+            self.K_S_01 = simps(self._K_p_q1q2_f_integrand(0,1,0,S_L_interpolator,alpha),self.logM_h_grid,axis=1)
+        return self.K_S_01.copy()
+
+    def compute_K_S_21(self,alpha, S_NL_interpolator):
+        """Compute the :math:`K_2^1[S](k)` integral, if not already computed. :math:`S` is the integral of the 2PCF windowed by the halo exclusion function of radius :math:`R_\mathrm{ex}``. Note this function uses the non-linear form.
+
+        Arguments:
+            alpha (float): Dimensionless ratio of exclusion to Lagrangian halo radius
+            S_NL_interpolator (interp1d): Interpolator for the non-linear :math:`S(R_\mathrm{ex})` function
+
+        Returns:
+            np.ndarray: Array of :math:`K_2^1[S](k)` values for each k.
+        """
+
+        if not hasattr(self,'K_S_21'):
+            self.K_S_21 = simps(self._K_p_q1q2_f_integrand(2,1,0,S_NL_interpolator,alpha),self.logM_h_grid,axis=1)
+        return self.K_S_21.copy()
+
+    def compute_K_V_11(self,alpha):
+        """Compute the :math:`K_1^1[V](k)` integral, if not already computed. :mathrm:`V` is the volume of the exclusion window function.
+
+        Arguments:
+            alpha (float): Dimensionless ratio of exclusion to Lagrangian halo radius
+
+        Returns:
+            np.ndarray: Array of :math:`K_1^1[V](k)` values for each k.
+        """
+        # Define function
+        V = lambda R: 4.*np.pi*R**3./3.
+
+        if not hasattr(self,'K_V_11'):
+            self.K_V_11 = simps(self._K_p_q1q2_f_integrand(1,1,0,V,alpha),self.logM_h_grid,axis=1)
+        return self.K_V_11.copy()
+
+    def compute_K_V_20(self,alpha):
+        """Compute the :math:`K_2^0[V](k)` integral, if not already computed. :mathrm:`V` is the volume of the exclusion window function.
+
+        Arguments:
+            alpha (float): Dimensionless ratio of exclusion to Lagrangian halo radius
+
+        Returns:
+            np.ndarray: Array of :math:`K_2^0[V](k)` values for each k.
+        """
+        # Define function
+        V = lambda R: 4.*np.pi*R**3./3.
+
+        if not hasattr(self,'K_V_20'):
+            self.K_V_20 = simps(self._K_p_q1q2_f_integrand(2,0,0,V,alpha),self.logM_h_grid,axis=1)
+        return self.K_V_20.copy()
+
+    def compute_K_PTheta_11(self,alpha, PTheta_interpolator):
+        """Compute the :math:`K_2^1[P \ast \Theta](k)` integral, if not already computed. :math:`\Theta` is the Fourier transform of the exclusion window function which is convolved with the power spectrum.
+
+        Arguments:
+            alpha (float): Dimensionless ratio of exclusion to Lagrangian halo radius
+            PTheta_interpolator (interp1d): Interpolator for the non-linear :math:`S(R_\mathrm{ex})` function
+
+        Returns:
+            np.ndarray: Array of :math:`K_1^1[P\ast \Theta](k)` values for each k.
+        """
+        if not hasattr(self,'K_PTheta_11'):
+            self.K_PTheta_11 = simps(self._K_p_q1q2_f_integrand(1,1,0,PTheta_interpolator,alpha),self.logM_h_grid,axis=1)
+        return self.K_PTheta_11.copy()

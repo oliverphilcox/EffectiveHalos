@@ -8,4 +8,5 @@ from .CountsCovariance import CountsCovariance
 
 print("TO DO")
 print("Add covariance computations and check always 1/h units there")
+print("Add Nm covariancds")
 print("add tutorial")
