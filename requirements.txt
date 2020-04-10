@@ -1,3 +1,5 @@
+nbsphinx
+ipykernel
 numpy
 scipy
 classy
