@@ -40,6 +40,6 @@ power_spectrum_SHM = halo_model.halo_model(cs2, R, 'Linear', 0, 0, 0)
 
 This generates an estimate for the matter power spectrum in a few seconds. Let's plot this:
 
-![alt text](https://github.com/oliverphilcox/EffectiveHalos/docs/ehm_tutorial_spec.png "Effective Halo Model Power Spectrum")
+![alt text](https://github.com/oliverphilcox/EffectiveHalos/blob/master/docs/ehm_tutorial_spec.png "Effective Halo Model Power Spectrum")
 
 A full tutorial can be found [here](https://effectivehalos.readthedocs.io/en/latest/Tutorial.html).

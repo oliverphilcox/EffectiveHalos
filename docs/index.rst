@@ -43,7 +43,7 @@ To compute a matter power spectrum in EffectiveHalos, simply run the following:
 This generates an estimate for the matter power spectrum in a few seconds. Let's plot this:
 
 .. image:: ehm_tutorial_spec.png
-  :width: 600
+  :width: 300
 
 A full tutorial is given in :doc:`Tutorial.ipynb`.
 
