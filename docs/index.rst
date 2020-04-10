@@ -15,7 +15,7 @@ Authors:
 Usage
 =======
 
-To compute a matter power spectrum in EffectiveHalos, simply run the following::
+To compute a matter power spectrum in EffectiveHalos, simply run the following:
 
 .. code-block:: python
 
@@ -26,9 +26,9 @@ To compute a matter power spectrum in EffectiveHalos, simply run the following::
     z = 0. # redshift
     cs2 = 8. # effective speed of sound (should be calibrated from simulations)
     R = 1. # smoothing scale (should be calibrated from simulations)
-    k = np.arange(0.01, 1., 0.005) # wavenumbers
+    k = np.arange(0.01, 1., 0.005) # wavenumbers in h/Mpc
 
-    ## Load classes
+    ## Load general classes
     cosmology = Cosmology(z, 'Planck18') # use Planck 2018 cosmology
     mass_function = MassFunction(cosmology, 'Bhattacharya') # Bhattacharya 2010 mass function
     halo_physics = HaloPhysics(cosmology, mass_function, 'Duffy', 'NFW') # Duffy 08 concentration relation, NFW halo profiles
@@ -42,9 +42,10 @@ To compute a matter power spectrum in EffectiveHalos, simply run the following::
 
 This generates an estimate for the matter power spectrum in a few seconds. Let's plot this:
 
-.. image:: ehm_tutorial_spec.pdf
+.. image:: ehm_tutorial_spec.png
+  :width: 600
 
-A full tutorial is given in :ref:`Tutorial.ipynb`.
+A full tutorial is given in :doc:`Tutorial.ipynb`.
 
 .. toctree::
    :maxdepth: 2
