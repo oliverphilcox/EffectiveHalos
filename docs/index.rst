@@ -22,5 +22,5 @@ Todo:
    :caption: Contents:
 
    installation
-   usage
    api
+   Tutorial.ipynb
