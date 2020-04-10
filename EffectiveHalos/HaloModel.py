@@ -14,9 +14,9 @@ class HaloModel:
 
     .. math::
 
-        P_\mathrm{model} = I_1^1(k)^2 P_{NL}(k) W^2(kR) + I_2^0(k,k)
+        P_\mathrm{model} = I_1^1(k)^2 P_\mathrm{NL}(k) W^2(kR) + I_2^0(k,k)
 
-    where :math:`I_p^q` are mass function integrals defined in the MassIntegrals class, :math:`P_{NL}`` is the 1-loop non-linear power spectrum from Effective Field Theory and :math:`W(kR)` is a smoothing window on scale R.
+    where :math:`I_p^q` are mass function integrals defined in the MassIntegrals class, :math:`P_\mathrm{NL}`` is the 1-loop non-linear power spectrum from Effective Field Theory and :math:`W(kR)` is a smoothing window on scale R.
 
     Args:
         cosmology (Cosmology): Instance of the Cosmology class containing relevant cosmology and functions.
@@ -26,7 +26,7 @@ class HaloModel:
 
     Keyword Args:
         kh_min: Minimum k vector in the simulation (or survey) region in :math:`h/\mathrm{Mpc}` units. Modes below kh_min are set to zero, default: 0.
-        verb (bool): If true output useful messages througout run-time, default: False.
+        verb (bool): If true, output useful messages througout run-time, default: False.
 
     """
 
@@ -59,14 +59,14 @@ class HaloModel:
         self.verb = verb
 
         # Compute linear power for the k-vector
-        self.linear_power = self.cosmology.compute_linear_power(self.kh_vector).copy()
+        self.linear_power = self.cosmology.compute_linear_power(self.kh_vector,self.kh_min).copy()
 
         # Set other hyperparameters consistently. (These are non-critical but control minutae of IR resummation and interpolation precision)
         self.IR_N_k = 5000
         self.IR_kh_max = 1.
-        self.OneLoop_N_interpolate = 20
+        self.OneLoop_N_interpolate = 30
         self.OneLoop_k_cut = 3
-        self.OneLoop_N_k = 1000
+        self.OneLoop_N_k = 2000
 
     def non_linear_power(self,cs2,R,pt_type = 'EFT',pade_resum = True, smooth_density = True, IR_resum = True):
         """
@@ -184,7 +184,7 @@ class HaloModel:
         """
 
         if not hasattr(self,'one_loop_only_power'):
-            self.one_loop_only_power = self._one_loop_only_power_interpolater(self.cosmology.compute_linear_power)(self.kh_vector)
+            self.one_loop_only_power = self._one_loop_only_power_interpolater(lambda kk: self.cosmology.compute_linear_power(kk,self.kh_min))(self.kh_vector)
 
         return self.one_loop_only_power.copy()
 

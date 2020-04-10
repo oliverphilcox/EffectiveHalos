@@ -8,7 +8,7 @@ from scipy.integrate import simps
 
 class CountsCovariance:
     """
-    Class to compute the covariance of cluster counts and the non-linear power spectrum using the halo model of Philcox et al. 2020. We provide routines for both the :math:`N_i`-:math:`N_j` and :math:`N_i`-:math:`P(k)` covariance where :math:`N_i` is the halo count in a mass bin defined by [:math:`m_{low,i}`, :math:`m_{high,i}`]
+    Class to compute the covariance of cluster counts and the non-linear power spectrum using the halo model of Philcox et al. 2020. We provide routines for both the :math:`N_i`-:math:`N_j` and :math:`N_i`-:math:`P(k)` covariance where :math:`N_i` is the halo count in a mass bin defined by [:math:`m_{\mathrm{low},i}`, :math:`m_{\mathrm{high},i}`]
 
     In the Effective Halo Model, the covariance between :math:`X` and :math:`Y` is defined as
 
@@ -22,7 +22,7 @@ class CountsCovariance:
         cosmology (Cosmology): Class containing relevant cosmology and functions.
         mass_function (MassFunction): Class containing the mass function and bias.
         halo_physics (HaloPhysics): Class containing the halo profiles and concentrations.
-        kh_vector (np.ndarray): Vector of wavenumbers (in :math:`h/\mathrm{Mpc}` units), for which power spectrum will be computed.
+        kh_vector (np.ndarray): Vector of wavenumbers (in :math:`h/\mathrm{Mpc}` units), for which power spectra will be computed.
         mass_bins (np.ndarray): Array of mass bin edges, in :math:`h^{-1}M_\mathrm{sun}` units. Must have length N_bins + 1.
         volume: Volume of the survey in :math:`(h^{-1}\mathrm{Mpc})^3`.
 
@@ -72,7 +72,6 @@ class CountsCovariance:
         self.smooth_density = smooth_density
         self.IR_resum = IR_resum
         self.npoints = npoints
-
 
         # Generate a power spectrum class with this k-vector
         self.halo_model = HaloModel(cosmology, mass_function, halo_physics, kh_vector, kh_min,verb=self.verb)
@@ -199,13 +198,13 @@ class CountsCovariance:
         if not hasattr(self,'all_iJ_20_array'):
             self.all_iJ_20_array = np.asarray([self.all_mass_integrals[n_bin].compute_I_20() for n_bin in range(self.N_bins)])
         if not hasattr(self,'all_iJ_12_array'):
-            self.all_iJ_12_array = np.asarray([self.all_mass_integrals[n_bin].compute_I_12() for n_bin in range(self.N_bins)])
+            self.all_iJ_12_array = np.asarray([self.all_mass_integrals[n_bin].compute_I_12(apply_correction=False) for n_bin in range(self.N_bins)])
         if not hasattr(self,'all_iJ_02_array'):
             self.all_iJ_02_array = np.asarray([self.all_mass_integrals[n_bin].compute_I_02() for n_bin in range(self.N_bins)]).reshape(-1,1)
 
         # Now construct the covariance
         if self.verb: print("Constructing output covariance")
-        cov_3h = self.all_iJ_02_array.copy() * self.I_11.copy() *  W_kR**4. * self.halo_model.linear_power**2.
+        cov_3h = self.all_iJ_02_array.copy() * self.I_11.copy()**2. *  W_kR**4. * self.halo_model.linear_power**2.
         cov_2h = 2. * self.all_iJ_11_array.copy() * self.I_11.copy() * power_model + 2. * self.I_11.copy() * self.all_iJ_12_array.copy() * self.PF2P.copy()
         cov_1h = self.all_iJ_20_array.copy()
 
@@ -378,7 +377,7 @@ class CountsCovariance:
 
                 # Fill up other components by symmetry
                 ex_matS[j,i] = ex_matS[i,j]
-                ex_matV[j,i] = ex_matV[j,i]
+                ex_matV[j,i] = ex_matV[i,j]
 
         # Now compute and return the covariance matrix term
         cov_1h = - (ex_matV + ex_matS) * self.volume
@@ -474,13 +473,15 @@ class CountsCovariance:
         if self.verb: print('Computing power spectrum response')
 
         # Compute the 1-loop power spectrum model in fine bins for the dilation derivative
-        fine_k = np.logspace(-3,0.5,1000)
+        fine_k = np.logspace(min(np.log10(self.kh_vector))-0.1,max(np.log10(self.kh_vector))+0.1,1000)
         fine_halo = HaloModel(self.cosmology,self.mass_function,self.halo_physics,fine_k,self.kh_min)
-        fine_pk_nl = fine_halo.non_linear_power(cs2,R,self.pt_type, self.pade_resum, False, self.IR_resum)
+        fine_pk_nl = fine_halo.non_linear_power(cs2,R,self.pt_type, self.pade_resum, self.smooth_density, self.IR_resum)
 
         # Compute the dilation derivative
         k_av = 0.5*(fine_k[1:]+fine_k[:-1])
-        dlnk3P_dlnk = InterpolatedUnivariateSpline(k_av,np.diff(np.log(fine_k**3.*fine_pk_nl))/np.diff(np.log(fine_k)),ext=1)(self.kh_vector)
+        log_vec = np.zeros_like(fine_k)
+        log_vec[fine_pk_nl!=0] = np.log(fine_k[fine_pk_nl!=0]**3.*fine_pk_nl[fine_pk_nl!=0])
+        dlnk3P_dlnk = InterpolatedUnivariateSpline(k_av,np.diff(log_vec)/np.diff(np.log(fine_k)),ext=1)(self.kh_vector)
 
         # Compute relevant I_p^q integrals, if not already computed
         if not hasattr(self,'I_11'):
@@ -497,12 +498,15 @@ class CountsCovariance:
         P_L = self.halo_model.non_linear_power(cs2,R,'Linear',self.pade_resum, self.smooth_density, self.IR_resum)
         # One-loop component (i.e. the residual)
         P_one_loop = P_NL - P_L
+        # One loop ratio (careful of stability)
+        ratio = np.zeros_like(P_NL)
+        ratio[P_NL!=0] = P_one_loop[P_NL!=0]/P_NL[P_NL!=0]
         # Full power
         P_full = self.halo_model.halo_model(cs2, R, self.pt_type, self.pade_resum, self.smooth_density, self.IR_resum)
 
         # Reconstruct output spectrum
         dP_HSV = 2. * self.I_11.copy() * self.I_12.copy() * P_NL + self.I_21.copy() # halo sample variance
-        dP_BC = self.I_11.copy()**2. * P_NL * (68./21. + 26./21.*P_one_loop/P_NL) # beat-coupling
+        dP_BC = self.I_11.copy()**2. * P_NL * (68./21. + 26./21.*ratio) # beat-coupling
         dP_LD = -1./3. * dlnk3P_dlnk * P_full  # linear dilation
 
         self.dP_ddelta =  dP_HSV + dP_BC + dP_LD
@@ -523,8 +527,8 @@ class CountsCovariance:
         # Prepare FASTPT
         if not hasattr(self,'fastpt'):
             min_k = np.max([np.min(self.kh_vector),1e-4]) # setting minimum to avoid zero errors
-            max_k = np.max(self.kh_vector)
-            self.kh_interp = np.logspace(np.log10(min_k)-0.5,np.log10(max_k)+0.5,1e4)
+            max_k = np.min([np.max(self.kh_vector),1e2])
+            self.kh_interp = np.logspace(np.log10(min_k)-1,np.log10(max_k)+1,1e4)
             # Compute the one-loop spectrum using FAST-PT
             self.fastpt = FASTPT.FASTPT(self.kh_interp,to_do=['dd_bias'],n_pad=len(self.kh_interp)*3);
 
@@ -532,7 +536,7 @@ class CountsCovariance:
         Wk = 3.*(np.sin(self.kh_interp*R)-self.kh_interp*R*np.cos(self.kh_interp*R))/(self.kh_interp*R)**3.
 
         # Compute the FASPT spectrum and interpolate to output grid
-        out=self.fastpt.one_loop_dd_bias((self.cosmology.compute_linear_power(self.kh_interp)*Wk).copy(),C_window=0.65,P_window=[0.25,0.25])
+        out=self.fastpt.one_loop_dd_bias((self.cosmology.compute_linear_power(self.kh_interp,self.kh_min)*Wk).copy(),C_window=0.65,P_window=[0.25,0.25])
         PF2P_power = out[2]/2.
         PF2P_int = InterpolatedUnivariateSpline(self.kh_interp,PF2P_power*Wk)
 
