@@ -34,6 +34,7 @@ extensions = ['sphinx.ext.mathjax',
     'sphinx.ext.autodoc',
     'sphinx.ext.coverage',
     'sphinx.ext.napoleon',
+    'nbsphinx'
 ]
 
 autodoc_mock_imports = ["classy","fastpt","mcfit"]

@@ -41,9 +41,6 @@ class CountsCovariance:
         """
         Initialize the class loading properties from the other classes.
         """
-        print("Add in 1/h units everywhere here")
-        print('also compute N(m) autocovariance?')
-        print('think about how to do sigma^2 + change in class definition.')
 
         # Write attributes, if they're of the correct type
         if isinstance(cosmology, Cosmology):
@@ -306,10 +303,10 @@ class CountsCovariance:
 
         cov_2h = -2. * self.all_iJ_10_array.copy() * self.I_11.copy() * iK_Theta_01_array * power_model
         cov_2h += 2. * self.all_iJ_111_array.copy() * self.I_11.copy() * iK_S_01_array * linear_power * W_kR**2.
-        cov_2h += -2. * self.I_11.copy() * self.all_iJ_00_array.copy() * iK_V_11_array * power_model
+        cov_2h += -2. * self.I_11.copy() * self.all_iJ_00_array.copy().reshape(-1,1) * iK_V_11_array * power_model
         cov_2h += -2. * self.I_11.copy() * self.all_iJ_01_array.copy() * iK_Theta_10_array * power_model
 
-        cov_1h = - self.all_iJ_00_array.copy() * iK_V_20_array
+        cov_1h = - self.all_iJ_00_array.copy().reshape(-1,1) * iK_V_20_array
         cov_1h += - self.all_iJ_01_array.copy() * iK_S_21_array
         cov_1h += -2. * self.all_iJ_10_array.copy() * iK_Theta_10_array
         cov_1h += -2. * self.all_iJ_11_array.copy() * iK_PTheta_11_array
