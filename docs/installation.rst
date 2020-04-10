@@ -4,8 +4,8 @@ Installation
 EffectiveHalos can be installed either from pip or by cloning the GitHub repository. Make sure to install the :ref:`dependencies` first!
 
 
-Pip installation
--------------------
+Installation via pip
+---------------------
 
 We recommend that EffectiveHalos is installed via pip::
 
@@ -63,7 +63,3 @@ EffectiveHalos uses Joe McEwen's `FAST-PT <https://github.com/JoeMcEwen/FAST-PT>
 EffectiveHalos uses the `mcfit <https://github.com/eelregit/mcfit>`_ for integral transforms. It is easiest to install this from pip::
 
   pip install mcfit (--user)
-
-.. todo::
-
-  can we get these autoinstalled?

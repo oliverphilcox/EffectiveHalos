@@ -11,6 +11,17 @@ This is based on the work of Philcox, Spergel \& Villaescusa-Navarro (in prep.),
 - David Spergel (Princeton / CCA)
 - Francisco Villaescusa-Navarro (Princeton / CCA)
 
+## Installation
+
+EffectiveHalos can be simply installed using pip:
+
+```
+pip install EffectiveHalos (--user)
+```
+
+Note that you will need a [CLASS](https://github.com/lesgourg/class_public) installation, including the 'classy' Python wrapper, to run EffectiveHalos.
+
+
 ## Basic Usage
 
 To compute a matter power spectrum in EffectiveHalos, simply run the following:
