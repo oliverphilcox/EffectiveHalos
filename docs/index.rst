@@ -45,7 +45,7 @@ This generates an estimate for the matter power spectrum in a few seconds. Let's
 .. image:: ehm_tutorial_spec.png
   :width: 300
 
-A full tutorial is given in :doc:`Tutorial.ipynb`.
+A full tutorial is given on the tutorial page.
 
 .. toctree::
    :maxdepth: 2
