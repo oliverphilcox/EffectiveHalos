@@ -15,7 +15,7 @@ class Cosmology(object):
     Args:
         redshift (float): Desired redshift :math:`z`
         name (str): Load cosmology from a list of predetermined cosmologies (see above).
-        params (kwargs): Any other CLASS parameters.
+        params (kwargs): Any other CLASS parameters. (Note that sigma8 does not seem to be supported by CLASS in Python 3).
 
     Keyword Args:
         verb (bool): If true output useful messages througout run-time, default: False.
@@ -23,13 +23,13 @@ class Cosmology(object):
     """
 
     loaded_models = {'Quijote':{"h":0.6711,"omega_cdm":(0.3175 - 0.049)*0.6711**2,
-                                "Omega_b":0.049, "sigma8":0.834,"n_s":0.9624,
-                                "N_eff":3.04},
+                                "Omega_b":0.049, "n_s":0.9624,
+                                "N_eff":3.046, "A_s":2.134724e-09}, #"sigma8":0.834,
                      'Abacus':{"h":0.6726,"omega_cdm":0.1199,
-                                "omega_b":0.02222,"n_s":0.9652,"sigma8":0.830,
-                                "N_eff":3.04},
+                                "omega_b":0.02222,"n_s":0.9652,"A_s":2.135472e-09,#"sigma8":0.830,
+                                "N_eff":3.046},
                      'Planck18':{"h":0.6732,"omega_cdm":0.12011,"omega_b":0.022383,
-                                "n_s":0.96605,"sigma8":0.8120}}
+                                "n_s":0.96605,"A_s":2.042644e-09}}#,"sigma8":0.8120}}
 
     def __init__(self,redshift,name="",verb=False,**params):
 
@@ -65,7 +65,7 @@ class Cosmology(object):
         if 'output' not in class_params.keys():
             class_params['output']='mPk'
         if 'P_k_max_h/Mpc' not in class_params.keys() and 'P_k_max_1/Mpc' not in class_params.keys():
-            class_params['P_k_max_h/Mpc']=100.
+            class_params['P_k_max_h/Mpc']=300.
         if 'z_pk' in class_params.keys():
             assert class_params['z_pk']==redshift, "Can't pass multiple redshifts!"
         else:

@@ -1,7 +1,7 @@
 Installation
 ============
 
-EffectiveHalos can be installed either from pip or by cloning the GitHub repository. Make sure to install the :ref:`dependencies` first!
+EffectiveHalos can be installed either from pip or by cloning the GitHub repository. Note that CLASS (and the classy Python wrapper) must be installed first, as described in :ref:`dependencies`.
 
 
 Installation via pip
@@ -46,7 +46,7 @@ The basic installation follows::
   git clone https://github.com/lesgourg/class_public.git
 
   # Now install
-  cd class_public
+  cd class_public*
   make clean
   make
 
