@@ -525,7 +525,7 @@ class CountsCovariance:
         if not hasattr(self,'fastpt'):
             min_k = np.max([np.min(self.kh_vector),1e-4]) # setting minimum to avoid zero errors
             max_k = np.min([np.max(self.kh_vector),1e2])
-            self.kh_interp = np.logspace(np.log10(min_k)-1,np.log10(max_k)+1,1e4)
+            self.kh_interp = np.logspace(np.log10(min_k)-1,np.log10(max_k)+1,int(1e4))
             # Compute the one-loop spectrum using FAST-PT
             self.fastpt = FASTPT.FASTPT(self.kh_interp,to_do=['dd_bias'],n_pad=len(self.kh_interp)*3);
 
