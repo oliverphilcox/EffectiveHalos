@@ -54,12 +54,12 @@ For further details, including the modifications required for Mac compilation, s
 
 **FAST-PT**
 
-EffectiveHalos uses Joe McEwen's `FAST-PT <https://github.com/JoeMcEwen/FAST-PT>`_ package to compute one-loop power spectra from the CLASS linear power spectrum. It is easiest to install this from pip::
+EffectiveHalos uses Joe McEwen's `FAST-PT <https://github.com/JoeMcEwen/FAST-PT>`_ package to compute one-loop power spectra from the CLASS linear power spectrum. This is probably installed alongside EffectiveHalos. If not, it is easiest to install from pip::
 
   pip install fast-pt (--user)
 
 **mcfit**
 
-EffectiveHalos uses the `mcfit <https://github.com/eelregit/mcfit>`_ for integral transforms. It is easiest to install this from pip::
+EffectiveHalos uses the `mcfit <https://github.com/eelregit/mcfit>`_ for integral transforms. This is probably installed alongside EffectiveHalos. If not, it is easiest to install from pip::
 
   pip install mcfit (--user)

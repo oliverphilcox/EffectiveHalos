@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
      name='EffectiveHalos',
-     version='1.0',
+     version='1.0.1',
      author="Oliver Philcox",
      author_email="ohep2@alumni.cam.ac.uk",
      description="Combining the Halo Model and Perturbation Theory: A 1% Accurate Model to k = 1 h/Mpc",
