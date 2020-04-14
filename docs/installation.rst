@@ -46,7 +46,7 @@ The basic installation follows::
   git clone https://github.com/lesgourg/class_public.git
 
   # Now install
-  cd class_public*
+  cd class_public
   make clean
   make
 
