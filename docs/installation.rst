@@ -19,7 +19,7 @@ Installation from source
 
 EffectiveHalos can also be installed directly from the git repository::
 
-  git clone https://github.com/EffectiveHalos.git
+  git clone https://github.com/oliverphilcox/EffectiveHalos.git
   cd EffectiveHalos
   python -m pip install . (--user)
 

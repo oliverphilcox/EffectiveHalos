@@ -1,7 +1,7 @@
 # EffectiveHalos
 EffectiveHalos is a fast Python code providing models of the real-space matter power spectrum, based a combination of the Halo Model and Effective Field Theory, which are 1\% accurate up to k = 1 h/Mpc. It can additionally compute accurate halo count covariances (including a model of halo exclusion), both alone and in combination with the matter power spectrum.
 
-This is based on the work of Philcox, Spergel \& Villaescusa-Navarro (in prep.), and full documentation is availble on [ReadTheDocs](https://EffectiveHalos.rtfd.io).
+This is based on the work of [Philcox, Spergel \& Villaescusa-Navarro (2020)](https://arxiv.org/abs/2004.09515), and full documentation is availble on [ReadTheDocs](https://EffectiveHalos.rtfd.io).
 
 ## Authors
 **Main Authors**
