@@ -58,8 +58,12 @@ class HaloModel:
         self.kh_min = kh_min
         self.verb = verb
 
-        # Compute linear power for the k-vector
+        # Compute linear (CDM+baryon) power for the k-vector
         self.linear_power = self.cosmology.compute_linear_power(self.kh_vector,self.kh_min).copy()
+
+        # Also compute full (CDM+baryon+neutrino) power if required
+        if self.cosmology.use_neutrinos:
+            self.linear_power_total = self.cosmology.compute_linear_power(self.kh_vector,self.kh_min,with_neutrinos=True).copy()
 
         # Set other hyperparameters consistently. (These are non-critical but control minutae of IR resummation and interpolation precision)
         self.IR_N_k = 5000
@@ -68,7 +72,7 @@ class HaloModel:
         self.OneLoop_k_cut = 3
         self.OneLoop_N_k = 2000
 
-    def non_linear_power(self,cs2,R,pt_type = 'EFT',pade_resum = True, smooth_density = True, IR_resum = True):
+    def non_linear_power(self,cs2,R,pt_type = 'EFT',pade_resum = True, smooth_density = True, IR_resum = True, include_neutrinos = True):
         """
         Compute the non-linear power spectrum to one-loop order, with IR corrections and counterterms. Whilst we recommend including all non-linear effects, these can be optionally removed with the Boolean parameters. Setting (pt_type='Linear', pade_resum=False, smooth_density=False, IR_resum = False) recovers the standard halo model prediction.
 
@@ -86,7 +90,9 @@ class HaloModel:
 
         is the counterterm, and IR resummation is applied to all spectra.
 
-        This computes the relevant integrals if they haven't already been computed. The function returns :math:`P_\mathrm{NL}` given smoothing scale R and effective squared sound-speed :math:`c_s^2`.
+        This computes the relevant loop integrals if they haven't already been computed. The function returns :math:`P_\mathrm{NL}` given smoothing scale R and effective squared sound-speed :math:`c_s^2`.
+
+        For massive neutrino cosmologies, we assume that the matter power spectrum is given by a mass-fraction-weighted sum of the non-linear CDM+baryon power spectrum, linear neutrino spectrum and linear neutrino cross CDM+baryon spectrum. This is a good approximation for the halo model spectra (i.e. including non-linear effects only for the CDM+baryon component.) The function can return either the non-linear CDM+baryon power spectrum or the combined CDM+baryon+neutrino power spectrum using the 'include_neutrinos' flag.
 
         Args:
             cs2 (float): Squared-speed-of-sound counterterm :math:`c_s^2` in :math:`(h^{-1}\mathrm{Mpc})^2` units. (Unused if pt_type is not "EFT")
@@ -97,6 +103,7 @@ class HaloModel:
             pade_resum (bool): If True, use a Pade resummation of the counterterm :math:`k^2/(1+k^2) P_\mathrm{lin}` rather than :math:`k^2 P_\mathrm{lin}(k)`, default: True
             smooth_density (bool): If True, smooth the density field on scale R, i.e. multiply power by W(kR)^2, default: True
             IR_resum (bool): If True, perform IR resummation on the density field to resum non-perturbative long-wavelength modes, default: True
+            include_neutrinos (bool): If True, return the full power spectrum of CDM+baryons+neutrinos (with the approximations given above). If False, return only the CDM+baryon power spectrum. This has no effect in cosmologies without massive neutrinos, default: True.
 
         Returns:
             np.ndarray: Non-linear power spectrum :math:`P_\mathrm{NL}` evaluated at the input k-vector.
@@ -133,13 +140,23 @@ class HaloModel:
         if smooth_density:
             output *= self._compute_smoothing_function(R)**2.
 
-        return output
+        # Now account for neutrino effects if present
+        if self.cosmology.use_neutrinos:
+            if include_neutrinos:
+                f_cb = 1.-self.cosmology.f_nu
+                return f_cb**2.*output + (self.linear_power_total.copy()-f_cb**2.*self.linear_power.copy())
+            else:
+                return output
+        else:
+            return output
 
-    def halo_model(self,cs2,R,pt_type = 'EFT',pade_resum = True, smooth_density = True, IR_resum = True, return_terms=False):
+    def halo_model(self,cs2,R,pt_type = 'EFT',pade_resum = True, smooth_density = True, IR_resum = True, include_neutrinos=True, return_terms=False):
         """
         Compute the non-linear halo-model power spectrum to one-loop order, with IR corrections and counterterms. Whilst we recommend including all non-linear effects, these can be optionally removed with the Boolean parameters.
 
         This is similar to the 'non_linear_power()' function, but includes the halo mass integrals, and is the *complete* model of the matter power spectrum at one-loop-order in our approximations. Note that the function requires two free parameters; the smoothing scale R and the effective squared sound-speed :math:`c_s^2`, which cannot be predicted from theory. (Note that :math:`c_s^2<0` is permissible).
+
+        For massive neutrino cosmologies, we assume that the matter power spectrum is given by a mass-fraction-weighted sum of the halo model CDM+baryon power spectrum, linear neutrino spectrum and linear neutrino cross CDM+baryon spectrum. This is a good approximation in practice (i.e. including halo-model effects only for the CDM+baryon component.) The function can return either the halo-model CDM+baryon power spectrum (suitable for comparison to CDM+baryon power spectra) or the combined CDM+baryon+neutrino power spectrum (suitable for comparison to matter spectra) using the 'include_neutrinos' flag. When 'include_neutrinos' is specified the model has three components; the weighted two-halo CDM+baryon part, the weighted one-halo CDM+baryon part and the weighted linear neutrino and cross spectra. The sum of all three and the first two individually are returned by the 'return_terms' command.
 
         For further details, see the class description.
 
@@ -152,7 +169,8 @@ class HaloModel:
             pade_resum (bool): If True, use a Pade resummation of the counterterm :math:`k^2/(1+k^2) P_\mathrm{lin}` rather than :math:`k^2 P_\mathrm{lin}(k)`, default: True
             smooth_density (bool): If True, smooth the density field on scale R, i.e. multiply power by W(kR)^2, default: True
             IR_resum (bool): If True, perform IR resummation on the density field to resum non-perturbative long-wavelength modes, default: True
-            return_terms (bool): If True, return the one- and two-halo terms in addition to the combined power spectrum model, default: False
+            include_neutrinos (bool): If True, return the full power spectrum of CDM+baryons+neutrinos (with the approximations given above). If False, return only the CDM+baryon power spectrum. This has no effect in cosmologies without massive neutrinos, default: True.
+            return_terms (bool): If True, return the one- and two-halo CDM+baryon halo-model terms in addition to the combined power spectrum model, default: False
 
         Returns:
             np.ndarray: Non-linear halo model power spectrum :math:`P_\mathrm{halo}` evaluated at the input k-vector.
@@ -160,8 +178,8 @@ class HaloModel:
             np.ndarray: Two-halo power spectrum term (if return_terms is true)
         """
 
-        # Compute the non-linear power spectrum
-        p_non_linear = self.non_linear_power(cs2, R, pt_type, pade_resum, smooth_density, IR_resum)
+        # Compute the non-linear power spectrum (neutrinos will be added in later)
+        p_non_linear = self.non_linear_power(cs2, R, pt_type, pade_resum, smooth_density, IR_resum, False)
 
         # Compute the halo mass function integrals, if not already computed
         if not hasattr(self,'I_11'):
@@ -169,11 +187,23 @@ class HaloModel:
         if not hasattr(self,'I_20'):
             self.I_20 = self.mass_integrals.compute_I_20()
 
-        # Compute the final mass function
+        # Compute the final spectrum
+        two_halo = p_non_linear*self.I_11.copy()*self.I_11.copy()
+        one_halo = self.I_20.copy()
+        output_spectrum = two_halo + one_halo
+
+        # Now account for neutrino effects if present
+        if self.cosmology.use_neutrinos:
+            if include_neutrinos:
+                f_cb = 1.-self.cosmology.f_nu
+                two_halo *= f_cb**2. # rescale two-halo term
+                one_halo *= f_cb**2. # rescale one-halo term
+                output_spectrum = f_cb**2.*output_spectrum + (self.linear_power_total.copy()-f_cb**2.*self.linear_power.copy())
+
         if return_terms:
-            return p_non_linear*self.I_11.copy()*self.I_11.copy() + self.I_20.copy(), self.I_20.copy(), p_non_linear*self.I_11.copy()*self.I_11.copy(),
+            return output_spectrum, one_halo, two_halo
         else:
-            return p_non_linear*self.I_11.copy()*self.I_11.copy() + self.I_20.copy()
+            return output_spectrum
 
     def compute_one_loop_only_power(self):
         """

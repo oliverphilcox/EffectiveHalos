@@ -19,6 +19,7 @@ class Cosmology(object):
 
     Keyword Args:
         verb (bool): If true output useful messages througout run-time, default: False.
+        npoints (int): Number of points to use in the interpolators for sigma^2, default: 100000
 
     """
 
@@ -31,7 +32,7 @@ class Cosmology(object):
                      'Planck18':{"h":0.6732,"omega_cdm":0.12011,"omega_b":0.022383,
                                 "n_s":0.96605,"A_s":2.042644e-09}}#,"sigma8":0.8120}}
 
-    def __init__(self,redshift,name="",verb=False,**params):
+    def __init__(self,redshift,name="",verb=False,npoints=int(1e5),**params):
 
         """
         Initialize the cosmology class with cosmological parameters or a defined model.
@@ -78,10 +79,24 @@ class Cosmology(object):
         self.cosmo.compute()
         self.h = self.cosmo.h()
         self.name = name
+        self.npoints = npoints
         self.verb = verb
 
+        ## Check if we're using neutrinos here
+        if self.cosmo.Omega_nu>0.:
+            if self.verb: print("Using a neutrino fraction of Omega_nu = %.3e"%self.cosmo.Omega_nu)
+            self.use_neutrinos = True
+            # Define neutrino mass fraction
+            self.f_nu = self.cosmo.Omega_nu/self.cosmo.Omega_m()
+        else:
+            if self.verb: print("Assuming massless neturinos.")
+            self.use_neutrinos = False
+
         ## Create a vectorized sigma(R) function from CLASS
-        self.vector_sigma_R = np.vectorize(lambda r: self.cosmo.sigma(r/self.h,self.z))
+        if self.use_neutrinos:
+            self.vector_sigma_R = np.vectorize(lambda r: self.cosmo.sigma_cb(r/self.h,self.z))
+        else:
+            self.vector_sigma_R = np.vectorize(lambda r: self.cosmo.sigma(r/self.h,self.z))
 
         # get density in physical units at z = 0
         # rho_critical is in Msun/h / (Mpc/h)^3 units
@@ -89,14 +104,17 @@ class Cosmology(object):
         self.rho_critical = ((3.*100.*100.)/(8.*np.pi*6.67408e-11)) * (1000.*1000.*3.085677581491367399198952281E+22/1.9884754153381438E+30)
         self.rhoM = self.rho_critical*self.cosmo.Omega0_m()
 
-    def compute_linear_power(self,kh,kh_min=0.):
+    def compute_linear_power(self,kh,kh_min=0.,with_neutrinos=False):
         """Compute the linear power spectrum from CLASS for a vector of input k.
 
         If set, we remove any modes below some minimum k.
 
         Args:
             kh (float, np.ndarray): Wavenumber or vector of wavenumbers (in h/Mpc units) to compute linear power with.
+
+        Keyword Args:
             kh_min (float): Value of k (in h/Mpc units) below which to set :math:`P(k) = 0`, default: 0.
+            with_neutrinos (bool): If True, return the full matter power spectrum, else return the CDM+baryon power spectrum (which is generally used in the halo model). Default: False.
 
         Returns:
             np.ndarray: Linear power spectrum in :math:`(h^{-1}\mathrm{Mpc})^3` units
@@ -111,17 +129,29 @@ class Cosmology(object):
 
             # Compute Pk using CLASS (vectorized)
             if not hasattr(self,'vector_linear_power'):
-                ## NB: This works in physical 1/Mpc units
-                self.vector_linear_power = np.vectorize(lambda k: self.cosmo.pk_lin(k*self.h,self.z)*self.h**3.)
+                ## NB: This works in physical 1/Mpc units so we convert here
+                if self.use_neutrinos:
+                    # Here we need both the CDM+baryon (cb) power spectra and the full matter power spectra
+                    # The CDM+baryon spectrum is used for the halo model parts, and the residual (matter-cb) added at the end
+                    self.vector_linear_power = np.vectorize(lambda k: self.cosmo.pk_cb_lin(k*self.h,self.z)*self.h**3.)
+                    self.vector_linear_power_total = np.vectorize(lambda k: self.cosmo.pk_lin(k*self.h,self.z)*self.h**3.)
+                else:
+                    self.vector_linear_power = np.vectorize(lambda k: self.cosmo.pk_lin(k*self.h,self.z)*self.h**3.)
 
-            output[filt] = self.vector_linear_power(kh[filt])
+            if self.use_neutrinos and with_neutrinos:
+                output[filt] = self.vector_linear_power_total(kh[filt])
+            else:
+                output[filt] = self.vector_linear_power(kh[filt])
             return output
 
         else:
             if kh<kh_min:
                 return 0.
             else:
-                return self.vector_linear_power(kh)
+                if self.use_neutrinos and with_neutrinos:
+                    return self.vector_linear_power_total(kh)
+                else:
+                    return self.vector_linear_power(kh)
 
     def sigma_logM_int(self,logM_h):
         """Return the value of :math:`\sigma(M,z)` using the prebuilt interpolators, which are constructed if not present.
@@ -133,7 +163,7 @@ class Cosmology(object):
             np.ndarray: :math:`\sigma(M,z)`
         """
         if not hasattr(self,'sigma_logM_int_func'):
-            self._interpolate_sigma_and_deriv()
+            self._interpolate_sigma_and_deriv(npoints=self.npoints)
         return self._sigma_logM_int_func(logM_h)
 
     def dlns_dlogM_int(self,logM_h):
@@ -146,7 +176,7 @@ class Cosmology(object):
             np.ndarray: :math:`d\ln\sigma/d\log M`
         """
         if not hasattr(self,'dlns_dlogM_int_func'):
-            self._interpolate_sigma_and_deriv()
+            self._interpolate_sigma_and_deriv(npoints=self.npoints)
         return self._dlns_dlogM_int_func(logM_h)
 
     def _sigmaM(self,M_h):
