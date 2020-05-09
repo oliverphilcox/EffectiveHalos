@@ -2,7 +2,7 @@
 EffectiveHalos: Accurate Models for Matter Power Spectra and Cluster Covariances
 =================================================================================
 
-EffectiveHalos is a fast Python code providing models of the real-space matter power spectrum, based a combination of the Halo Model and Effective Field Theory, which are 1\% accurate up to :math:`k = 1h\,\mathrm{Mpc}^{-1}`. It can additionally compute accurate the covariance of halo cluster counts, both and alone and with the matter power spectrum, featuring a model for halo exclusion.
+EffectiveHalos is a fast Python code providing models of the real-space matter power spectrum, based a combination of the Halo Model and Effective Field Theory, which are 1\% accurate up to :math:`k = 1h\,\mathrm{Mpc}^{-1}`, across a range of cosmologies including those with massive neutrinos. It can additionally compute accurate halo count covariances (including a model of halo exclusion), both and alone and with the matter power spectrum, featuring a model for halo exclusion.
 
 This is based on the work of [Philcox, Spergel \& Villaescusa-Navarro 2020](https://arxiv.org/abs/2004.09515), and makes use of the CLASS and FAST-PT codes for computing linear and one-loop power spectra respectively.
 

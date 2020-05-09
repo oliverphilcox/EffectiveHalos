@@ -76,6 +76,11 @@ class CountsCovariance:
         # Copy in the MassIntegrals class
         self.mass_integrals = self.halo_model.mass_integrals
 
+        if self.cosmology.use_neutrinos:
+            if self.verb:
+                print("Note: massive neutrinos are not implemented in full, so we assume CDM+baryon power spectra here.")
+                print("(This will creates only a (subdominant) percent-level error for typical neutrino masses.)")
+
         # Run some checks
         assert self.mass_bins[0]>=np.power(10.,self.mass_integrals.min_logM_h), 'Minimum bin must be above MassIntegral limit!'
         assert self.mass_bins[-1]<=np.power(10.,self.mass_integrals.max_logM_h), 'Maximum bin must be below MassIntegral limit!'
