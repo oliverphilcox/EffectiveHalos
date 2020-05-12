@@ -88,6 +88,8 @@ class Cosmology(object):
             self.use_neutrinos = True
             # Define neutrino mass fraction
             self.f_nu = self.cosmo.Omega_nu/self.cosmo.Omega_m()
+            if self.cosmo.Neff()>3.5:
+                print("N_eff > 3.5, which seems large (standard value: 3.046). This may indicate that N_ur has not been set.")
         else:
             if self.verb: print("Assuming massless neturinos.")
             self.use_neutrinos = False
@@ -236,8 +238,3 @@ class Cosmology(object):
         """Return the value of :math:`\Omega_m(z)` at the class redshift
 
         Returns:
-            float: :math:`\Omega_m(z)`
-        """
-        hnorm = self._h_over_h0()
-        output = (self.cosmo.Omega0_m())/self.a**3/hnorm**2
-        return output
