@@ -238,3 +238,8 @@ class Cosmology(object):
         """Return the value of :math:`\Omega_m(z)` at the class redshift
 
         Returns:
+            float: :math:`\Omega_m(z)`
+        """
+        hnorm = self._h_over_h0()
+        output = (self.cosmo.Omega0_m())/self.a**3/hnorm**2
+        return output
