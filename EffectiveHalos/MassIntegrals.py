@@ -33,14 +33,15 @@ class MassIntegrals:
         mass_function (MassFunction): Instance of the MassFunction class, containing the mass function and bias.
         halo_physics (HaloPhysics): Instance of the HaloPhysics class, containing the halo profiles and concentrations.
         kh_vector (np.ndarray): Array (or float) of wavenumbers in :math:`h\mathrm{Mpc}^{-1}` units from which to compute mass integrals.
+        z (float): Redshift for which to compute mass integrals.
 
     Keyword Args:
         min_logM_h (float): Minimum mass in :math:`\log_{10}(M/h^{-1}M_\mathrm{sun})` units, default: 6.001.
         max_logM_h (float): Maximum mass in :math:`\log_{10}(M/h^{-1}M_\mathrm{sun})` units, default: 16.999.
-        npoints (int): Number of logarithmically spaced mass grid points, default: 10000.
+        npoints (int): Number of logarithmically spaced mass grid points, default: 1000.
         verb (bool): If true output useful messages througout run-time, default: False.
     """
-    def __init__(self,cosmology,mass_function,halo_physics,kh_vector,min_logM_h=6.001, max_logM_h=16.999, npoints=int(1e4),verb=False,m_low=-1):
+    def __init__(self,cosmology,mass_function,halo_physics,kh_vector,z,min_logM_h=6.001, max_logM_h=16.999, npoints=int(1e3),verb=False):
         """
         Initialize the class with relevant model hyperparameters.
         """
@@ -70,6 +71,10 @@ class MassIntegrals:
         self.max_logM_h = max_logM_h
         self.npoints = npoints
         self.verb = verb
+
+        # Check and save redshift
+        self.z = z
+        assert z<=self.cosmology.z_max, "Redshift must be below maximum set in the cosmology class!"
 
         # Define a mass vector for computations
         self.logM_h_grid = np.linspace(self.min_logM_h,self.max_logM_h, self.npoints)
@@ -128,9 +133,9 @@ class MassIntegrals:
                 A = 1. - simps(self._I_p_q1q2_integrand(1,0,0,zero_k=True),self.logM_h_grid)
                 # compute window functions
                 min_m_h = np.power(10.,self.min_logM_h)
-                min_window = self.halo_physics.halo_profile(min_m_h,self.kh_vectors).ravel()
-                zero_window = self.halo_physics.halo_profile(min_m_h,0.).ravel()
-                self.I_10 += A*min_window/zero_window
+                min_window = self.halo_physics.halo_profile(min_m_h,self.kh_vectors,self.z).reshape(self.N_k)
+                zero_window = self.halo_physics.halo_profile(min_m_h,0.,self.z)
+                self.I_11 += A*min_window/zero_window
         return self.I_10.copy()
 
     def compute_I_11(self,apply_correction = True):
@@ -153,8 +158,8 @@ class MassIntegrals:
                 A = 1. - simps(self._I_p_q1q2_integrand(1,1,0,zero_k=True),self.logM_h_grid)
                 # compute window functions
                 min_m_h = np.power(10.,self.min_logM_h)
-                min_window = self.halo_physics.halo_profile(min_m_h,self.kh_vectors).ravel()
-                zero_window = self.halo_physics.halo_profile(min_m_h,0.).ravel()
+                min_window = self.halo_physics.halo_profile(min_m_h,self.kh_vectors,self.z).reshape(self.N_k)
+                zero_window = self.halo_physics.halo_profile(min_m_h,0.,self.z)
                 self.I_11 += A*min_window/zero_window
         return self.I_11.copy()
 
@@ -186,9 +191,9 @@ class MassIntegrals:
                 A = - simps(self._I_p_q1q2_integrand(1,2,0,zero_k=True),self.logM_h_grid)
                 # compute window functions
                 min_m_h = np.power(10.,self.min_logM_h)
-                min_window = self.halo_physics.halo_profile(min_m_h,self.kh_vectors).ravel()
-                zero_window = self.halo_physics.halo_profile(min_m_h,0.).ravel()
-                self.I_12 += A*min_window/zero_window
+                min_window = self.halo_physics.halo_profile(min_m_h,self.kh_vectors,self.z).reshape(self.N_k)
+                zero_window = self.halo_physics.halo_profile(min_m_h,0.,self.z)
+                self.I_11 += A*min_window/zero_window
         return self.I_12.copy()
 
     def compute_I_20(self):
@@ -235,7 +240,7 @@ class MassIntegrals:
             fourier_profiles = 1.
         else:
             if zero_k:
-                fourier_profiles = np.power(self.halo_physics.halo_profile(self.m_h_grid,-1,norm_only=True),p)
+                fourier_profiles = np.power(self.halo_physics.halo_profile(self.m_h_grid,-1,self.z,norm_only=True),p)
             else:
                 fourier_profiles = np.power(self._compute_fourier_profile(),p)
 
@@ -252,7 +257,7 @@ class MassIntegrals:
             np.ndarray: array of :math:`m / \rho u(k|m)` values.
         """
         if not hasattr(self,'fourier_profile'):
-            self.fourier_profile = self.halo_physics.halo_profile(self.m_h_grid,self.kh_vectors)
+            self.fourier_profile = self.halo_physics.halo_profile(self.m_h_grid,self.kh_vectors,self.z)
         return self.fourier_profile.copy()
 
     def _compute_mass_function(self):
@@ -262,7 +267,7 @@ class MassIntegrals:
             np.ndarray: :math:`dn/d\log_{10}(M/h^{-1}M_\mathrm{sun})` array
         """
         if not hasattr(self,'mass_function_grid'):
-            self.mass_function_grid = self.mass_function.mass_function(self.m_h_grid)
+            self.mass_function_grid = self.mass_function.mass_function(self.m_h_grid,self.z)
         return self.mass_function_grid.copy()
 
     def _compute_linear_bias(self):
@@ -272,7 +277,7 @@ class MassIntegrals:
             np.ndarray: Array of Eulerian linear biases :math:`b_1^E(m)`
         """
         if not hasattr(self,'linear_bias_grid'):
-            self.linear_bias_grid = self.mass_function.linear_halo_bias(self.m_h_grid)
+            self.linear_bias_grid = self.mass_function.linear_halo_bias(self.m_h_grid,self.z)
         return self.linear_bias_grid.copy()
 
     def _compute_second_order_bias(self):
@@ -282,7 +287,7 @@ class MassIntegrals:
             np.ndarray: Array of second order Eulerian biases :math:`b_2^E(m)`
         """
         if not hasattr(self,'second_order_bias_grid'):
-            self.second_order_bias_grid = self.mass_function.second_order_bias(self.m_h_grid)
+            self.second_order_bias_grid = self.mass_function.second_order_bias(self.m_h_grid,self.z)
         return self.second_order_bias_grid.copy()
 
     def _return_bias(self,q):

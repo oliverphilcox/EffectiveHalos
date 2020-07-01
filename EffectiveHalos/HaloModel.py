@@ -8,7 +8,7 @@ import sys
 import fastpt as FASTPT
 
 class HaloModel:
-    """Class to compute the non-linear power spectrum from the halo model of Philcox et al. 2020.
+    """Class to compute the non-linear power spectrum from the halo model of Philcox et al. 2020 at a particular redshift.
 
     The model power is defined as
 
@@ -23,14 +23,16 @@ class HaloModel:
         mass_function (MassFunction): Instance of the MassFunction class, containing the mass function and bias.
         halo_physics (HaloPhysics): Instance of the HaloPhysics class, containing the halo profiles and concentrations.
         kh_vector (np.ndarray): Vector of wavenumbers (in :math:`h/\mathrm{Mpc}` units), for which power spectrum will be computed.
+        z (float): Redshift for which the power spectrum will be computed.
 
     Keyword Args:
         kh_min: Minimum k vector in the simulation (or survey) region in :math:`h/\mathrm{Mpc}` units. Modes below kh_min are set to zero, default: 0.
+        npoints: Number of points with which to compute the mass integrals, default: 1000.
         verb (bool): If true, output useful messages througout run-time, default: False.
 
     """
 
-    def __init__(self,cosmology,mass_function,halo_physics,kh_vector,kh_min=0,verb=False):
+    def __init__(self,cosmology,mass_function,halo_physics,kh_vector,z,kh_min=0,npoints=1000,verb=False):
         """
         Initialize the class loading properties from the other classes.
         """
@@ -49,9 +51,13 @@ class HaloModel:
         else:
             raise TypeError('halo_physics input must be an instance of the HaloPhysics class!')
 
+        # Check and save redshift
+        self.z = z
+        assert z<=self.cosmology.z_max, "Redshift must be below maximum set in the cosmology class!"
+
         # Create instance of the MassIntegrals class
-        self.mass_integrals = MassIntegrals(self.cosmology, self.mass_function, self.halo_physics, kh_vector,
-                                            min_logM_h = self.halo_physics.min_logM_h+0.01, max_logM_h = self.halo_physics.max_logM_h-0.01,npoints=self.halo_physics.npoints)
+        self.mass_integrals = MassIntegrals(self.cosmology, self.mass_function, self.halo_physics, kh_vector, self.z,
+                                            min_logM_h = self.halo_physics.min_logM_h+0.01, max_logM_h = self.halo_physics.max_logM_h-0.01,npoints=npoints)
 
         # Write useful attributes
         self.kh_vector = kh_vector
@@ -59,11 +65,11 @@ class HaloModel:
         self.verb = verb
 
         # Compute linear (CDM+baryon) power for the k-vector
-        self.linear_power = self.cosmology.compute_linear_power(self.kh_vector,self.kh_min).copy()
+        self.linear_power = self.cosmology.compute_linear_power(self.kh_vector,self.z,kh_min=self.kh_min).copy()
 
         # Also compute full (CDM+baryon+neutrino) power if required
         if self.cosmology.use_neutrinos:
-            self.linear_power_total = self.cosmology.compute_linear_power(self.kh_vector,self.kh_min,with_neutrinos=True).copy()
+            self.linear_power_total = self.cosmology.compute_linear_power(self.kh_vector,self.z,kh_min=self.kh_min,with_neutrinos=True).copy()
 
         # Set other hyperparameters consistently. (These are non-critical but control minutae of IR resummation and interpolation precision)
         self.IR_N_k = 5000
@@ -214,7 +220,7 @@ class HaloModel:
         """
 
         if not hasattr(self,'one_loop_only_power'):
-            self.one_loop_only_power = self._one_loop_only_power_interpolater(lambda kk: self.cosmology.compute_linear_power(kk,self.kh_min))(self.kh_vector)
+            self.one_loop_only_power = self._one_loop_only_power_interpolater(lambda kk: self.cosmology.compute_linear_power(kk,self.z,kh_min=self.kh_min))(self.kh_vector)
 
         return self.one_loop_only_power.copy()
 
@@ -365,11 +371,11 @@ class HaloModel:
             kh_interp = np.logspace(np.log10(min_k)-0.5,np.log10(max_k)+0.5,self.IR_N_k)
 
             # Define turning point of power spectrum (we compute no-wiggle spectrum beyond this point)
-            linear_power_interp = self.cosmology.compute_linear_power(kh_interp,kh_min=self.kh_min)
+            linear_power_interp = self.cosmology.compute_linear_power(kh_interp,self.z,kh_min=self.kh_min)
             max_pos = np.where(linear_power_interp==max(linear_power_interp))
             kh_turn = kh_interp[max_pos]
             Pk_turn = linear_power_interp[max_pos]
-            Pk_max = self.cosmology.compute_linear_power(np.atleast_1d(self.IR_kh_max),kh_min=self.kh_min)
+            Pk_max = self.cosmology.compute_linear_power(np.atleast_1d(self.IR_kh_max),self.z,kh_min=self.kh_min)
 
             # Define k in required range
             ffilt = np.where(np.logical_and(kh_interp>kh_turn,kh_interp<self.IR_kh_max))
@@ -411,7 +417,7 @@ class HaloModel:
             def _BAO_integrand(q):
                 r_BAO = 105. # BAO scale in Mpc/h
                 kh_osc = 1./r_BAO
-                return self.cosmology.compute_linear_power(q,kh_min=self.kh_min)*(1.-spherical_jn(0,q/kh_osc)+2.*spherical_jn(2,q/kh_osc))/(6.*np.pi**2.)
+                return self.cosmology.compute_linear_power(q,self.z,kh_min=self.kh_min)*(1.-spherical_jn(0,q/kh_osc)+2.*spherical_jn(2,q/kh_osc))/(6.*np.pi**2.)
             kk_grid = np.linspace(1e-4,0.2,10000)
 
             # Now store the BAO damping scale as Sigma^2

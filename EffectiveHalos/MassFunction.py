@@ -44,7 +44,7 @@ class MassFunction:
             raise NameError('cosmology attribute must be an instance of the Cosmology class!')
 
         # Expansion parameter
-        self.a = 1./(1.+self.cosmology.z)
+        self.a = lambda z: 1./(1.+z)
 
         self.verb = verb
 
@@ -57,9 +57,9 @@ class MassFunction:
         # Define mass-function specific parameters:
         self._load_mass_function_parameters(mass_dict)
 
-    def mass_function(self,m_h):
+    def mass_function(self,m_h,z):
         """
-        Return the mass function, equal to the number density of halos per unit logarithmic mass interval. This assumes the existence of a universal mass function, with
+        Return the mass function at a specified redshift, equal to the number density of halos per unit logarithmic mass interval. This assumes the existence of a universal mass function, with
 
         .. math::
 
@@ -74,6 +74,7 @@ class MassFunction:
 
         Args:
             m_h (np.ndarray): Array of masses in :math:`h^{-1}M_\mathrm{sun}` units.
+            z (float): Redshift at which to evaluate the mass function.
 
         Returns:
             np.ndarray: Mass function, :math:`dn/d\log_{10}(M/h^{-1}M_\mathrm{sun})` in :math:`h^3\mathrm{Mpc}^{-3}` units
@@ -81,79 +82,88 @@ class MassFunction:
         """
 
         logM_h = np.log10(m_h) # log10(M/h^{-1}Msun)
-        dlns_dlogM = self.cosmology.dlns_dlogM_int(logM_h)
+        dlns_dlogM = self.cosmology.dlns_dlogM_int(logM_h,z)
 
         # Compute peak height
-        sigma = self.cosmology.sigma_logM_int(logM_h)
-        nu = self.delta_c/sigma
+        sigma = self.cosmology.sigma_logM_int(logM_h,z)
 
-        # Compute universal mass function f(nu)
+        # Compute universal mass function f(nu) [z independent]
         if self.mass_function_name=='Sheth-Tormen':
+            nu = self.delta_c(z)/sigma
             f = nu * self.A_ST * (1. + (self.a_ST * nu**2)**(-self.p_ST)) * np.exp(-self.a_ST * nu**2/2.)
         elif self.mass_function_name=='Tinker':
-            f = self.alpha*(1.+np.power(self.beta*nu,-2.*self.phi))*pow(nu,2.*self.eta)*np.exp(-self.gamma*nu**2/2.)
+            nu = self.delta_c/sigma
+            f = self.alpha*(1.+np.power(self.beta(z)*nu,-2.*self.phi(z)))*pow(nu,2.*self.eta(z))*np.exp(-self.gamma(z)*nu**2/2.)
         elif self.mass_function_name=='Crocce':
-            f = self.pA*(np.power(sigma,-self.pa)+self.pb)*np.exp(-self.pc/sigma**2)
+            nu = self.delta_c/sigma
+            f = self.pA(z)*(np.power(sigma,-self.pa(z))+self.pb(z))*np.exp(-self.pc(z)/sigma**2)
         elif self.mass_function_name=='Bhattacharya':
+            nu = self.delta_c/sigma
             f = self.A0 * np.sqrt(2./np.pi)*np.exp(-self.a0*nu**2./2.)*(1.+(self.a0*nu**2.)**-self.p0)*np.power(self.a0*nu**2.,self.q0/2.)
 
         # Return mass function
         mf = f * self.cosmology.rhoM * dlns_dlogM / m_h
         return mf
 
-    def linear_halo_bias(self,m_h):
+    def linear_halo_bias(self,m_h,z):
         """
-        Compute the linear halo bias, from the peak background split.
+        Compute the linear halo bias at a specified redshift, from the peak background split.
 
         Associated bias functions are available for each mass function, and more can be user-defined. See the class description for details of the loaded parametrizations.
 
         Args:
             m_h (np.ndarray): Array of masses in :math:`h^{-1}M_\mathrm{sun}` units.
+            z (float): Redshift at which to evaluate the bias
 
         Returns:
             np.ndarray: Linear Eulerian halo bias (dimensionless)
         """
 
         logM_h = np.log10(m_h)
-        sigma= self.cosmology.sigma_logM_int(logM_h);
-        nu = self.delta_c/sigma;
+        sigma= self.cosmology.sigma_logM_int(logM_h,z);
 
         if self.mass_function_name=='Sheth-Tormen':
-            return 1.+(self.a_ST*np.power(nu,2)-1.+2.*self.p_ST/(1.+np.power(self.a_ST*np.power(nu,2),self.p_ST)))/self.delta_c;
+            nu = self.delta_c(z)/sigma;
+            return 1.+(self.a_ST*np.power(nu,2)-1.+2.*self.p_ST/(1.+np.power(self.a_ST*np.power(nu,2),self.p_ST)))/self.delta_c(z);
 
         elif self.mass_function_name=='Tinker':
+            nu = self.delta_c/sigma;
             return 1.-self.fit_A*np.power(nu,self.fit_a)/(np.power(nu,self.fit_a)+np.power(self.delta_c,self.fit_a))+self.fit_B*np.power(nu,self.fit_b)+self.fit_C*np.power(nu,self.fit_c);
 
         elif self.mass_function_name=='Crocce':
-            return 1.-self.pa/(self.delta_c + self.pb*self.delta_c*(self.delta_c/nu)**self.pa) + (2.*self.pc*np.power(nu,2.))/np.power(self.delta_c,3.)
+            nu = self.delta_c/sigma;
+            return 1.-self.pa(z)/(self.delta_c + self.pb(z)*self.delta_c*(self.delta_c/nu)**self.pa(z)) + (2.*self.pc(z)*np.power(nu,2.))/np.power(self.delta_c,3.)
 
         elif self.mass_function_name=='Bhattacharya':
+            nu = self.delta_c/sigma;
             return 1. + (self.a0*nu**2.+2.*self.p0/(1.+np.power(self.a0*nu**2.,self.p0))-self.q0) / self.delta_c
 
-    def second_order_bias(self,m_h):
+    def second_order_bias(self,m_h,z):
         """ Compute the second order Eulerian bias, defined as :math:`\\frac{4}{21}b_1^L + \\frac{1}{2}b_2^L` where :math:`b_1^L` and :math:`b_2^L` are the Lagrangian bias parameters.
 
         Associated bias functions are available for each mass function, and more can be user-defined. See the class description for details of the loaded parametrizations.
 
         Args:
-        - m_h: Mass in :math:`h^{-1}M_\mathrm{sun}` units.
+            m_h (np.ndarray): Mass in :math:`h^{-1}M_\mathrm{sun}` units.
+            z (float): Redshift at which to evaluate the bias
 
         Returns:
             np.ndarray: Quadratic Eulerian halo bias (dimensionless)
         """
 
         logM_h = np.log10(m_h)
-        sigma= self.cosmology.sigma_logM_int(logM_h);
-        nu = self.delta_c/sigma;
+        sigma= self.cosmology.sigma_logM_int(logM_h,z);
 
         if self.mass_function_name=='Crocce':
-            b1L = -self.pa/(self.delta_c + self.pb*self.delta_c*(self.delta_c/nu)**self.pa) + (2.*self.pc*np.power(nu,2.))/np.power(self.delta_c,3.)
-            b2L = (4.*self.pb*self.pc*self.delta_c**2.*(-2.*self.delta_c**2.+self.pc*nu**2.)+nu**self.pa*(self.pa**2.*self.delta_c**4.-4.*(1.+self.pa)*self.pc*self.delta_c**2.*nu**2.+4.*self.pc**2*nu**4.))/(self.delta_c**6.*(self.pb*self.delta_c**self.pa+nu**self.pa))
+            nu = self.delta_c/sigma;
+            b1L = -self.pa(z)/(self.delta_c + self.pb(z)*self.delta_c*(self.delta_c/nu)**self.pa(z)) + (2.*self.pc(z)*np.power(nu,2.))/np.power(self.delta_c,3.)
+            b2L = (4.*self.pb(z)*self.pc(z)*self.delta_c**2.*(-2.*self.delta_c**2.+self.pc(z)*nu**2.)+nu**self.pa(z)*(self.pa(z)**2.*self.delta_c**4.-4.*(1.+self.pa(z))*self.pc(z)*self.delta_c**2.*nu**2.+4.*self.pc(z)**2*nu**4.))/(self.delta_c**6.*(self.pb(z)*self.delta_c**self.pa(z)+nu**self.pa(z)))
 
             b2E = 8./21.*b1L + b2L
             return b2E
 
         elif self.mass_function_name=='Bhattacharya':
+            nu = self.delta_c/sigma;
             b1L = (self.a0*nu**2.+2.*self.p0/(1.+np.power(self.a0*nu**2.,self.p0))-self.q0) / self.delta_c
             b2L = (-2*self.a0*nu**2. + self.a0**2.*nu**4. + (4.*self.p0*(self.a0*nu**2. + self.p0 - self.q0))/(1 + (self.a0*nu**2.)**self.p0) - 2.*self.a0*nu**2.*self.q0 + self.q0**2.)/self.delta_c**2.
 
@@ -180,9 +190,9 @@ class MassFunction:
             self.A_ST  = (1.+2.**(-self.p_ST)*gamma_fn(0.5-self.p_ST)/np.sqrt(np.pi))**(-1.)*np.sqrt(2.*self.a_ST/np.pi)
 
             # Compute the spherical collapse threshold of Nakamura-Suto, 1997.
-            Om_mz = self.cosmology._Omega_m()
+            Om_mz = lambda z: self.cosmology._Omega_m(z)
             dc0 = (3./20.)*pow(12.*np.pi,2./3.);
-            self.delta_c = dc0*(1.+0.012299*np.log10(Om_mz));
+            self.delta_c = lambda z: dc0*(1.+0.012299*np.log10(Om_mz(z)));
 
         elif self.mass_function_name=='Tinker':
             self.delta_c = 1.686 # critical density for collapse
@@ -202,10 +212,10 @@ class MassFunction:
             phi0=interp1d(odeltas,phi0)(odelta)
             eta0=interp1d(odeltas,eta0)(odelta)
 
-            self.beta = beta0*self.a**-0.2
-            self.phi = phi0*self.a**0.08
-            self.eta = eta0*self.a**-0.27
-            self.gamma = gamma0*self.a**0.01
+            self.beta = lambda z: beta0*self.a(z)**-0.2
+            self.phi = lambda z: phi0*self.a(z)**0.08
+            self.eta = lambda z: eta0*self.a(z)**-0.27
+            self.gamma = lambda z: gamma0*self.a(z)**0.01
 
             # BIAS FUNCTION PARAMETERS
             y = np.log10(odelta);
@@ -220,19 +230,19 @@ class MassFunction:
         elif self.mass_function_name=='Crocce':
             self.delta_c = 1.686  # critical density for collapse
 
-            if self.cosmology.name=='Quijote':
-                if self.verb: print('Using fitted parameters for the Crocce mass function from Quijote simulations ')
-                # Optimal values for the Quijote simulations
-                self.pA = 0.729
-                self.pa = 2.355
-                self.pb = 0.423
-                self.pc = 1.318
-            else:
-                # Optimal values from original simulations
-                self.pA = 0.58*self.a**0.13
-                self.pa = 1.37*self.a**0.15
-                self.pb = 0.3*self.a**0.084
-                self.pc = 1.036*self.a**0.024
+            # if self.cosmology.name=='Quijote':
+            #     if self.verb: print('Using fitted parameters for the Crocce mass function from Quijote simulations ')
+            #     # Optimal values for the Quijote simulations
+            #     self.pA = 0.729
+            #     self.pa = 2.355
+            #     self.pb = 0.423
+            #     self.pc = 1.318
+            # else:
+            # Optimal values from original simulations
+            self.pA = lambda z: 0.58*self.a(z)**0.13
+            self.pa = lambda z: 1.37*self.a(z)**0.15
+            self.pb = lambda z: 0.3*self.a(z)**0.084
+            self.pc = lambda z: 1.036*self.a(z)**0.024
 
         elif self.mass_function_name=='Bhattacharya':
             self.delta_c = 1.686 # critical density for collapse

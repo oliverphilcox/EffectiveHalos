@@ -37,12 +37,12 @@ R = 1. # smoothing scale (should be calibrated from simulations)
 k = np.arange(0.01, 1., 0.005) # wavenumbers in h/Mpc
 
 ## Load general classes
-cosmology = Cosmology(z, 'Planck18') # use Planck 2018 cosmology
+cosmology = Cosmology('Planck18') # use Planck 2018 cosmology
 mass_function = MassFunction(cosmology, 'Bhattacharya') # Bhattacharya 2010 mass function
 halo_physics = HaloPhysics(cosmology, mass_function, 'Duffy', 'NFW') # Duffy 08 concentration relation, NFW halo profiles
 
-## Load HaloModel class
-halo_model = HaloModel(cosmology, mass_function, halo_physics, k)
+## Load HaloModel class at z = 0
+halo_model = HaloModel(cosmology, mass_function, halo_physics, k, z)
 
 ## Compute the power spectrum in both Effective and Standard Halo Models
 power_spectrum_EHM = halo_model.halo_model(cs2, R)
@@ -55,4 +55,4 @@ This generates an estimate for the matter power spectrum in a few seconds. Let's
 
 A full tutorial can be found [here](https://effectivehalos.readthedocs.io/en/latest/Tutorial.html).
 
-***New for version 1.1:*** Accurate models for the power spectrum in massive neutrino cosmologies.
+***New for version 1.2:*** Restructuring to allow for fast computation of multiple redshifts.

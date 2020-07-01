@@ -25,13 +25,12 @@ class HaloPhysics:
     Keyword Args:
         min_logM_h (float): Minimum halo mass in :math:`\log_{10}(M/h^{-1}M_\mathrm{sun})`, default: 6
         max_logM_h (float): Maximum halo mass in :math:`\log_{10}(M/h^{-1}M_\mathrm{sun})`, default: 17
-        npoints (int): Number of sampling points in mass for :math:`\sigma(M)` interpolation and mass integrals, default: 1e5
         halo_overdensity (float): Characteristic halo overdensity in units of background matter density. Can be a fixed value or 'virial', whereupon the virial collapse overdensity relation of Bryan & Norman 1998 to construct this. Default: 200.
         verb (bool): If true output useful messages througout run-time, default: False.
 
     """
 
-    def __init__(self,cosmology,mass_function,concentration_name='Duffy',profile_name='NFW',min_logM_h=6,max_logM_h=17,npoints=int(1e5),halo_overdensity=200,verb=False):
+    def __init__(self,cosmology,mass_function,concentration_name='Duffy',profile_name='NFW',min_logM_h=6,max_logM_h=17,halo_overdensity=200,verb=False):
         """
         Initialize the class with relevant model hyperparameters.
         """
@@ -48,7 +47,6 @@ class HaloPhysics:
         self.profile_name = profile_name
         self.min_logM_h = min_logM_h
         self.max_logM_h = max_logM_h
-        self.npoints = npoints
 
         # Load halo overdensity
         if halo_overdensity=='virial':
@@ -56,14 +54,10 @@ class HaloPhysics:
         else:
             self.halo_overdensity = halo_overdensity
 
-        # Create interpolators for sigma and d(ln(sigma))/dlog10(M):
-        cosmology._interpolate_sigma_and_deriv(self.min_logM_h,self.max_logM_h,self.npoints)
-
-        # Save reduced Hubble value for later use
         self.a = self.cosmology.a
         self.verb = verb
 
-    def halo_profile(self,m_h,kh,norm_only=False):
+    def halo_profile(self,m_h,kh,z,norm_only=False):
         """Compute the halo profile function in Fourier space; :math:`\\rho(k|m) = \\frac{m}{\\bar{\\rho}_M}u(k|m)`
         where :math:`\\bar{\\rho}_M`` is the background matter density and :math:`u(k|m)` is the halo profile.
 
@@ -74,6 +68,7 @@ class HaloPhysics:
         Args:
             m_h (np.ndarray): Mass in :math:`h^{-1}M_\mathrm{sun}` units.
             kh (np.ndarray): Wavenumber in h/Mpc units.
+            z (float): Redshift at which to evaluate halo profile.
             norm_only (bool): Boolean, if set, just return the normalization factor :math:`m/\\bar{\\rho}_M`, default: False
 
         Returns:
@@ -90,20 +85,21 @@ class HaloPhysics:
             rv = np.power(m_h*3.0/(4.0*np.pi*self.cosmology.rhoM*odelta),1.0/3.0)
 
             # Compute halo concentration
-            c = self.halo_concentration(m_h);
+            c = self.halo_concentration(m_h,z);
             # The function u is normalised to 1 for k<<1 so multiplying by M/rho turns units to a density in units normalized by h
             return self._normalized_halo_profile(kh,rv, c)*m_h/self.cosmology.rhoM;
 
         else:
             raise Exception("Halo profile '%s' not currently implemented!"%self.profile_name)
 
-    def halo_concentration(self,m_h):
+    def halo_concentration(self,m_h,z):
         """Compute the halo concentration :math:`c = r_\mathrm{virial} / r_\mathrm{scale}`.
 
         For details of the available concentration parametrizations, see the class description.
 
         Args:
             m_h (np.ndarray): Mass in :math:`h^{-1}M_\mathrm{sun}` units.
+            z (float): Redshift at which to evaluate halo profile.
 
         Returns:
             np.ndarray: Array of concentration parameters.
@@ -111,17 +107,20 @@ class HaloPhysics:
 
         if self.concentration_name=='Duffy':
             m_h_pivot = 2e12;
-            return 7.85*np.power(m_h/m_h_pivot,-0.081)*pow(self.a,0.71);
+            return 7.85*np.power(m_h/m_h_pivot,-0.081)*pow(self.a(z),0.71);
         else:
             raise NameError('Concentration profile %s is not implemented yet'%(self.concentration_name))
 
-    def _virial_overdensity(self):
+    def _virial_overdensity(self, z):
         """Compute the virial collapse overdensity from Bryan-Norman 1998
+
+        Args:
+            z (float): Redshift
 
         Returns:
             float: Virial collapse overdensity
         """
-        Om_mz = self.cosmology._Omega_m()
+        Om_mz = self.cosmology._Omega_m(z)
         x = Om_mz-1.;
         Dv0 = 18.*pow(np.pi,2);
         Dv = (Dv0+82.*x-39.*pow(x,2))/Om_mz;

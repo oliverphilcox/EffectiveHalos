@@ -23,6 +23,7 @@ class CountsCovariance:
         mass_function (MassFunction): Class containing the mass function and bias.
         halo_physics (HaloPhysics): Class containing the halo profiles and concentrations.
         kh_vector (np.ndarray): Vector of wavenumbers (in :math:`h/\mathrm{Mpc}` units), for which power spectra will be computed.
+        z (float): Redshift for which the power spectrum will be computed.
         mass_bins (np.ndarray): Array of mass bin edges, in :math:`h^{-1}M_\mathrm{sun}` units. Must have length N_bins + 1.
         volume: Volume of the survey in :math:`(h^{-1}\mathrm{Mpc})^3`.
 
@@ -37,7 +38,7 @@ class CountsCovariance:
 
     """
 
-    def __init__(self,cosmology, mass_function, halo_physics, kh_vector, mass_bins, volume, kh_min=0, pt_type = 'EFT', pade_resum = True, smooth_density = True, IR_resum = True, npoints = 1000, verb=False):
+    def __init__(self,cosmology, mass_function, halo_physics, kh_vector, z, mass_bins, volume, kh_min=0, pt_type = 'EFT', pade_resum = True, smooth_density = True, IR_resum = True, npoints = 1000, verb=False):
         """
         Initialize the class loading properties from the other classes.
         """
@@ -69,9 +70,10 @@ class CountsCovariance:
         self.smooth_density = smooth_density
         self.IR_resum = IR_resum
         self.npoints = npoints
+        self.z = z
 
         # Generate a power spectrum class with this k-vector
-        self.halo_model = HaloModel(cosmology, mass_function, halo_physics, kh_vector, kh_min,verb=self.verb)
+        self.halo_model = HaloModel(cosmology, mass_function, halo_physics, kh_vector, z, kh_min,verb=self.verb)
 
         # Copy in the MassIntegrals class
         self.mass_integrals = self.halo_model.mass_integrals
@@ -84,9 +86,10 @@ class CountsCovariance:
         # Run some checks
         assert self.mass_bins[0]>=np.power(10.,self.mass_integrals.min_logM_h), 'Minimum bin must be above MassIntegral limit!'
         assert self.mass_bins[-1]<=np.power(10.,self.mass_integrals.max_logM_h), 'Maximum bin must be below MassIntegral limit!'
+        assert z<=self.cosmology.z_max, "Redshift must be below maximum set in the cosmology class!"
 
         # Compute linear power for the k-vector
-        self.linear_power = self.cosmology.compute_linear_power(self.kh_vector,self.kh_min).copy()
+        self.linear_power = self.cosmology.compute_linear_power(self.kh_vector,self.z,kh_min=self.kh_min).copy()
 
     def NP_covariance(self, cs2, R, alpha, sigma2_volume=-1, use_exclusion=True, use_SSC=True):
         """
@@ -476,7 +479,7 @@ class CountsCovariance:
 
         # Compute the 1-loop power spectrum model in fine bins for the dilation derivative
         fine_k = np.logspace(min(np.log10(self.kh_vector))-0.1,max(np.log10(self.kh_vector))+0.1,1000)
-        fine_halo = HaloModel(self.cosmology,self.mass_function,self.halo_physics,fine_k,self.kh_min)
+        fine_halo = HaloModel(self.cosmology,self.mass_function,self.halo_physics,fine_k,self.z,self.kh_min)
         fine_pk_nl = fine_halo.non_linear_power(cs2,R,self.pt_type, self.pade_resum, self.smooth_density, self.IR_resum)
 
         # Compute the dilation derivative
@@ -555,7 +558,7 @@ class CountsCovariance:
         """
 
         R_survey = np.power(3.*self.volume/(4.*np.pi),1./3.) # equivalent survey volume
-        sigma2_volume = np.power(self.cosmology.vector_sigma_R(R_survey),2.)
+        sigma2_volume = np.power(self.cosmology.vector_sigma_R(R_survey,self.z),2.)
 
         return sigma2_volume
 
@@ -576,7 +579,7 @@ class CountsCovariance:
                 max_logM_h = np.log10(self.mass_bins[n_bin+1])
 
                 # Load an instance of the MassIntegral class
-                this_mass_integral = MassIntegrals(self.cosmology,self.mass_function,self.halo_physics,self.kh_vector,
+                this_mass_integral = MassIntegrals(self.cosmology,self.mass_function,self.halo_physics,self.kh_vector,self.z,
                                                 min_logM_h=min_logM_h, max_logM_h=max_logM_h, npoints=self.npoints)
                 self.all_mass_integrals.append(this_mass_integral)
 
@@ -596,7 +599,7 @@ class CountsCovariance:
                 av_M_h = 0.5*(self.mass_bins[n_bin]+self.mass_bins[n_bin+1])
 
                 # Load an instance of the MassIntegral class
-                this_mass_integral = MassIntegrals(self.cosmology,self.mass_function,self.halo_physics,self.kh_vector,
+                this_mass_integral = MassIntegrals(self.cosmology,self.mass_function,self.halo_physics,self.kh_vector,self.z,
                                                 min_logM_h=np.log10(av_M_h),npoints=self.npoints)
                 self.all_exclusion_mass_integrals.append(this_mass_integral)
 
@@ -620,20 +623,20 @@ class CountsCovariance:
             if self.verb: print("Computing interpolation grid for linear S function")
 
         # Define a k grid
-        kk = np.logspace(-4,1,10000)
+        kk = np.logspace(-4,1,3000)
 
         # Define a power spectrum
         if not self.smooth_density:
             raise Exception("Power spectrum integrals are unstable without density field smoothing!")
 
-        hm2 = HaloModel(self.cosmology, self.mass_function, self.halo_physics, kk, kh_min = self.kh_min)
+        hm2 = HaloModel(self.cosmology, self.mass_function, self.halo_physics, kk, self.z, kh_min = self.kh_min)
         if non_linear:
             power_grid = hm2.non_linear_power(cs2, R, self.pt_type, self.pade_resum, self.smooth_density, self.IR_resum)
         else:
             power_grid = hm2.non_linear_power(cs2,R,'Linear',0,self.smooth_density,self.IR_resum)
 
         # Define interpolation grid for exclusion radii
-        RR = np.linspace(0,500,3000).reshape(-1,1)
+        RR = np.linspace(0,500,1000).reshape(-1,1)
 
         # Compute integrals
         S_tmp = simps(power_grid*kk**2./(2.*np.pi**2.)*4.*np.pi*spherical_jn(1,kk*RR)/kk*RR**2.,kk,axis=1)
@@ -654,10 +657,10 @@ class CountsCovariance:
 
 
         # Define a k grid
-        kk = np.logspace(-4,1,10000)
+        kk = np.logspace(-4,1,3000)
 
         # Define a power spectrum
-        hm2 = HaloModel(self.cosmology, self.mass_function, self.halo_physics, kk, kh_min = self.kh_min)
+        hm2 = HaloModel(self.cosmology, self.mass_function, self.halo_physics, kk, self.z, kh_min = self.kh_min)
         pp = hm2.non_linear_power(cs2, R, self.pt_type, self.pade_resum, self.smooth_density, self.IR_resum)
 
         # Transform to real space for convolution
