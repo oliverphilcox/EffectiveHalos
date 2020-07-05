@@ -234,7 +234,13 @@ class Cosmology(object):
         Ea = np.sqrt((self.cosmo.Omega0_m()+self.cosmo.Omega_Lambda()*pow(self.a,-3)+Omega0_k*self.a)/pow(self.a,3))
         return Ea
 
-    def _Omega_m(self):
-        """Return the value of :math:`\Omega_m(z)` at the class redshift
-
+    def _Omega_m(self,z):
+        """Return the value of :math:`\Omega_m(z)` at the specified redshift
+        Args:
+            z (float): Desired redshift (less than the maximum specified in the class initialization)
         Returns:
+            float: :math:`\Omega_m(z)`
+        """
+        hnorm = self._h_over_h0(z)
+        output = (self.cosmo.Omega0_m())/self.a(z)**3/hnorm**2
+        return output
